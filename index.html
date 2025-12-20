@@ -3,138 +3,104 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mustaqil Ish: Usul al-Fiqh (To'liq)</title>
+    <title>Mustaqil Ish: Usul al-Fiqh (To'liq Tahrir)</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
         :root {
             --primary: #2c3e50;
-            --accent: #2980b9;
-            --bg: #ecf0f1;
-            --text: #34495e;
-            --white: #ffffff;
+            --secondary: #34495e;
+            --accent: #3498db;
+            --light: #f8f9fa;
+            --border: #e9ecef;
         }
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg);
+            background-color: #f0f2f5;
             margin: 0;
             display: flex;
             height: 100vh;
             overflow: hidden;
-            color: var(--text);
         }
 
-        /* ----- CHAP PANEL (MENYU) ----- */
+        /* Chap Panel - Menyu */
         .sidebar {
-            width: 380px;
-            background: var(--white);
-            border-right: 1px solid #bdc3c7;
+            width: 350px;
+            background: white;
+            border-right: 1px solid var(--border);
             display: flex;
             flex-direction: column;
             padding: 20px;
             overflow-y: auto;
-            box-shadow: 2px 0 10px rgba(0,0,0,0.05);
+            box-shadow: 2px 0 5px rgba(0,0,0,0.05);
         }
 
-        .student-info {
-            background: #f8f9fa;
-            padding: 15px;
-            border-radius: 8px;
-            border: 1px solid #dfe6e9;
-            margin-bottom: 20px;
-        }
-
-        .student-info label {
-            display: block;
-            font-size: 0.85em;
-            font-weight: bold;
-            margin-bottom: 5px;
-            color: var(--primary);
-        }
-
-        .student-info input {
+        .student-form input {
             width: 100%;
-            padding: 8px;
+            padding: 10px;
             margin-bottom: 10px;
-            border: 1px solid #bdc3c7;
+            border: 1px solid #ddd;
             border-radius: 4px;
-            font-size: 0.9em;
-            box-sizing: border-box; 
+            box-sizing: border-box;
         }
 
-        .chapter-block {
-            margin-bottom: 15px;
+        .topics-tree {
+            margin-top: 20px;
         }
 
         .chapter-title {
             font-weight: bold;
             color: var(--primary);
-            padding: 8px 0;
+            margin-top: 15px;
+            margin-bottom: 5px;
+            padding-bottom: 5px;
             border-bottom: 2px solid var(--accent);
-            margin-bottom: 8px;
             font-size: 0.95em;
-            text-transform: uppercase;
         }
 
         .topic-item {
             display: flex;
             align-items: flex-start;
-            padding: 6px;
+            margin-bottom: 8px;
+            font-size: 0.9em;
+            padding: 5px;
             border-radius: 4px;
             transition: background 0.2s;
-            font-size: 0.9em;
         }
 
         .topic-item:hover {
-            background-color: #f1f2f6;
+            background-color: var(--light);
         }
 
         .topic-item input {
-            margin-top: 4px;
+            margin-top: 3px;
             margin-right: 10px;
-            cursor: pointer;
         }
 
-        .topic-item label {
-            cursor: pointer;
-            line-height: 1.4;
-        }
-
-        /* ----- O'NG PANEL (TAHRIRLASH) ----- */
+        /* O'ng Panel - Tahrirlash */
         .main-content {
             flex: 1;
             padding: 30px;
             overflow-y: auto;
-            background-color: #dfe6e9;
+            background-color: #f0f2f5;
         }
 
-        .editor-wrapper {
-            max-width: 900px;
+        .editor-container {
+            max-width: 800px;
             margin: 0 auto;
         }
 
-        .header-section {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-
-        .header-section h1 {
-            margin: 0;
-            color: var(--primary);
-        }
-
         .info-card {
-            background: var(--white);
+            background: white;
             padding: 25px;
-            margin-bottom: 25px;
+            margin-bottom: 20px;
             border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-            animation: slideIn 0.3s ease-out;
-            border-left: 5px solid var(--accent);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            animation: fadeIn 0.3s ease-in;
         }
 
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateY(20px); }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
@@ -143,533 +109,297 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 15px;
-            border-bottom: 1px solid #ecf0f1;
+            border-bottom: 1px solid var(--border);
             padding-bottom: 10px;
         }
 
         .card-title {
-            font-size: 1.1em;
             font-weight: bold;
             color: var(--primary);
+            font-size: 1.1em;
         }
 
-        .btn-remove {
-            background: none;
-            border: none;
+        .remove-btn {
             color: #e74c3c;
             cursor: pointer;
             font-size: 0.9em;
-            opacity: 0.7;
+            border: none;
+            background: none;
         }
-        .btn-remove:hover { opacity: 1; }
 
-        textarea.content-editor {
+        textarea.editable-area {
             width: 100%;
-            min-height: 200px;
-            padding: 15px;
-            border: 1px solid #bdc3c7;
+            min-height: 180px;
+            padding: 10px;
+            border: 1px solid #ddd;
             border-radius: 4px;
-            font-family: 'Times New Roman', serif; /* Ilmiy uslub uchun */
-            font-size: 16px;
+            font-family: inherit;
+            font-size: 1em;
             line-height: 1.6;
             resize: vertical;
-            box-sizing: border-box;
             background-color: #fafafa;
+            box-sizing: border-box;
         }
 
-        textarea.content-editor:focus {
+        textarea.editable-area:focus {
             outline: 2px solid var(--accent);
-            background-color: #fff;
+            background-color: white;
         }
 
-        /* ----- TUGMALAR ----- */
-        .fab-container {
-            position: fixed;
-            bottom: 30px;
-            right: 40px;
-            z-index: 100;
+        .action-bar {
+            position: sticky;
+            bottom: 20px;
+            text-align: right;
+            margin-top: 20px;
         }
 
-        .btn-download {
+        .btn-pdf {
             background-color: #27ae60;
             color: white;
-            padding: 15px 30px;
+            padding: 12px 30px;
             border: none;
             border-radius: 50px;
             font-size: 16px;
             font-weight: bold;
             cursor: pointer;
-            box-shadow: 0 4px 15px rgba(39, 174, 96, 0.4);
+            box-shadow: 0 4px 15px rgba(39, 174, 96, 0.3);
             transition: transform 0.2s;
-            display: flex;
-            align-items: center;
-            gap: 10px;
         }
 
-        .btn-download:hover {
+        .btn-pdf:hover {
             transform: scale(1.05);
-            background-color: #219150;
         }
 
-        /* ----- PDF SHABLON (KO'RINMAS) ----- */
+        /* PDF Preview Styles (Hidden) */
         #pdf-template {
             display: none;
             padding: 40px;
             font-family: 'Times New Roman', serif;
-            color: #000;
         }
+        
+        .pdf-header { text-align: center; border-bottom: 2px solid black; margin-bottom: 20px; }
+        .pdf-student { margin-bottom: 30px; font-weight: bold; }
+        .pdf-section { margin-bottom: 20px; text-align: justify; }
+        .pdf-section h3 { background-color: #eee; padding: 5px; font-size: 14pt; }
+        .pdf-content { font-size: 12pt; line-height: 1.5; white-space: pre-wrap; }
 
-        .pdf-header {
-            text-align: center;
-            border-bottom: 2px solid #000;
-            margin-bottom: 30px;
-            padding-bottom: 10px;
-        }
-
-        .pdf-info {
-            margin-bottom: 30px;
-            font-size: 12pt;
-        }
-
-        .pdf-info p { margin: 5px 0; font-weight: bold; }
-
-        .pdf-section {
-            margin-bottom: 25px;
-            page-break-inside: avoid;
-        }
-
-        .pdf-section h3 {
-            background-color: #f0f0f0;
-            padding: 5px 10px;
-            font-size: 14pt;
-            margin-bottom: 10px;
-            border-left: 4px solid #333;
-        }
-
-        .pdf-text {
-            font-size: 12pt;
-            line-height: 1.5;
-            text-align: justify;
-            white-space: pre-wrap;
-        }
     </style>
 </head>
 <body>
 
 <div class="sidebar">
-    <h2 style="text-align:center; color: var(--primary);">Mavzular Rejasi</h2>
+    <h2 style="text-align:center; color: var(--primary);">Mavzular</h2>
     
-    <div class="student-info">
-        <label>F.I.SH (To'liq):</label>
-        <input type="text" id="inpName" placeholder="Abdullayev Behzod">
+    <div class="student-form">
+        <label>F.I.SH:</label>
+        <input type="text" id="inpName" placeholder="Ism familiyangizni yozing">
         <label>Kurs va Guruh:</label>
-        <input type="text" id="inpCourse" placeholder="4-A guruhi">
+        <input type="text" id="inpCourse" placeholder="Masalan: 4-A">
     </div>
 
-    <div id="topicsMenu">
+    <div class="topics-tree" id="topicsMenu">
         </div>
 </div>
 
 <div class="main-content">
-    <div class="editor-wrapper">
-        <div class="header-section">
-            <h1>Mustaqil Ish Platformasi</h1>
-            <p>Mavzularni tanlang, ma'lumotlarni tahrirlang va PDF yuklab oling.</p>
-        </div>
-
-        <div id="cards-container">
+    <div class="editor-container">
+        <h1 style="color: var(--primary); text-align: center;">Tahrirlash Maydoni</h1>
+        
+        <div id="cards-area">
             </div>
-    </div>
 
-    <div class="fab-container">
-        <button class="btn-download" onclick="generatePDF()">
-            <span>📥 PDF YUKLAB OLISH</span>
-        </button>
+        <div class="action-bar">
+            <button class="btn-pdf" onclick="generatePDF()">PDF YUKLAB OLISH</button>
+        </div>
     </div>
 </div>
 
 <div id="pdf-template">
     <div class="pdf-header">
         <h1>MUSTAQIL ISH</h1>
-        <h3>Fan: Usul al-Fiqh / Hadisshunoslik</h3>
+        <p>Fan: Usul al-Fiqh</p>
     </div>
-    
-    <div class="pdf-info">
-        <p>Talaba: <span id="pdf-student-name"></span></p>
-        <p>Guruh: <span id="pdf-student-course"></span></p>
-        <p>Sana: <span id="pdf-date"></span></p>
+    <div class="pdf-student">
+        <p>Talaba: <span id="pdf-name"></span></p>
+        <p>Guruh: <span id="pdf-course"></span></p>
     </div>
-
-    <div id="pdf-body">
-        </div>
-    
-    <div style="margin-top: 50px; text-align: right;">
-        <p>Imzo: _______________</p>
-    </div>
+    <div id="pdf-body"></div>
 </div>
 
 <script>
-    // ======================================================
-    // MA'LUMOTLAR BAZASI (MANBADAN TO'LIQ OLINDI)
-    // ======================================================
-    const db = [
+    // TO'LIQ MA'LUMOTLAR BAZASI (TARJIMA2.PDF ASOSIDA)
+    const fullData = [
         {
-            chapter: "1-BOB: Xabarlarning bo'linishi",
+            chapter: "1-BOB: Xabarlarning Ta'rifi va Taqsimoti",
             topics: [
                 {
-                    id: "1_1",
-                    title: "Hanafiylarning taqsimoti (3 qism)",
-                    text: `Bizning hanafiy imomlarimiz Rasululloh (s.a.v)ga bog'lanish (ittisol) jihatidan xabarlarni uch qismga bo'lishgan:
-
-1. Mutavotir xabar: Surat jihatidan ham, ma'no jihatidan ham mutlaqo shubhasiz, to'liq bog'lanishga ega bo'lgan xabar. Unda hech qanday shubha yo'q.
-
-2. Mashhur xabar: Surat jihatidan shubha bor, chunki u sahobalar davrida ahod bo'lgan. Ammo ma'no jihatidan shubha yo'q, chunki u ikkinchi va uchinchi asrlarda (tobi'inlar va tobi'ut-tobi'inlar davrida) mutavotir bo'lib, ummat tomonidan qabul qilingan.
-
-3. Ahod xabar (Xabarul-vohid): Surat jihatidan ham, ma'no jihatidan ham shubha bor. Chunki u birinchi asrda ahod bo'lgan, keyin ham mutavotir bo'lmagan va tobi'inlar hamda ularning izdoshlari davrida qabul qilinmagan.`
+                    id: "1.1",
+                    title: "Hanafiylarning Taqsimoti",
+                    text: "Bizning hanafiy imomlarimiz Rasululloh (s.a.v)ga bog'lanish (ittisol) jihatidan xabarlarni uch qismga bo'lishgan:\n\n1. Mutavotir xabar: Surat jihatidan ham, ma'no jihatidan ham mutlaqo shubhasiz, to'liq bog'lanishga ega bo'lgan xabar.\n2. Mashhur xabar: Surat jihatidan shubha bor, chunki u sahobalar davrida ahod bo'lgan. Ammo ma'no jihatidan shubha yo'q, chunki u ikkinchi va uchinchi asrlarda (tobi'in va tobi'ut-tobi'in davrida) mutavotir bo'lib, ummat tomonidan qabul qilingan.\n3. Ahod xabar: Surat jihatidan ham, ma'no jihatidan ham shubha bor, chunki u birinchi asrda ahod bo'lgan va keyinchalik ham mutavotir darajasiga yetmagan."
                 },
                 {
-                    id: "1_2",
-                    title: "Muhaddislarning taqsimoti va Solishtirish",
-                    text: `Muhaddislarning aksariyatiga koʻra xabarlar ikki qismga bo'linadi:
-1. Mutavotir xabar.
-2. Xabarul-vohid (Bu o'z navbatida Mashhur, Aziz, G'aribga bo'linadi).
-
-Ikki istilohni solishtirish:
-Har bir guruh o'z faniga mos bo'lgan yo'lni tanlagan:
-- Muhaddislarning maqsadi isnod, shuning uchun ular roviylar soniga qarab bo'lishgan.
-- Faqihlarning maqsadi esa matn va unga amal qilish, shuning uchun ular o'z mavzulariga foydali bo'lgan jihatdan bo'lishgan.
-
-Ibn Humom aytadi: "Hanafiylarda xabar mutavotir, mashhur va ahoddir."`
-                },
-                {
-                    id: "1_3",
-                    title: "To'liq bog'lanishning yana bir turi",
-                    text: `Eslatma: To'liq bog'lanishning yana bir turi mavjud - bu gapiruvchidan bevosita og'zaki eshitishdir. 
-Bu mutavotirdan ham kuchliroq, chunki gapni eshitish va gapiruvchini ko'rish tushunishga yanada yaqinroqdir.`
+                    id: "1.2",
+                    title: "Muhaddislarning Taqsimoti",
+                    text: "Muhaddislarning aksariyatiga koʻra xabarlar ikki qismga bo'linadi:\n1. Mutavotir xabar.\n2. Xabarul-vohid.\nXabarul-vohid esa o'z navbatida uch qismga bo'linadi: Mashhur, Aziz, G'arib. Hanafiylar bilan muhaddislar o'rtasidagi asosiy farq 'Mashhur' xabarni alohida mustaqil qism sifatida tan olinishidir."
                 }
             ]
         },
         {
-            chapter: "2-BOB: Mutavotir xabar",
+            chapter: "2-BOB: Mutavotir Xabar Tafsilotlari",
             topics: [
                 {
-                    id: "2_1",
-                    title: "Mutavotir ta'rifi va Hukmi",
-                    text: `Ta'rifi: 
-Lug'atda: "Tavotur" narsalarning ketma-ket kelishi.
-Istilohda (Ibn as-Sa'atiy): "O'z-o'zidan ilmni hosil qiladigan jamoa xabari."
-
-Hukmi:
-Ko'pchilik ulamolar orasida mutavotir xabar zaruriy (majburiy) ilm beradi, degan masalada ixtilof yo'q. Uni inkor qilgan kishi kofir bo'ladi.
-Qozı Iso ibn Aban aytadi: "Kim ularni rad etsa, Rasulullohni rad etgandek bo'ladi. Shu sababli u kofir bo'ladi."
-
-Son masalasi: Hanafiylar nazarida mutavotir uchun aniq son (masalan, 10, 40, 70) shart emas. Mezon - ilm va ishonch hosil bo'lishidir.`
+                    id: "2.1",
+                    title: "Mutavotir Ta'rifi va Hukmi",
+                    text: "Lug'atda 'tavotur' so'zi narsalarning ketma-ket kelishini anglatadi. Istilohda (Ibn as-Sa'atiy): 'O'z-o'zidan ilmni hosil qiladigan jamoa xabari'.\n\nMutavotir xabarning hukmi: U zaruriy (qat'iy) ilm beradi. Uni inkor qilgan kishi kofir bo'ladi. Chunki uni inkor qilish Rasululloh (s.a.v)ni rad etish bilan tengdir."
                 },
                 {
-                    id: "2_2",
-                    title: "Mutavotir shartlari (3 ta)",
-                    text: `Hanafiy muhaqqiqlarga koʻra mutavotir bo'lishi uchun uchta shart bor:
-
-1-shart: Xabar beruvchilarning soni shunchalik ko'p bo'lishi kerakki, odatda aql ularning ataylab yolg'on ustida kelishib olishlarini imkonsiz deb bilsin.
-
-2-shart: Bu ko'plik isnodning barcha tabaqalarida mavjud bo'lishi kerak. Hanafiylar nazarida mutavotirlik uch asr (sahobalar, tobi'inlar, tobi'ut-tobi'inlar) bilan bog'liq.
-
-3-shart: Xabar his-tuyg'uga (sezgiga) asoslangan bo'lishi kerak, aqlga emas.
-Masalan: Bag'dod ahli "dunyo yaratilgandir" desa, bu mutavotir bo'lmaydi, chunki bu aqliy masala. Ammo "La ilaha illalloh degan jannatga kiradi" hadisining aytilgani hissiy (eshitilgan), mazmuni esa aqliydir.`
+                    id: "2.2",
+                    title: "Mutavotirning Uchta Sharti",
+                    text: "Hanafiy muhaqqiqlarga ko'ra mutavotir bo'lishi uchun quyidagi shartlar lozim:\n1. Ko'plik: Roviylar soni shunchalik ko'p bo'lishi kerakki, aql ularning yolg'on ustida kelishib olishini imkonsiz deb bilsin.\n2. Uzluksizlik: Bu ko'plik barcha tabaqalarda (sahoba, tobi'in, tobi'ut-tobi'in) mavjud bo'lishi shart.\n3. Sezgiga asoslanish: Xabar aqliy xulosa emas, balki ko'rish yoki eshitish kabi hissiyotga asoslangan bo'lishi kerak."
                 }
             ]
         },
         {
-            chapter: "3-BOB: Mashhur xabar",
+            chapter: "3-BOB: Mashhur Xabar Tafsilotlari",
             topics: [
                 {
-                    id: "3_1",
-                    title: "Mashhur ta'rifi va 'Uch Asr' masalasi",
-                    text: `Ta'rifi: Mashhur xabar - bu birinchi asrda ahod bo'lgan, so'ngra ikkinchi va uchinchi asrlarda (tobi'in va tobi'ut-tobi'in davrida) mutavotir bo'lgan xabardir.
-
-Muhim qoida: Hanafiylar bir ovozdan aytishganki, uch asrdan keyin yuzaga kelgan mashhurlik yoki mutavotirlik e'tiborga olinmaydi.
-
-Asr (Qarn) chegaralari:
-- Birinchi asr (Sahobalar): 110-hijriy yilgacha (Abu Tufayl vafoti).
-- Ikkinchi asr (Tobi'inlar): 180-hijriy yilgacha.
-- Uchinchi asr (Tobi'ut-tobi'inlar): 220-hijriy yilgacha.`
+                    id: "3.1",
+                    title: "Mashhur Xabar va Uch Asr Qoidasi",
+                    text: "Mashhur xabar - birinchi asrda (sahobalar davrida) ahod bo'lib, keyingi ikki asrda mutavotir bo'lgan xabardir. \n\nHanafiylarda uch asr chegarasi:\n1. Sahobalar asri (110 h.y.gacha).\n2. Tobi'inlar asri (180 h.y.gacha).\n3. Tobi'ut-tobi'inlar asri (220 h.y.gacha).\nUch asrdan keyingi mashhurlik e'tiborga olinmaydi."
                 },
                 {
-                    id: "3_2",
-                    title: "Mashhur xabarning hukmi",
-                    text: `Hanafiylar huzurida eng kuchli qarash:
-Mashhur xabar mutavotir ham emas, mutavotir hukmida ham emas. U mutavotirdan past, xabarul-vohiddan yuqori darajadir.
-
-U "xotirjamlik (tuma'nina)" hosil qiladigan ilmni beradi (yakin ehtimolli gumon).
-Uni inkor qilgan kishi kofir bo'lmaydi, balki adashgan (zall) hisoblanadi.
-Sababi: Birinchi asrda roviylar soni kam bo'lgani uchun xato ehtimoli to'liq yo'qolmagan.`
+                    id: "3.2",
+                    title: "Mashhur Xabarning Hukmi",
+                    text: "Mashhur xabar 'tuma'nina' (xotirjamlik) beradigan ilm hosil qiladi. Uni inkor qilgan kishi kofir bo'lmaydi, balki adashgan (zall) deb ataladi. U bilan Qur'onning umumiy hukmlarini xoslash (taxsis) mumkin."
                 }
             ]
         },
         {
-            chapter: "4-BOB: Ahod xabarlar",
+            chapter: "4-BOB: Ahod Xabarlar va Hudud",
             topics: [
                 {
-                    id: "4_1",
-                    title: "Ahod xabar ta'rifi va Hukmi",
-                    text: `Ta'rifi: Xabarul-vohid mashhurlik va mutavotir darajasiga yetmagan har qanday xabardir. U bitta, ikkita yoki undan ko'p kishi rivoyat qilgan bo'lishidan qat'i nazar.
-
-Hukmi: Ahod xabar ilm bermaydi (ya'ni e'tiqodiy masalalarda hujjat emas), ammo "Amal qilishni vojib qiladi".
-Imom Saraxsiy aytadi: "Bizning mazhabimizda xabarul-vohid amalni vojib qiladi, lekin qat'iy ilmni vojib qilmaydi."
-U bilan amal qilish uchun u "mansux" (bekor qilingan) bo'lmasligi kerak.`
+                    id: "4.1",
+                    title: "Ahod Xabar Hukmi",
+                    text: "Ahod xabar (Xabarul-vohid) qat'iy ilm bermaydi, lekin amal qilishni vojib qiladi. Shariat amallarida u dalil sifatida qabul qilinadi."
                 },
                 {
-                    id: "4_2",
-                    title: "Hudud (Jazolar) va Ahod xabar",
-                    text: `Ahod xabar bilan hudud (shariy jazo) sobit bo'ladimi?
-
-1-qarash (Imom Abu Yusuf va ko'pchilik): Hudud xabarul-vohid bilan isbotlanadi. Chunki hudud ham amaliy hukmdir.
-2-qarash (Imom Karkhiy): Isbotlanmaydi. Dalil: "Hududlarni shubhalar bilan daf eting" hadisi. Ahod xabarda shubha bor.
-
-Rojih (Kuchli) qarash: Birinchi qarash to'g'ri. Chunki hadisdagi "shubha" dalildagi shubha emas, balki voqeadagi shubhadir. Agar dalildagi shubha bo'lsa, guvohlik bilan ham hudud sobit bo'lmasdi.
-
-Imom Abu Hanifa fikri: U zotdan aniq matn yo'q, lekin Imom Muhammadning rivoyatiga ko'ra, Abu Hanifa mursal va ahod hadis bilan hududni (masalan, zimmiyni o'ldirgan musulmonni qatl qilishni) sobit qilgan.`
+                    id: "4.2",
+                    title: "Hududlarda Ahod Xabarning O'rni",
+                    text: "Hudud (jazolar) ahod xabar bilan sobit bo'ladimi? \n- Imom Abu Yusuf va ko'pchilik: Sobit bo'ladi, chunki u ham shariy hukmdir.\n- Imom Karkhiy: Sobit bo'lmaydi, chunki hadisda hududlarni shubha bilan qaytarish buyurilgan, ahodda esa shubha bor. \nLekin fatvo Abu Yusuf qarashiga ko'ra berilgan."
                 }
             ]
         },
         {
-            chapter: "ROVIYLAR SHARTLARI: 1. AQL",
+            chapter: "5-BOB: Roviylar Shartlari (Aql, Islom, Zabt)",
             topics: [
                 {
-                    id: "5_1",
-                    title: "Aql va Balog'at",
-                    text: `Hadis rivoyatida talab qilinadigan aql - bu to'liq aql (balog'at). Yosh bolaning rivoyati hujjat bo'lmaydi.
-
-Balog'at: Bu "Ado etish" (rivoyatni birovga yetkazish) shartidir, "Tahammul" (eshitib olish) sharti emas.
-Ya'ni: Agar bola 5-6 yoshida eshitib, balog'atga yetganda aytsa, qabul qilinadi.
-Misollar: Ibn Abbos, Abdulloh ibn Zubayr, Nu'mon ibn Bashir (r.a)lar kichikliklarida eshitgan hadislarini katta bo'lgach rivoyat qilganlar va ummat qabul qilgan.
-
-Tahammul yoshi: Aniq yosh (masalan 5 yosh) shart emas, mezon - "Tamyiz" (farqlash va tushunish).`
-                }
-            ]
-        },
-        {
-            chapter: "ROVIYLAR SHARTLARI: 2. ISLOM",
-            topics: [
-                {
-                    id: "6_1",
-                    title: "Islom sharti",
-                    text: `Roviy musulmon bo'lishi shart. Kofirning rivoyati qabul qilinmaydi.
-Sababi: Kufr rostlikka zid emas, lekin kofirda Islom diniga "dushmanlik gumoni" bor.
-
-Bu shart ham faqat "Ado etish" vaqtida kerak.
-Dalil: Jubayr ibn Mut'im (r.a) kofir holida Rasulullohning "Tur" surasini o'qiganlarini eshitgan, keyin musulmon bo'lib rivoyat qilgan va bu qabul qilingan.`
-                }
-            ]
-        },
-        {
-            chapter: "ROVIYLAR SHARTLARI: 3. ZABT",
-            topics: [
-                {
-                    id: "7_1",
-                    title: "Zabt (Aniq saqlash) turlari",
-                    text: `Zabt - hadisni eshitib, tushunib, o'zgartirmasdan saqlash.
-
-Hanafiylarda zabt ikki tur:
-1. Zohiriy zabt: Lafzini va lug'aviy ma'nosini saqlash.
-2. Botiniy zabt (Afzali): Hadisning fiqhiy ma'nosini tushunish (Faqih bo'lish).
-
-Saqlash usuli bo'yicha:
-1. Sadr zabti: Xotiradan chiqarib berish (Abu Hanifa yo'li).
-2. Kitob zabti: Yozib olib saqlash.
-
-G'aflat: Agar roviyda g'aflat va xato ko'p bo'lsa, rivoyati qabul qilinmaydi. Agar zabt ustun bo'lib, xato kam bo'lsa, kechiriladi.`
-                }
-            ]
-        },
-        {
-            chapter: "ROVIYLAR SHARTLARI: 4. ADOLAT",
-            topics: [
-                {
-                    id: "8_1",
-                    title: "Adolat ta'rifi",
-                    text: `Adolat - insonni taqvo va muruwwatni saqlashga undaydigan mustahkam sifat (malaka).
-
-Hadis bobida talab qilingan adolat:
-1. Katta gunohlardan tiyilish.
-2. Kichik gunohlarda qat'iy turib olmaslik.
-3. Muruwwatni (odamgarchilik va urfni) buzadigan ishlarni qilmaslik.`
+                    id: "5.1",
+                    title: "Aql va Balog'at Sharti",
+                    text: "Rivoyatni yetkazish (ado etish) vaqtida roviy oqil va balog'atga yetgan bo'lishi shart. Ammo yosh bolaning eshitgan (tahammul) hadislari u katta bo'lganda rivoyat qilsa qabul qilinadi."
                 },
                 {
-                    id: "8_2",
-                    title: "Yolg'onchi roviy hukmi",
-                    text: `Nabiy (s.a.v)ga qasddan yolg'on gapirgan kishi:
-Agar keyin tavba qilsa ham, hanafiylarning kuchli qarashiga (Ibn Muborak, Buxoriy) ko'ra, uning rivoyati abadiy qabul qilinmaydi (jazo sifatida).
-Imom Navaviy va ba'zi kechki hanafiylar (Ibn Humom) agar tavbasi aniq bo'lsa, qabul qilinadi deganlar.`
-                },
-                {
-                    id: "8_3",
-                    title: "Ta'dil va Mubham roviy",
-                    text: `1. Adolatli roviyning rivoyat qilishi ta'dilmi?
-Hanafiylarda: Agar uch asr (Salaf) davrida bo'lsa, bir olimning ikkinchisidan hadis olishi uni oqlash (ta'dil) hisoblanadi. Undan keyingi davrda hisoblanmaydi.
-
-2. Mubham ta'dil ("Menga ishonchli kishi aytdi"):
-Hanafiylarning ko'pchiligi nazarida bu qabul qilinadi (ayniqsa uch asr ichida). Muhaddislar buni qabul qilmaydi.`
+                    id: "5.2",
+                    title: "Islom va Zabt Shartlari",
+                    text: "Islom: Roviy musulmon bo'lishi shart. Kofirning rivoyati dushmanlik gumoni borligi uchun rad etiladi.\nZabt: Bu hadisni qanday eshitgan bo'lsa, shunday saqlashdir. Zabt ikki xil bo'ladi: Sadr (xotira) zabti va Kitob zabti. Agar roviy ko'p xato qilsa yoki g'ofil bo'lsa, rivoyati olinmaydi."
                 }
             ]
         },
         {
-            chapter: "BID'ATCHI VA MAJHUL ROVIYLAR",
+            chapter: "6-BOB: Adolat va Majhul Roviylar",
             topics: [
                 {
-                    id: "9_1",
-                    title: "Bid'at turlari va Hukmi",
-                    text: `Bid'at ikki xil:
-1. Kufrga olib boruvchi (masalan, Mujassima): Rivoyati mutlaqo rad etiladi.
-2. Fisqqa olib boruvchi (Ahli havo): 
-Bu borada 3 xil mazhab bor:
-- 1-mazhab (Imom Saraxsiy): Mutlaqo qabul qilinmaydi.
-- 2-mazhab (Ibn Humom): Agar yolg'onni halol sanamasa, qabul qilinadi.
-- 3-mazhab (Ibn Hajar va kechki ulamolar): Agar o'z bid'atiga da'vat qiluvchi bo'lmasa qabul qilinadi.
-
-Dalil: Imom Buxoriy Imron ibn Hattol (Xorijiy)dan hadis olganlar, chunki u yolg'onchi emas edi.`
+                    id: "6.1",
+                    title: "Adolat Sifati va Yolg'on",
+                    text: "Adolat - katta gunohlardan tiyilish va muruwwatni saqlashdir. Rasululloh (s.a.v)ga qasddan yolg'on to'qigan kishi tavba qilsa ham, uning rivoyati abadiy qabul qilinmaydi (Hanafiylarning qat'iy qarashi)."
                 },
                 {
-                    id: "9_2",
-                    title: "Majhul va Mastur (5 qism)",
-                    text: `Hanafiylar istilohida "Majhul" - bu 3 asr ichida yashagan, lekin rivoyatlari kam (1-2 ta) bo'lgan roviy. "Mastur" esa 3 asrdan keyingi roviy.
-
-Uch asr majhulining 5 turi va hukmi:
-1. Salaf undan rivoyat qilgan va qabul qilgan: Hukmi - Mashhur roviy kabi, qabul qilinadi.
-2. Salaf sukut qilgan: Qabul qilinadi.
-3. Ixtilof qilingan (Ba'zilar olgan, ba'zilar rad etgan): Qiyosga mos kelsa qabul qilinadi. (Misol: Ma'qil ibn Sinon hadisi).
-4. Salaf rad etgan: Rad etiladi (Munkar).
-5. Noma'lum (Hech kim bilmagan): Amal qilish vojib emas, lekin qiyosga mos kelsa joiz.`
+                    id: "6.2",
+                    title: "Majhul va Mastur Roviylar",
+                    text: "Majhul roviy - uch asr (salaf) davrida yashagan, lekin rivoyati kam kishi. Mastur - uch asrdan keyingi adolati noma'lum kishi. \n\nMajhulning 5 turi:\n1. Salaf qabul qilgan: Qabul qilinadi.\n2. Salaf sukut qilgan: Qabul qilinadi.\n3. Ixtilofli: Qiyosga mos bo'lsa olinadi.\n4. Salaf rad etgan: Olinmaydi.\n5. Hech kim tanimagan: Olinmaydi."
+                },
+                {
+                    id: "6.3",
+                    title: "Bid'atchi Roviy Hukmi",
+                    text: "Agar bid'at kufrga eltuvchi bo'lsa - rad etiladi. Agar fisq bo'lsa: \n1. Saraxsiy: Rad etiladi.\n2. Ibn Humom: Yolg'onni halol sanamasa olinadi.\n3. Ibn Hajar: O'z bid'atiga da'vat qilmasa olinadi."
                 }
             ]
         }
     ];
 
-    // ======================================================
-    // DASTUR MANTIQI
-    // ======================================================
-
-    // 1. Menyuni yaratish
-    function initMenu() {
-        const menu = document.getElementById('topicsMenu');
-        
-        db.forEach(section => {
+    // INIZIALIZATSIYA
+    function renderMenu() {
+        const menuContainer = document.getElementById('topicsMenu');
+        fullData.forEach(chapter => {
             let html = `<div class="chapter-block">
-                <div class="chapter-title">${section.chapter}</div>`;
-            
-            section.topics.forEach(topic => {
-                html += `
-                    <div class="topic-item">
-                        <input type="checkbox" id="chk_${topic.id}" onchange="handleSelection('${topic.id}')">
-                        <label for="chk_${topic.id}">${topic.title}</label>
-                    </div>`;
+                <div class="chapter-title">${chapter.chapter}</div>`;
+            chapter.topics.forEach(topic => {
+                html += `<div class="topic-item">
+                    <input type="checkbox" id="chk_${topic.id}" onchange="toggleTopic('${topic.id}')">
+                    <label for="chk_${topic.id}">${topic.title}</label>
+                </div>`;
             });
             html += `</div>`;
-            menu.innerHTML += html;
+            menuContainer.innerHTML += html;
         });
-
-        // Sana qo'yish
-        const date = new Date().toLocaleDateString('uz-UZ');
-        document.getElementById('pdf-date').innerText = date;
     }
 
-    // 2. Tanlov o'zgarganda
-    function handleSelection(id) {
+    function toggleTopic(id) {
         const checkbox = document.getElementById(`chk_${id}`);
-        const container = document.getElementById('cards-container');
-        
+        const cardsArea = document.getElementById('cards-area');
         if (checkbox.checked) {
-            // Ma'lumotni topish
-            let data = null;
-            db.forEach(s => {
-                const found = s.topics.find(t => t.id === id);
-                if (found) data = found;
+            let topic = null;
+            fullData.forEach(ch => {
+                const found = ch.topics.find(t => t.id === id);
+                if(found) topic = found;
             });
-
-            if (data) {
+            if(topic) {
                 const card = document.createElement('div');
                 card.className = 'info-card';
                 card.id = `card_${id}`;
                 card.innerHTML = `
                     <div class="card-header">
-                        <div class="card-title">${data.title}</div>
-                        <button class="btn-remove" onclick="removeTopic('${id}')">❌ O'chirish</button>
+                        <div class="card-title">${topic.title}</div>
+                        <button class="remove-btn" onclick="removeCard('${id}')">❌</button>
                     </div>
-                    <textarea class="content-editor" id="txt_${id}">${data.text}</textarea>
-                `;
-                container.appendChild(card);
-                card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    <textarea class="editable-area" id="txt_${id}">${topic.text}</textarea>`;
+                cardsArea.appendChild(card);
+                card.scrollIntoView({ behavior: 'smooth' });
             }
         } else {
-            removeTopic(id);
+            removeCard(id);
         }
     }
 
-    // 3. O'chirish funksiyasi
-    function removeTopic(id) {
+    function removeCard(id) {
         const card = document.getElementById(`card_${id}`);
         if(card) card.remove();
-        
         const chk = document.getElementById(`chk_${id}`);
         if(chk) chk.checked = false;
     }
 
-    // 4. PDF Generatsiya
     function generatePDF() {
         const name = document.getElementById('inpName').value;
         const course = document.getElementById('inpCourse').value;
-        const cards = document.querySelectorAll('.info-card');
-
-        if (!name || !course) {
-            alert("Iltimos, Ism va Kursingizni kiriting!");
-            return;
-        }
-        if (cards.length === 0) {
-            alert("Iltimos, kamida bitta mavzuni tanlang!");
-            return;
-        }
-
-        // Ma'lumotlarni PDF shabloniga joylash
-        document.getElementById('pdf-student-name').innerText = name;
-        document.getElementById('pdf-student-course').innerText = course;
-
+        if(!name || !course) return alert("Ism va kursni kiriting!");
+        
+        document.getElementById('pdf-name').innerText = name;
+        document.getElementById('pdf-course').innerText = course;
         const pdfBody = document.getElementById('pdf-body');
-        pdfBody.innerHTML = '';
+        pdfBody.innerHTML = "";
 
-        cards.forEach(card => {
+        document.querySelectorAll('.info-card').forEach(card => {
             const title = card.querySelector('.card-title').innerText;
             const content = card.querySelector('textarea').value;
-
-            const section = document.createElement('div');
-            section.className = 'pdf-section';
-            section.innerHTML = `
-                <h3>${title}</h3>
-                <div class="pdf-text">${content}</div>
-                <hr style="margin-top: 15px; border: 0; border-top: 1px dashed #ccc;">
-            `;
-            pdfBody.appendChild(section);
+            pdfBody.innerHTML += `<div class="pdf-section"><h3>${title}</h3><div class="pdf-content">${content}</div></div>`;
         });
 
-        // PDF yaratish
         const element = document.getElementById('pdf-template');
         element.style.display = 'block';
-
-        const opt = {
-            margin: 15,
-            filename: `Mustaqil_Ish_${name.replace(/\s+/g, '_')}.pdf`,
-            image: { type: 'jpeg', quality: 0.98 },
-            html2canvas: { scale: 2 },
-            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-        };
-
-        html2pdf().set(opt).from(element).save().then(() => {
-            element.style.display = 'none';
-        });
+        html2pdf().set({ margin: 15, filename: `Ish_${name}.pdf`, html2canvas: { scale: 2 }, jsPDF: { unit: 'mm', format: 'a4' } })
+        .from(element).save().then(() => { element.style.display = 'none'; });
     }
 
-    // Ishga tushirish
-    initMenu();
-
+    window.onload = renderMenu;
 </script>
 </body>
 </html>
