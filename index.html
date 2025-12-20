@@ -213,7 +213,6 @@
     }
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    /* ✅ MUHIM: PDF blok "display:none/hidden" bo‘lmaydi */
     #pdfOutput{
       position: fixed;
       left: 0;
@@ -223,11 +222,10 @@
       background: white;
       padding: 20mm;
       box-sizing: border-box;
-
-      opacity: 0;            /* ko‘rinmaydi */
-      pointer-events: none;  /* bosilmaydi */
-      z-index: 9999;         /* manfiy bo‘lmasin */
-      visibility: visible;   /* hidden bo‘lmasin */
+      opacity: 0;
+      pointer-events: none;
+      z-index: 9999;
+      visibility: visible;
     }
 
     @media (max-width: 768px) {
@@ -248,7 +246,7 @@
   <div class="container">
     <div class="main-header">
       <h1>📚 Hadis Ilmi - Mustaqil Ish Tizimi</h1>
-      <p>Tanlangan mavzular bo‘yicha matnni tahrirlang va professional PDF yuklab oling</p>
+      <p>Tanlangan mavzular bo'yicha matnni tahrirlang va professional PDF yuklab oling</p>
     </div>
 
     <div class="steps">
@@ -258,7 +256,7 @@
 
     <div id="selectionSection">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:30px; gap: 12px;">
-        <h3 style="color:var(--primary);">Mavzular ro‘yxati (<span id="countDisplay">10</span>)</h3>
+        <h3 style="color:var(--primary);">Mavzular ro'yxati (<span id="countDisplay">10</span>)</h3>
         <button class="btn btn-secondary" onclick="toggleSelectAll()">
           <i class="fa-solid fa-check-double"></i> Hammasini tanlash/bekor qilish
         </button>
@@ -277,7 +275,7 @@
     <div id="editorSection">
       <div style="background:var(--light); padding:30px; border-radius:20px; margin-bottom:40px; text-align:center;">
         <h3 style="color:var(--primary); margin-bottom:15px;">✍️ Tahrirlash rejimi</h3>
-        <p>Matnlarni o‘zgartiring yoki qo‘shimcha izohlar qo‘shing. PDF da aynan shu ko‘rinishda chiqadi.</p>
+        <p>Matnlarni o'zgartiring yoki qo'shimcha izohlar qo'shing. PDF da aynan shu ko'rinishda chiqadi.</p>
       </div>
 
       <div id="editorContainer"></div>
@@ -285,11 +283,11 @@
       <div class="editable-box" style="border-color:var(--accent);">
         <div class="editor-label">
           <span><i class="fa-solid fa-star"></i> UMUMIY XULOSA</span>
-          <span class="edit-hint"><i class="fa-solid fa-lightbulb"></i> O‘z fikringizni yozing</span>
+          <span class="edit-hint"><i class="fa-solid fa-lightbulb"></i> O'z fikringizni yozing</span>
         </div>
         <div id="finalConclusion" contenteditable="true">
           <strong>XULOSA:</strong><br><br>
-          Ushbu mavzularni o‘rganish jarayonida men hadis ilmining asosiy qoidalarini chuqurroq tushundim...
+          Ushbu mavzularni o'rganish jarayonida men hadis ilmining asosiy qoidalarini chuqurroq tushundim...
         </div>
       </div>
 
@@ -304,11 +302,10 @@
     </div>
   </div>
 
-  <!-- PDF uchun blok (ko‘rinmaydi, lekin render bo‘ladi) -->
   <div id="pdfOutput">
     <div style="font-family: 'Times New Roman', serif; color: #000; line-height: 1.8;">
       <h1 style="text-align: center; color: #4e54c8; font-size: 24pt; border-bottom: 3px solid #4e54c8; padding-bottom: 20px; margin-bottom: 40px;">
-        HADIS ILMI BO‘YICHA MUSTAQIL ISH
+        HADIS ILMI BO'YICHA MUSTAQIL ISH
       </h1>
       <div id="pdfContentBody" style="font-size: 12pt;"></div>
     </div>
@@ -316,35 +313,35 @@
 
   <script>
     const topicsData = [
-      { id: 1, title: "Xabarlarning mutavotir, mashhur va ahodga bo‘linishi", desc: "Hanafiylar va muhaddislar taqsimoti", content: `
+      { id: 1, title: "Xabarlarning mutavotir, mashhur va ahodga bo'linishi", desc: "Hanafiylar va muhaddislar taqsimoti", content: `
         <h3>Hanafiylarning taqsimoti</h3>
-        <p>Hanafiy ulamolar Rasululloh ﷺ ga bog‘lanish jihatidan xabarlarni <strong>uch</strong> qismga bo‘lishgan:</p>
-        <div class="highlight"><strong>MUTAVOTIR:</strong> Surat va ma’no jihatidan shubhasiz, to‘liq bog‘lanishga ega.</div>
-        <div class="highlight"><strong>MASHHUR:</strong> Surat jihatidan shubha bor, lekin ma’no jihatidan qabul qilingan.</div>
-        <div class="highlight"><strong>XABARUL-VOHID (AHOD):</strong> Surat va ma’no jihatidan gumon bor.</div>
+        <p>Hanafiy ulamolar Rasululloh ﷺ ga bog'lanish jihatidan xabarlarni <strong>uch</strong> qismga bo'lishgan:</p>
+        <div class="highlight"><strong>MUTAVOTIR:</strong> Surat va ma'no jihatidan shubhasiz, to'liq bog'lanishga ega.</div>
+        <div class="highlight"><strong>MASHHUR:</strong> Surat jihatidan shubha bor, lekin ma'no jihatidan qabul qilingan.</div>
+        <div class="highlight"><strong>XABARUL-VOHID (AHOD):</strong> Surat va ma'no jihatidan gumon bor.</div>
         <h3>Muhaddislar taqsimoti</h3>
-        <p>Asosan ikki: mutavotir va xabarul-vohid (keyin mashhur, aziz, g‘arib).</p>` },
-      { id: 2, title: "Mutavotir xabar", desc: "Ta’rifi, shartlari, hukmi", content: `
-        <h3>Ta’rifi</h3>
-        <p>O‘z-o‘zidan zaruriy ilm hosil qiladigan ko‘p kishilik xabar.</p>
+        <p>Asosan ikki: mutavotir va xabarul-vohid (keyin mashhur, aziz, g'arib).</p>` },
+      { id: 2, title: "Mutavotir xabar", desc: "Ta'rifi, shartlari, hukmi", content: `
+        <h3>Ta'rifi</h3>
+        <p>O'z-o'zidan zaruriy ilm hosil qiladigan ko'p kishilik xabar.</p>
         <h3>Shartlari</h3>
-        <p>1. Ko‘p roviy, 2. Barcha tabaqalarda ko‘plik, 3. Sezgi (his)ga asoslangan bo‘lishi.</p>
+        <p>1. Ko'p roviy, 2. Barcha tabaqalarda ko'plik, 3. Sezgi (his)ga asoslangan bo'lishi.</p>
         <h3>Hukmi</h3>
-        <div class="highlight">Zaruriy ilm beradi. Inkor qilgan kofir bo‘ladi.</div>` },
+        <div class="highlight">Zaruriy ilm beradi. Inkor qilgan kofir bo'ladi.</div>` },
       { id: 3, title: "Mashhur xabar", desc: "Uch asr mezoni", content: `
-        <h3>Ta’rifi</h3>
+        <h3>Ta'rifi</h3>
         <p>1-asrda ahod, 2-3 asrlarda mutavotir darajasiga yetgan xabar.</p>
-        <div class="highlight">Hukmi: Yaqin gumon (tuma’nina) beradi. Inkor qilgan adashgan hisoblanadi.</div>` },
-      { id: 4, title: "Ahod xabarlar", desc: "Hukmi va hududda qo‘llanilishi", content: `
+        <div class="highlight">Hukmi: Yaqin gumon (tuma'nina) beradi. Inkor qilgan adashgan hisoblanadi.</div>` },
+      { id: 4, title: "Ahod xabarlar", desc: "Hukmi va hududda qo'llanilishi", content: `
         <h3>Hukmi</h3>
         <div class="highlight">Ilm bermaydi, lekin amal qilishni vojib qiladi.</div>
-        <p>Hudud jazolarida ixtilof bor, lekin ko‘pchilik qabul qiladi.</p>` },
-      { id: 5, title: "Aql", desc: "Roviy sharti", content: `<p>Ado etishda to‘liq aql (balog‘at) shart. Tahammulda tushunish yetarli.</p>` },
-      { id: 6, title: "Islom", desc: "Musulmonlik sharti", content: `<p>Rivoyatni ado etish vaqtida musulmon bo‘lishi shart.</p>` },
-      { id: 7, title: "Zabt", desc: "Yodlash va saqlash", content: `<h3>Ta’rifi</h3><p>To‘g‘ri eshitish, tushunish, yodlash va o‘zgartirmasdan yetkazish.</p>` },
+        <p>Hudud jazolarida ixtilof bor, lekin ko'pchilik qabul qiladi.</p>` },
+      { id: 5, title: "Aql", desc: "Roviy sharti", content: `<p>Ado etishda to'liq aql (balog'at) shart. Tahammulda tushunish yetarli.</p>` },
+      { id: 6, title: "Islom", desc: "Musulmonlik sharti", content: `<p>Rivoyatni ado etish vaqtida musulmon bo'lishi shart.</p>` },
+      { id: 7, title: "Zabt", desc: "Yodlash va saqlash", content: `<h3>Ta'rifi</h3><p>To'g'ri eshitish, tushunish, yodlash va o'zgartirmasdan yetkazish.</p>` },
       { id: 8, title: "Adolat", desc: "Taqvo va muruwwat", content: `<p>Katta gunohlardan saqlanish, kichik gunohda davom etmaslik.</p>` },
-      { id: 9, title: "Bid’atchi rivoyati", desc: "Qabul qilinishi", content: `<p>Agar bid’atiga da’vat qilsa, rivoyati qabul qilinmaydi.</p>` },
-      { id: 10, title: "Mastur va majhul roviy", desc: "Hukmi", content: `<p>Hanafiylar ilk uch asrdagi mastur roviylarni ma’lum shartlar bilan qabul qilgan.</p>` }
+      { id: 9, title: "Bid'atchi rivoyati", desc: "Qabul qilinishi", content: `<p>Agar bid'atiga da'vat qilsa, rivoyati qabul qilinmaydi.</p>` },
+      { id: 10, title: "Mastur va majhul roviy", desc: "Hukmi", content: `<p>Hanafiylar ilk uch asrdagi mastur roviylarni ma'lum shartlar bilan qabul qilgan.</p>` }
     ];
 
     let selectedIds = [];
@@ -445,6 +442,33 @@
       document.getElementById('step2').classList.remove('active');
     }
 
+    function convertHighlightsToInlineStyles(html) {
+      const temp = document.createElement('div');
+      temp.innerHTML = html;
+      
+      const highlights = temp.querySelectorAll('.highlight');
+      highlights.forEach(h => {
+        h.style.background = '#eef2ff';
+        h.style.borderLeft = '5px solid #4e54c8';
+        h.style.padding = '18px';
+        h.style.margin = '20px 0';
+        h.style.borderRadius = '0 10px 10px 0';
+        h.style.fontWeight = '500';
+        h.style.display = 'block';
+      });
+
+      const h3s = temp.querySelectorAll('h3');
+      h3s.forEach(h => {
+        h.style.color = '#4e54c8';
+        h.style.margin = '20px 0 12px';
+        h.style.fontSize = '14pt';
+        h.style.borderLeft = '5px solid #4e54c8';
+        h.style.paddingLeft = '15px';
+      });
+
+      return temp.innerHTML;
+    }
+
     function generatePDF() {
       const loader = document.getElementById('loader');
       loader.classList.add('active');
@@ -456,6 +480,8 @@
         const topic = topicsData.find(t => t.id === id);
         const editedEl = document.getElementById(`edit-content-${id}`);
         const edited = editedEl ? editedEl.innerHTML : topic.content;
+        
+        const styledContent = convertHighlightsToInlineStyles(edited);
 
         const div = document.createElement('div');
         div.style.marginBottom = '40px';
@@ -463,7 +489,7 @@
           <h2 style="color:#4e54c8; font-size:18pt; border-bottom:2px solid #4e54c8; padding-bottom:10px;">
             ${topic.id}. ${topic.title}
           </h2>
-          <div style="margin-top:15px; text-align:justify;">${edited}</div>
+          <div style="margin-top:15px; text-align:justify;">${styledContent}</div>
         `;
         body.appendChild(div);
       });
