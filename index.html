@@ -448,22 +448,20 @@
       
       const highlights = temp.querySelectorAll('.highlight');
       highlights.forEach(h => {
-        h.style.background = '#eef2ff';
-        h.style.borderLeft = '5px solid #4e54c8';
-        h.style.padding = '18px';
-        h.style.margin = '20px 0';
-        h.style.borderRadius = '0 10px 10px 0';
-        h.style.fontWeight = '500';
-        h.style.display = 'block';
+        h.removeAttribute('class');
+        h.setAttribute('style', 'background: #eef2ff; border-left: 5px solid #4e54c8; padding: 18px; margin: 20px 0; border-radius: 0 10px 10px 0; font-weight: 500; display: block;');
       });
 
       const h3s = temp.querySelectorAll('h3');
       h3s.forEach(h => {
-        h.style.color = '#4e54c8';
-        h.style.margin = '20px 0 12px';
-        h.style.fontSize = '14pt';
-        h.style.borderLeft = '5px solid #4e54c8';
-        h.style.paddingLeft = '15px';
+        h.setAttribute('style', 'color: #4e54c8; margin: 20px 0 12px; font-size: 14pt; border-left: 5px solid #4e54c8; padding-left: 15px;');
+      });
+
+      const paragraphs = temp.querySelectorAll('p');
+      paragraphs.forEach(p => {
+        if (!p.getAttribute('style')) {
+          p.setAttribute('style', 'margin: 10px 0; line-height: 1.6;');
+        }
       });
 
       return temp.innerHTML;
