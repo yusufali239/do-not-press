@@ -7,8 +7,9 @@
 
   <!-- Font Awesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <!-- html2pdf -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+  <!-- html2pdf.js - Barqaror versiya (0.9.3) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js"></script>
 
   <style>
     :root {
@@ -213,19 +214,17 @@
     }
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    #pdfOutput{
-      position: fixed;
-      left: 0;
-      top: 0;
+    /* PDF uchun yashirin element - off-screen */
+    #pdfOutput {
+      position: absolute;
+      left: -9999px;
+      top: -9999px;
       width: 210mm;
       min-height: 297mm;
       background: white;
       padding: 20mm;
       box-sizing: border-box;
-      opacity: 0;
-      pointer-events: none;
-      z-index: 9999;
-      visibility: visible;
+      visibility: hidden;
     }
 
     @media (max-width: 768px) {
@@ -246,7 +245,7 @@
   <div class="container">
     <div class="main-header">
       <h1>📚 Hadis Ilmi - Mustaqil Ish Tizimi</h1>
-      <p>Tanlangan mavzular bo'yicha matnni tahrirlang va professional PDF yuklab oling</p>
+      <p>Tanlangan mavzular bo‘yicha matnni tahrirlang va professional PDF yuklab oling</p>
     </div>
 
     <div class="steps">
@@ -256,7 +255,7 @@
 
     <div id="selectionSection">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:30px; gap: 12px;">
-        <h3 style="color:var(--primary);">Mavzular ro'yxati (<span id="countDisplay">10</span>)</h3>
+        <h3 style="color:var(--primary);">Mavzular ro‘yxati (<span id="countDisplay">10</span>)</h3>
         <button class="btn btn-secondary" onclick="toggleSelectAll()">
           <i class="fa-solid fa-check-double"></i> Hammasini tanlash/bekor qilish
         </button>
@@ -275,7 +274,7 @@
     <div id="editorSection">
       <div style="background:var(--light); padding:30px; border-radius:20px; margin-bottom:40px; text-align:center;">
         <h3 style="color:var(--primary); margin-bottom:15px;">✍️ Tahrirlash rejimi</h3>
-        <p>Matnlarni o'zgartiring yoki qo'shimcha izohlar qo'shing. PDF da aynan shu ko'rinishda chiqadi.</p>
+        <p>Matnlarni o‘zgartiring yoki qo‘shimcha izohlar qo‘shing. PDF da aynan shu ko‘rinishda chiqadi.</p>
       </div>
 
       <div id="editorContainer"></div>
@@ -283,11 +282,14 @@
       <div class="editable-box" style="border-color:var(--accent);">
         <div class="editor-label">
           <span><i class="fa-solid fa-star"></i> UMUMIY XULOSA</span>
-          <span class="edit-hint"><i class="fa-solid fa-lightbulb"></i> O'z fikringizni yozing</span>
+          <span class="edit-hint"><i class="fa-solid fa-lightbulb"></i> O‘z fikringizni yozing</span>
         </div>
         <div id="finalConclusion" contenteditable="true">
           <strong>XULOSA:</strong><br><br>
-          Ushbu mavzularni o'rganish jarayonida men hadis ilmining asosiy qoidalarini chuqurroq tushundim...
+          Ushbu mavzularni o‘rganish jarayonida men hadis ilmining asosiy qoidalarini chuqurroq tushundim.
+          Xususan, xabarlarning tasnifi, roviylar shartlari va rivoyat qabul qilish mezonlari bo‘yicha ko‘p yangi narsalarni bildim.
+          Bu bilimlar kelajakda hadislar bilan ishlashda va fiqhiy masalalarni tushunishda katta yordam beradi.
+          Alloh ilmimizni ziyoda qilsin.
         </div>
       </div>
 
@@ -302,10 +304,11 @@
     </div>
   </div>
 
+  <!-- PDF uchun yashirin blok -->
   <div id="pdfOutput">
     <div style="font-family: 'Times New Roman', serif; color: #000; line-height: 1.8;">
       <h1 style="text-align: center; color: #4e54c8; font-size: 24pt; border-bottom: 3px solid #4e54c8; padding-bottom: 20px; margin-bottom: 40px;">
-        HADIS ILMI BO'YICHA MUSTAQIL ISH
+        HADIS ILMI BO‘YICHA MUSTAQIL ISH
       </h1>
       <div id="pdfContentBody" style="font-size: 12pt;"></div>
     </div>
@@ -313,35 +316,35 @@
 
   <script>
     const topicsData = [
-      { id: 1, title: "Xabarlarning mutavotir, mashhur va ahodga bo'linishi", desc: "Hanafiylar va muhaddislar taqsimoti", content: `
+      { id: 1, title: "Xabarlarning mutavotir, mashhur va ahodga bo‘linishi", desc: "Hanafiylar va muhaddislar taqsimoti", content: `
         <h3>Hanafiylarning taqsimoti</h3>
-        <p>Hanafiy ulamolar Rasululloh ﷺ ga bog'lanish jihatidan xabarlarni <strong>uch</strong> qismga bo'lishgan:</p>
-        <div class="highlight"><strong>MUTAVOTIR:</strong> Surat va ma'no jihatidan shubhasiz, to'liq bog'lanishga ega.</div>
-        <div class="highlight"><strong>MASHHUR:</strong> Surat jihatidan shubha bor, lekin ma'no jihatidan qabul qilingan.</div>
-        <div class="highlight"><strong>XABARUL-VOHID (AHOD):</strong> Surat va ma'no jihatidan gumon bor.</div>
+        <p>Hanafiy ulamolar Rasululloh ﷺ ga bog‘lanish jihatidan xabarlarni <strong>uch</strong> qismga bo‘lishgan:</p>
+        <div class="highlight"><strong>MUTAVOTIR:</strong> Surat va ma’no jihatidan shubhasiz, to‘liq bog‘lanishga ega.</div>
+        <div class="highlight"><strong>MASHHUR:</strong> Surat jihatidan shubha bor, lekin ma’no jihatidan qabul qilingan.</div>
+        <div class="highlight"><strong>XABARUL-VOHID (AHOD):</strong> Surat va ma’no jihatidan gumon bor.</div>
         <h3>Muhaddislar taqsimoti</h3>
-        <p>Asosan ikki: mutavotir va xabarul-vohid (keyin mashhur, aziz, g'arib).</p>` },
-      { id: 2, title: "Mutavotir xabar", desc: "Ta'rifi, shartlari, hukmi", content: `
-        <h3>Ta'rifi</h3>
-        <p>O'z-o'zidan zaruriy ilm hosil qiladigan ko'p kishilik xabar.</p>
+        <p>Asosan ikki: mutavotir va xabarul-vohid (keyin mashhur, aziz, g‘arib).</p>` },
+      { id: 2, title: "Mutavotir xabar", desc: "Ta’rifi, shartlari, hukmi", content: `
+        <h3>Ta’rifi</h3>
+        <p>O‘z-o‘zidan zaruriy ilm hosil qiladigan ko‘p kishilik xabar.</p>
         <h3>Shartlari</h3>
-        <p>1. Ko'p roviy, 2. Barcha tabaqalarda ko'plik, 3. Sezgi (his)ga asoslangan bo'lishi.</p>
+        <p>1. Ko‘p roviy, 2. Barcha tabaqalarda ko‘plik, 3. Sezgi (his)ga asoslangan bo‘lishi.</p>
         <h3>Hukmi</h3>
-        <div class="highlight">Zaruriy ilm beradi. Inkor qilgan kofir bo'ladi.</div>` },
+        <div class="highlight">Zaruriy ilm beradi. Inkor qilgan kofir bo‘ladi.</div>` },
       { id: 3, title: "Mashhur xabar", desc: "Uch asr mezoni", content: `
-        <h3>Ta'rifi</h3>
+        <h3>Ta’rifi</h3>
         <p>1-asrda ahod, 2-3 asrlarda mutavotir darajasiga yetgan xabar.</p>
-        <div class="highlight">Hukmi: Yaqin gumon (tuma'nina) beradi. Inkor qilgan adashgan hisoblanadi.</div>` },
-      { id: 4, title: "Ahod xabarlar", desc: "Hukmi va hududda qo'llanilishi", content: `
+        <div class="highlight">Hukmi: Yaqin gumon (tuma’nina) beradi. Inkor qilgan adashgan hisoblanadi.</div>` },
+      { id: 4, title: "Ahod xabarlar", desc: "Hukmi va hududda qo‘llanilishi", content: `
         <h3>Hukmi</h3>
         <div class="highlight">Ilm bermaydi, lekin amal qilishni vojib qiladi.</div>
-        <p>Hudud jazolarida ixtilof bor, lekin ko'pchilik qabul qiladi.</p>` },
-      { id: 5, title: "Aql", desc: "Roviy sharti", content: `<p>Ado etishda to'liq aql (balog'at) shart. Tahammulda tushunish yetarli.</p>` },
-      { id: 6, title: "Islom", desc: "Musulmonlik sharti", content: `<p>Rivoyatni ado etish vaqtida musulmon bo'lishi shart.</p>` },
-      { id: 7, title: "Zabt", desc: "Yodlash va saqlash", content: `<h3>Ta'rifi</h3><p>To'g'ri eshitish, tushunish, yodlash va o'zgartirmasdan yetkazish.</p>` },
+        <p>Hudud jazolarida ixtilof bor, lekin ko‘pchilik qabul qiladi.</p>` },
+      { id: 5, title: "Aql", desc: "Roviy sharti", content: `<p>Ado etishda to‘liq aql (balog‘at) shart. Tahammulda tushunish yetarli.</p>` },
+      { id: 6, title: "Islom", desc: "Musulmonlik sharti", content: `<p>Rivoyatni ado etish vaqtida musulmon bo‘lishi shart.</p>` },
+      { id: 7, title: "Zabt", desc: "Yodlash va saqlash", content: `<h3>Ta’rifi</h3><p>To‘g‘ri eshitish, tushunish, yodlash va o‘zgartirmasdan yetkazish.</p>` },
       { id: 8, title: "Adolat", desc: "Taqvo va muruwwat", content: `<p>Katta gunohlardan saqlanish, kichik gunohda davom etmaslik.</p>` },
-      { id: 9, title: "Bid'atchi rivoyati", desc: "Qabul qilinishi", content: `<p>Agar bid'atiga da'vat qilsa, rivoyati qabul qilinmaydi.</p>` },
-      { id: 10, title: "Mastur va majhul roviy", desc: "Hukmi", content: `<p>Hanafiylar ilk uch asrdagi mastur roviylarni ma'lum shartlar bilan qabul qilgan.</p>` }
+      { id: 9, title: "Bid’atchi rivoyati", desc: "Qabul qilinishi", content: `<p>Agar bid’atiga da’vat qilsa, rivoyati qabul qilinmaydi.</p>` },
+      { id: 10, title: "Mastur va majhul roviy", desc: "Hukmi", content: `<p>Hanafiylar ilk uch asrdagi mastur roviylarni ma’lum shartlar bilan qabul qilgan.</p>` }
     ];
 
     let selectedIds = [];
@@ -398,9 +401,9 @@
         const id = +card.id.split('-')[1];
         card.classList.toggle('selected', selectedIds.includes(id));
       });
-      document.querySelectorAll('.checkbox-custom').forEach(box => {
-        const id = +box.id.split('-')[1];
-        box.querySelector('i').style.opacity = selectedIds.includes(id) ? '1' : '0';
+      document.querySelectorAll('.checkbox-custom i').forEach(i => {
+        const id = +i.closest('.card').id.split('-')[1];
+        i.style.opacity = selectedIds.includes(id) ? '1' : '0';
       });
 
       updateUI();
@@ -446,22 +449,13 @@
       const temp = document.createElement('div');
       temp.innerHTML = html;
       
-      const highlights = temp.querySelectorAll('.highlight');
-      highlights.forEach(h => {
+      temp.querySelectorAll('.highlight').forEach(h => {
         h.removeAttribute('class');
-        h.setAttribute('style', 'background: #eef2ff; border-left: 5px solid #4e54c8; padding: 18px; margin: 20px 0; border-radius: 0 10px 10px 0; font-weight: 500; display: block;');
+        h.style.cssText = 'background: #eef2ff; border-left: 5px solid #4e54c8; padding: 18px; margin: 20px 0; border-radius: 0 10px 10px 0; font-weight: 500; display: block;';
       });
 
-      const h3s = temp.querySelectorAll('h3');
-      h3s.forEach(h => {
-        h.setAttribute('style', 'color: #4e54c8; margin: 20px 0 12px; font-size: 14pt; border-left: 5px solid #4e54c8; padding-left: 15px;');
-      });
-
-      const paragraphs = temp.querySelectorAll('p');
-      paragraphs.forEach(p => {
-        if (!p.getAttribute('style')) {
-          p.setAttribute('style', 'margin: 10px 0; line-height: 1.6;');
-        }
+      temp.querySelectorAll('h3').forEach(h => {
+        h.style.cssText = 'color: #4e54c8; margin: 20px 0 12px; font-size: 14pt; border-left: 5px solid #4e54c8; padding-left: 15px;';
       });
 
       return temp.innerHTML;
@@ -503,32 +497,36 @@
       body.appendChild(concDiv);
 
       const element = document.getElementById('pdfOutput');
+      element.style.visibility = 'visible';
+      element.style.left = '0';
+      element.style.top = '0';
 
       const opt = {
-        margin: [15, 15, 15, 15],
+        margin: 15,
         filename: 'Hadis_Ilmi_Mustaqil_Ish.pdf',
         image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: {
+        html2canvas: { 
           scale: 2,
-          backgroundColor: "#ffffff",
           useCORS: true,
-          scrollX: 0,
-          scrollY: 0,
-          windowWidth: element.scrollWidth
+          backgroundColor: '#ffffff'
         },
         jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
       };
 
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-          html2pdf().set(opt).from(element).save().then(() => {
-            loader.classList.remove('active');
-          }).catch(err => {
-            loader.classList.remove('active');
-            alert("PDF xatolik: " + (err?.message || err));
-          });
+      html2pdf().set(opt).from(element).save()
+        .then(() => {
+          console.log('PDF muvaffaqiyatli yuklandi!');
+        })
+        .catch(err => {
+          console.error('PDF xatosi:', err);
+          alert('PDF yaratishda xato yuz berdi. Console ni tekshiring.');
+        })
+        .finally(() => {
+          loader.classList.remove('active');
+          element.style.visibility = 'hidden';
+          element.style.left = '-9999px';
+          element.style.top = '-9999px';
         });
-      });
     }
 
     init();
