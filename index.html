@@ -65,25 +65,24 @@
     .card { background: var(--white); border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.05); margin-bottom: 20px; overflow: hidden; transition: transform 0.3s ease; border: 2px solid transparent; }
     .card.selected { border-color: var(--primary); background: #f8f9ff; }
     .card-header { padding: 20px; display: flex; align-items: center; cursor: pointer; gap: 15px; }
-    
+
     .checkbox-custom { width: 28px; height: 28px; border: 2px solid #ddd; border-radius: 8px; display: flex; align-items: center; justify-content: center; transition: 0.3s; flex-shrink: 0; }
     .card.selected .checkbox-custom { background: var(--primary); border-color: var(--primary); color: white; }
-    
+
     .card-title { flex: 1; font-weight: 700; font-size: 1.1rem; }
     .card-meta { font-size: 0.85rem; color: #777; margin-top: 5px; }
-    
+
     .toggle-icon { width: 30px; height: 30px; background: #eee; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--primary); transition: 0.3s; }
-    
+
     .card-content { max-height: 0; overflow: hidden; transition: max-height 0.4s ease-out; background: #fff; border-top: 1px solid #eee; }
-    .card-content.open { max-height: 2000px; }
+    .card-content.open { max-height: 3000px; }
     .content-padding { padding: 25px; line-height: 1.7; }
     .content-padding h3 { color: var(--primary); margin: 15px 0 10px; font-size: 1.2rem; }
-    
+
     .highlight { background: #eef2ff; border-left: 4px solid var(--primary); padding: 15px; margin: 15px 0; border-radius: 0 8px 8px 0; }
 
     /* ACTION BAR */
     .action-bar { position: sticky; bottom: 20px; background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); padding: 15px 30px; border-radius: 50px; box-shadow: 0 10px 40px rgba(0,0,0,0.2); display: flex; justify-content: space-between; align-items: center; margin-top: 20px; z-index: 100; border: 1px solid rgba(0,0,0,0.1); }
-
     .btn { padding: 12px 30px; border: none; border-radius: 30px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: 0.3s; display: inline-flex; align-items: center; gap: 10px; }
     .btn-primary { background: linear-gradient(45deg, var(--primary), var(--secondary)); color: white; box-shadow: 0 4px 15px rgba(78, 84, 200, 0.4); }
     .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(78, 84, 200, 0.5); }
@@ -98,17 +97,6 @@
     .editor-label { font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; color: #888; margin-bottom: 10px; display: flex; justify-content: space-between; }
     .edit-hint { color: var(--accent); font-size: 0.8rem; display: flex; align-items: center; gap: 5px; }
 
-    /* PDF PREVIEW STYLES (MUHIM TUZATISH) */
-    /* Biz display: none ishlatmaymiz, o'rniga ekrandan tashqariga chiqaramiz */
-    #pdfOutput {
-      position: absolute;
-      left: -10000px; /* Ekranning chap tomonida ko'rinmas joyda turadi */
-      top: 0;
-      width: 800px; /* A4 formatga yaqin o'lcham */
-      background: white;
-      z-index: -1;
-    }
-
     /* Loader */
     .loader { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.9); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 9999; opacity: 0; pointer-events: none; transition: 0.3s; }
     .loader.active { opacity: 1; pointer-events: all; }
@@ -118,6 +106,63 @@
     @media (max-width: 768px) {
       .action-bar { flex-direction: column; gap: 15px; border-radius: 20px; }
       .btn { width: 100%; justify-content: center; }
+    }
+
+    /* =========================
+       PDF OUTPUT (MUHIM)
+       html2pdf ko‘rishi uchun:
+       - element ekranda bor bo‘lishi kerak
+       - display:none bo‘lmasin
+       - z-index:-1 bo‘lmasin
+       ========================= */
+    #pdfOutput{
+      position: fixed;
+      left: 0;
+      top: 0;
+      width: 794px;               /* A4 pxga yaqin */
+      background: white;
+      opacity: 0;                 /* ko‘rinmaydi, lekin render bo‘ladi */
+      pointer-events: none;
+      z-index: 9999;
+    }
+
+    /* PDF ichidagi matnlar chiroyli chiqishi uchun */
+    #pdfOutput .pdf-wrap{
+      padding: 40px;
+      font-family: "Times New Roman", serif;
+      color: #000;
+    }
+    #pdfOutput h1{
+      text-align:center;
+      color: #4e54c8;
+      border-bottom: 2px solid #4e54c8;
+      padding-bottom: 15px;
+      margin-bottom: 30px;
+    }
+    #pdfOutput h3{
+      color:#4e54c8;
+      border-bottom:1px solid #ddd;
+      padding-bottom:5px;
+      margin: 18px 0 10px;
+      page-break-after: avoid;
+    }
+    #pdfOutput .pdf-topic{
+      margin-bottom: 18px;
+      page-break-inside: avoid;
+    }
+    #pdfOutput .pdf-highlight{
+      background: #eef2ff;
+      border-left: 4px solid #4e54c8;
+      padding: 12px;
+      margin: 10px 0;
+      border-radius: 0 8px 8px 0;
+    }
+    #pdfOutput .pdf-conclusion{
+      margin-top: 30px;
+      padding: 18px;
+      border: 2px solid #4e54c8;
+      background: #f8f9ff;
+      page-break-inside: avoid;
     }
   </style>
 </head>
@@ -156,11 +201,14 @@
     </div>
 
     <div id="editorSection">
-      <div class="info-box" style="background:#e3f2fd; padding:20px; border-radius:10px; margin-bottom:30px; border-left:5px solid #2196f3;">
-        <h4 style="color:#0d47a1; margin-bottom:10px;"><i class="fa-solid fa-pen-to-square"></i> Tahrirlash rejimi</h4>
-        <p style="color:#1565c0; font-size:0.95rem;">
-          Matnlarni o'zgartirishingiz mumkin. PDF xuddi shu ko'rinishda chiqadi.
-        </p>
+      <div class="editable-box" style="border-color:#2196f3; background:#e3f2fd;">
+        <div class="editor-label" style="color:#0d47a1;">
+          <span><i class="fa-solid fa-pen-to-square"></i> Tahrirlash rejimi</span>
+          <span class="edit-hint" style="color:#1565c0;">PDF xuddi shu ko‘rinishda chiqadi</span>
+        </div>
+        <div style="color:#1565c0; font-size:0.95rem;">
+          Matnlarni bemalol o‘zgartiring. PDF faqat tanlangan mavzular + xulosa bilan chiqadi.
+        </div>
       </div>
 
       <div id="editorContainer"></div>
@@ -187,11 +235,10 @@
     </div>
   </div>
 
-  <div id="pdfOutput">
-    <div style="padding: 40px; font-family: 'Times New Roman', serif; color: #000;">
-      <h1 style="text-align: center; color: #4e54c8; border-bottom: 2px solid #4e54c8; padding-bottom: 15px; margin-bottom: 30px;">
-        Hadis Ilmi: Mustaqil Ish
-      </h1>
+  <!-- PDF OUTPUT (HTML2PDF shu elementni “rasmga” oladi) -->
+  <div id="pdfOutput" aria-hidden="true">
+    <div class="pdf-wrap">
+      <h1>Hadis Ilmi: Mustaqil Ish</h1>
       <div id="pdfContentBody"></div>
     </div>
   </div>
@@ -363,7 +410,10 @@
         const wrapper = document.createElement('div');
         wrapper.className = 'editable-box';
         wrapper.innerHTML = `
-          <div class="editor-label"><span>${topic.id}. ${topic.title}</span><span class="edit-hint"><i class="fa-solid fa-eraser"></i> Tahrirlash</span></div>
+          <div class="editor-label">
+            <span>${topic.id}. ${topic.title}</span>
+            <span class="edit-hint"><i class="fa-solid fa-eraser"></i> Tahrirlash</span>
+          </div>
           <div id="edit-content-${id}" contenteditable="true" style="outline:none;">${topic.content}</div>
         `;
         container.appendChild(wrapper);
@@ -377,55 +427,79 @@
       document.getElementById('step2').classList.remove('active');
     }
 
-    // PDF YARATISH FUNKSIYASI (TUZATILDI)
+    // Highlightlarni PDFga mos ko‘rinishga aylantirish
+    function convertHighlightsToPdf(html) {
+      const tmp = document.createElement('div');
+      tmp.innerHTML = html;
+
+      tmp.querySelectorAll('.highlight').forEach(el => {
+        el.classList.remove('highlight');
+        el.classList.add('pdf-highlight');
+      });
+
+      return tmp.innerHTML;
+    }
+
+    // PDF YARATISH FUNKSIYASI (ISHONCHLI)
     function generatePDF() {
       const loader = document.getElementById('loader');
       loader.classList.add('active');
 
-      // 1. PDF kontentni yangilash
+      // 1) PDF kontentni yangilash
       const pdfBody = document.getElementById('pdfContentBody');
       pdfBody.innerHTML = '';
 
       selectedIds.forEach(id => {
         const topic = topicsData.find(t => t.id === id);
-        // Tahrirlangan matnni olamiz
         const editedText = document.getElementById(`edit-content-${id}`).innerHTML;
-        
+
         const div = document.createElement('div');
-        div.style.marginBottom = '20px';
+        div.className = 'pdf-topic';
         div.innerHTML = `
-          <h3 style="color:#4e54c8; border-bottom:1px solid #ddd; padding-bottom:5px; margin-bottom:10px;">${topic.id}. ${topic.title}</h3>
-          <div style="font-size:14px; line-height:1.6;">${editedText}</div>
+          <h3>${topic.id}. ${topic.title}</h3>
+          <div style="font-size:14px; line-height:1.6;">
+            ${convertHighlightsToPdf(editedText)}
+          </div>
         `;
         pdfBody.appendChild(div);
       });
 
       const conclusion = document.getElementById('finalConclusion').innerHTML;
       const concDiv = document.createElement('div');
-      concDiv.style.marginTop = '40px';
-      concDiv.style.padding = '20px';
-      concDiv.style.border = '2px solid #4e54c8';
-      concDiv.style.background = '#f8f9ff';
+      concDiv.className = 'pdf-conclusion';
       concDiv.innerHTML = conclusion;
       pdfBody.appendChild(concDiv);
 
-      // 2. PDF generatsiya (Element ekranda mavjud bo'lishi kerak!)
+      // 2) PDF generatsiya
       const element = document.getElementById('pdfOutput');
-      
+
       const opt = {
         margin:       10,
         filename:     'Hadis_Mustaqil_Ish.pdf',
         image:        { type: 'jpeg', quality: 0.98 },
-        html2canvas:  { scale: 2 },
-        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        html2canvas:  {
+          scale: 2,
+          useCORS: true,
+          backgroundColor: "#ffffff",
+          scrollX: 0,
+          scrollY: 0,
+          windowWidth: element.scrollWidth
+        },
+        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
+        pagebreak:    { mode: ['css', 'legacy'] }
       };
 
-      // 1 soniya kutib keyin generatsiya qilamiz (Brauzer chizib olishi uchun)
-      setTimeout(() => {
-        html2pdf().set(opt).from(element).save().then(() => {
-          loader.classList.remove('active');
+      // Render “yetilib olish” uchun ikki frame kutamiz
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          html2pdf().set(opt).from(element).save().then(() => {
+            loader.classList.remove('active');
+          }).catch(err => {
+            loader.classList.remove('active');
+            alert("PDFda xatolik: " + (err?.message || err));
+          });
         });
-      }, 500);
+      });
     }
 
     init();
