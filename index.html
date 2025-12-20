@@ -1,462 +1,330 @@
 <!DOCTYPE html>
 <html lang="uz">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mustaqil Ish: Usul al-Fiqh (To'liq Tahrir)</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-    <style>
-        :root {
-            --primary: #2c3e50;
-            --secondary: #34495e;
-            --accent: #3498db;
-            --light: #f8f9fa;
-            --border: #e9ecef;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Hadis Ilmi - Mustaqil Ish</title>
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f0f2f5;
-            margin: 0;
-            display: flex;
-            height: 100vh;
-            overflow: hidden;
-        }
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
-        .sidebar {
-            width: 350px;
-            background: white;
-            border-right: 1px solid var(--border);
-            display: flex;
-            flex-direction: column;
-            padding: 20px;
-            overflow-y: auto;
-            box-shadow: 2px 0 5px rgba(0,0,0,0.05);
-        }
+  <style>
+    :root {
+      --primary: #4e54c8;
+      --secondary: #8f94fb;
+      --bg: #f8fbff;
+      --white: #ffffff;
+      --light: #f0f4ff;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #e0e7ff 0%, #c3dafe 100%);
+      min-height: 100vh;
+      color: #2c3e50;
+      padding: 20px;
+    }
+    .container { max-width: 900px; margin: 0 auto; padding-bottom: 100px; }
+    
+    /* ASOSIY STYLES */
+    .card {
+      background: var(--white);
+      border-radius: 15px;
+      margin-bottom: 15px;
+      padding: 20px;
+      border: 2px solid transparent;
+      cursor: pointer;
+      transition: 0.2s;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    }
+    .card.selected {
+      border-color: var(--primary);
+      background: #f4f7ff;
+    }
+    .card-header { display: flex; align-items: center; gap: 15px; font-weight: bold; }
+    .check-icon {
+      width: 24px; height: 24px; border: 2px solid #ccc; border-radius: 6px;
+      display: flex; align-items: center; justify-content: center;
+      color: white; transition: 0.2s;
+    }
+    .card.selected .check-icon { background: var(--primary); border-color: var(--primary); }
 
-        .student-form input {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            box-sizing: border-box;
-        }
+    /* BUTTONS */
+    .btn {
+      padding: 12px 25px; border: none; border-radius: 50px;
+      color: white; font-weight: bold; cursor: pointer;
+      background: var(--primary); display: inline-flex; align-items: center; gap: 8px;
+    }
+    .btn:disabled { background: #ccc; cursor: not-allowed; }
+    
+    /* ACTION BAR */
+    .action-bar {
+      position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+      background: white; padding: 15px 30px; border-radius: 50px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+      display: flex; gap: 15px; z-index: 100;
+    }
 
-        .topics-tree {
-            margin-top: 20px;
-        }
+    /* EDITOR & INPUTS */
+    input[type="text"] {
+      width: 100%; padding: 15px; margin-bottom: 20px;
+      border: 1px solid #ddd; border-radius: 10px; font-size: 16px;
+    }
+    .editable-box {
+      background: white; padding: 20px; border-radius: 10px; margin-bottom: 20px;
+      border: 2px dashed #ccc;
+    }
 
-        .chapter-title {
-            font-weight: bold;
-            color: var(--primary);
-            margin-top: 15px;
-            margin-bottom: 5px;
-            padding-bottom: 5px;
-            border-bottom: 2px solid var(--accent);
-            font-size: 0.95em;
-        }
+    /* LOADER */
+    .loader {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(255,255,255,0.98); 
+      display: none; flex-direction: column;
+      align-items: center; justify-content: center; z-index: 9999;
+    }
+    .loader.active { display: flex; }
+    .spinner {
+      width: 50px; height: 50px; border: 5px solid #eee;
+      border-top: 5px solid var(--primary); border-radius: 50%;
+      animation: spin 1s linear infinite; margin-bottom: 20px;
+    }
+    @keyframes spin { 100% { transform: rotate(360deg); } }
 
-        .topic-item {
-            display: flex;
-            align-items: flex-start;
-            margin-bottom: 8px;
-            font-size: 0.9em;
-            padding: 5px;
-            border-radius: 4px;
-            transition: background 0.2s;
-        }
+    /* --- PDF CONTAINER (MUHIM QISM) --- */
+    /* Bu qism oddiy holatda ko'rinmaydi */
+    #pdfOutput {
+      display: none; 
+      background: white;
+      width: 750px; /* A4 proporsiyasi uchun fix o'lcham */
+      padding: 40px;
+      color: black;
+      font-family: 'Times New Roman', serif;
+    }
+    
+    /* PDF ichidagi stillar */
+    .pdf-header { text-align: center; border-bottom: 2px solid #000; padding-bottom: 20px; margin-bottom: 30px; }
+    .pdf-topic { margin-bottom: 30px; page-break-inside: auto; }
+    .pdf-title { color: #000; font-size: 16pt; font-weight: bold; margin-bottom: 10px; }
+    .pdf-text { font-size: 12pt; line-height: 1.5; text-align: justify; }
+    .pdf-highlight { 
+        background-color: #f0f0f0; 
+        padding: 10px; 
+        border-left: 3px solid #000; 
+        margin: 10px 0; 
+        font-weight: bold;
+    }
 
-        .topic-item:hover {
-            background-color: var(--light);
-        }
-
-        .topic-item input {
-            margin-top: 3px;
-            margin-right: 10px;
-        }
-
-        .main-content {
-            flex: 1;
-            padding: 30px;
-            overflow-y: auto;
-            background-color: #f0f2f5;
-        }
-
-        .editor-container {
-            max-width: 800px;
-            margin: 0 auto;
-        }
-
-        .info-card {
-            background: white;
-            padding: 25px;
-            margin-bottom: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-            animation: fadeIn 0.3s ease-in;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-            border-bottom: 1px solid var(--border);
-            padding-bottom: 10px;
-        }
-
-        .card-title {
-            font-weight: bold;
-            color: var(--primary);
-            font-size: 1.1em;
-        }
-
-        .remove-btn {
-            color: #e74c3c;
-            cursor: pointer;
-            font-size: 0.9em;
-            border: none;
-            background: none;
-        }
-
-        textarea.editable-area {
-            width: 100%;
-            min-height: 150px;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-family: inherit;
-            font-size: 1em;
-            line-height: 1.6;
-            resize: vertical;
-            background-color: #fafafa;
-            box-sizing: border-box;
-        }
-
-        textarea.editable-area:focus {
-            outline: 2px solid var(--accent);
-            background-color: white;
-        }
-
-        .action-bar {
-            position: sticky;
-            bottom: 20px;
-            text-align: right;
-            margin-top: 20px;
-        }
-
-        .btn-pdf {
-            background-color: #27ae60;
-            color: white;
-            padding: 12px 30px;
-            border: none;
-            border-radius: 50px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            box-shadow: 0 4px 15px rgba(39, 174, 96, 0.3);
-            transition: transform 0.2s;
-        }
-
-        .btn-pdf:hover {
-            transform: scale(1.05);
-        }
-
-        #pdf-template {
-            display: none;
-            padding: 40px;
-            font-family: 'Times New Roman', serif;
-        }
-        
-        .pdf-header { text-align: center; border-bottom: 2px solid black; margin-bottom: 20px; }
-        .pdf-student { margin-bottom: 30px; font-weight: bold; }
-        .pdf-section { margin-bottom: 20px; text-align: justify; page-break-inside: avoid; }
-        .pdf-section h3 { background-color: #eee; padding: 5px; font-size: 14pt; }
-        .pdf-content { font-size: 12pt; line-height: 1.5; white-space: pre-wrap; }
-
-    </style>
+  </style>
 </head>
 <body>
 
-<div class="sidebar">
-    <h2 style="text-align:center; color: var(--primary);">Mavzular</h2>
-    
-    <div class="student-form">
-        <label>F.I.SH:</label>
-        <input type="text" id="inpName" placeholder="Abdullayev Anvar">
-        <label>Kurs va Guruh:</label>
-        <input type="text" id="inpCourse" placeholder="4-A">
+  <div class="loader" id="loader">
+    <div class="spinner"></div>
+    <h3>PDF tayyorlanmoqda...</h3>
+  </div>
+
+  <div class="container" id="appContainer">
+    <div style="text-align:center; margin-bottom:30px;">
+      <h1 style="color:var(--primary);">📚 Hadis Ilmi - Mustaqil Ish</h1>
     </div>
 
-    <div class="topics-tree" id="topicsMenu"></div>
-</div>
+    <input type="text" id="studentName" placeholder="F.I.O va Guruhingizni yozing (Masalan: Aliyev Vali, 304-guruh)" />
 
-<div class="main-content">
-    <div class="editor-container">
-        <h1 style="color: var(--primary); text-align: center;">Mustaqil Ish Tahrirchisi</h1>
-        <p style="text-align: center; color: #7f8c8d;">Chap tarafdan mavzuni tanlang. Matn o'ng tarafda paydo bo'ladi. Uni o'qib, o'zgartirib, xulosa yozishingiz mumkin.</p>
-        
-        <div id="cards-area"></div>
+    <div id="selectionSection">
+      <div id="topicsContainer"></div>
+      <div class="action-bar">
+        <button class="btn" onclick="toggleSelectAll()">Hammasi</button>
+        <button class="btn" id="nextBtn" onclick="goToEditor()" disabled>Davom etish</button>
+      </div>
+    </div>
 
-        <div class="action-bar">
-            <button class="btn-pdf" onclick="generatePDF()">PDF YUKLAB OLISH</button>
+    <div id="editorSection" style="display:none;">
+      <div id="editorContainer"></div>
+      
+      <div class="editable-box">
+        <h4>Xulosa:</h4>
+        <div id="finalConclusion" contenteditable="true">
+          Ushbu mavzularni o'rganib, men hadis ilmining nozik jihatlarini tushundim...
         </div>
-    </div>
-</div>
+      </div>
 
-<div id="pdf-template">
-    <div class="pdf-header">
-        <h1>MUSTAQIL ISH</h1>
-        <p>Fan: Usul al-Fiqh / Hadisshunoslik</p>
+      <div class="action-bar">
+        <button class="btn" style="background:#777" onclick="backToSelection()">Ortga</button>
+        <button class="btn" onclick="generatePDF()">PDF YUKLAB OLISH</button>
+      </div>
     </div>
-    <div class="pdf-student">
-        <p>Talaba: <span id="pdf-name"></span></p>
-        <p>Guruh: <span id="pdf-course"></span></p>
-    </div>
-    <div id="pdf-body"></div>
-</div>
+  </div>
 
-<script src="data.js"></script>
-<script>
-    function renderMenu() {
-        const menuContainer = document.getElementById('topicsMenu');
-        
-        fullData.forEach(chapter => {
-            let html = `<div class="chapter-block">
-                <div class="chapter-title">${chapter.chapter}</div>`;
-            
-            chapter.topics.forEach(topic => {
-                html += `
-                    <div class="topic-item">
-                        <input type="checkbox" id="chk_${topic.id}" onchange="toggleTopic('${topic.id}')">
-                        <label for="chk_${topic.id}" style="cursor:pointer;">${topic.title}</label>
-                    </div>
-                `;
-            });
-            
-            html += `</div>`;
-            menuContainer.innerHTML += html;
-        });
+  <div id="pdfWrapper" style="position: absolute; top: 0; left: 0; width: 100%; z-index: -1;">
+     <div id="pdfOutput"></div>
+  </div>
+
+  <script>
+    // DATA
+    const topics = [
+      { id: 1, title: "Xabarlarning bo'linishi", content: "<p>Hanafiylar xabarlarni uchga bo'ladi: <br>1. <b>Mutavotir</b> - shubhasiz.<br>2. <b>Mashhur</b> - suratda shubha, ma'noda yo'q.<br>3. <b>Ahod</b> - gumonli xabarlar.</p>" },
+      { id: 2, title: "Mutavotir xabar", content: "<p>Yolg'onga kelishib olishi aqlan mumkin bo'lmagan ko'p sonli roviylar xabari. <div class='pdf-highlight'>Hukmi: Zaruriy ilm beradi, inkor qilgan kofir bo'ladi.</div></p>" },
+      { id: 3, title: "Mashhur xabar", content: "<p>Avvalida ahod (yakka) bo'lib, keyingi asrlarda mutavotir darajasiga yetgan xabar. <div class='pdf-highlight'>Hukmi: Tuma'nina (xotirjamlik) ilmini beradi.</div></p>" },
+      { id: 4, title: "Ahod xabarlar", content: "<p>Mutavotir va mashhur darajasiga yetmagan xabarlar. <div class='pdf-highlight'>Hukmi: Ilm bermaydi, lekin amal qilish vojib.</div></p>" },
+      { id: 5, title: "Roviy shartlari: Aql", content: "<p>Roviy hadisni aytayotganda to'liq aqlga ega (bolig') bo'lishi shart.</p>" },
+      { id: 6, title: "Roviy shartlari: Islom", content: "<p>Rivoyat qilayotganda musulmon bo'lishi shart. Kofirning rivoyati qabul qilinmaydi.</p>" },
+      { id: 7, title: "Zabt (Yodlash)", content: "<p>Eshitgan narsasini o'zgartirmasdan, xuddi o'zidek yetkazib berish qobiliyati.</p>" },
+      { id: 8, title: "Adolat", content: "<p>Roviyning taqvosi bo'lishi, katta gunohlardan saqlanishi va muruvvatli bo'lishi.</p>" },
+      { id: 9, title: "Bid'atchining rivoyati", content: "<p>Agar bid'atchi o'z bid'atiga targ'ib qilmasa va yolg'onchi bo'lmasa, rivoyati qabul qilinishi mumkin.</p>" },
+      { id: 10, title: "Mastur roviy", content: "<p>Adolati noma'lum (yopiq) roviy. Hanafiylar ilk asrlardagi masturlarni qabul qilgan.</p>" }
+    ];
+
+    let selected = [];
+    let edits = {};
+
+    // 1. DASTURNI YURGIZISH
+    window.addEventListener('DOMContentLoaded', () => {
+      const cont = document.getElementById('topicsContainer');
+      cont.innerHTML = topics.map(t => `
+        <div class="card" id="card-${t.id}" onclick="toggle(${t.id})">
+          <div class="card-header">
+            <div class="check-icon" id="check-${t.id}"><i class="fa fa-check"></i></div>
+            <span>${t.id}. ${t.title}</span>
+          </div>
+        </div>
+      `).join('');
+    });
+
+    // 2. LOGIKA
+    function toggle(id) {
+      if(selected.includes(id)) selected = selected.filter(x => x !== id);
+      else selected.push(id);
+      
+      // UI yangilash
+      topics.forEach(t => {
+         const el = document.getElementById(`card-${t.id}`);
+         const ic = document.getElementById(`check-${t.id}`);
+         if(selected.includes(t.id)) {
+           el.classList.add('selected');
+           ic.style.background = '#4e54c8';
+           ic.style.borderColor = '#4e54c8';
+         } else {
+           el.classList.remove('selected');
+           ic.style.background = 'transparent';
+           ic.style.borderColor = '#ccc';
+         }
+      });
+      document.getElementById('nextBtn').disabled = selected.length === 0;
     }
 
-    function toggleTopic(id) {
-        const checkbox = document.getElementById(`chk_${id}`);
-        const cardsArea = document.getElementById('cards-area');
-        
-        if (checkbox.checked) {
-            let selectedTopic = null;
-            fullData.forEach(ch => {
-                const found = ch.topics.find(t => t.id === id);
-                if(found) selectedTopic = found;
-            });
-
-            if(selectedTopic) {
-                const card = document.createElement('div');
-                card.className = 'info-card';
-                card.id = `card_${id}`;
-                card.innerHTML = `
-                    <div class="card-header">
-                        <div class="card-title">${selectedTopic.title}</div>
-                        <button class="remove-btn" onclick="removeCard('${id}')">✖ O'chirish</button>
-                    </div>
-                    <textarea class="editable-area" id="txt_${id}">${selectedTopic.text}</textarea>
-                `;
-                cardsArea.appendChild(card);
-                card.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            }
-        } else {
-            removeCard(id);
-        }
+    function toggleSelectAll() {
+      if(selected.length === topics.length) selected = [];
+      else selected = topics.map(t => t.id);
+      
+      // UI Update (oddiyroq yo'l bilan)
+      topics.forEach(t => {
+         // Force update visuals
+         const el = document.getElementById(`card-${t.id}`);
+         const ic = document.getElementById(`check-${t.id}`);
+         if(selected.includes(t.id)) {
+           el.classList.add('selected');
+           ic.style.background = '#4e54c8';
+         } else {
+           el.classList.remove('selected');
+           ic.style.background = 'transparent';
+         }
+      });
+      document.getElementById('nextBtn').disabled = selected.length === 0;
     }
 
-    function removeCard(id) {
-        const card = document.getElementById(`card_${id}`);
-        if(card) card.remove();
-        
-        const checkbox = document.getElementById(`chk_${id}`);
-        if(checkbox) checkbox.checked = false;
+    function goToEditor() {
+      const name = document.getElementById('studentName').value;
+      if(!name) return alert("Ismingizni kiriting!");
+
+      document.getElementById('selectionSection').style.display = 'none';
+      document.getElementById('editorSection').style.display = 'block';
+
+      const cont = document.getElementById('editorContainer');
+      cont.innerHTML = '';
+      
+      selected.sort((a,b)=>a-b).forEach(id => {
+        const t = topics.find(x => x.id === id);
+        const div = document.createElement('div');
+        div.className = 'editable-box';
+        div.innerHTML = `
+          <h4 style="color:#888; margin-bottom:10px">${t.title}</h4>
+          <div id="edit-${id}" contenteditable="true" style="outline:none">${edits[id] || t.content}</div>
+        `;
+        cont.appendChild(div);
+      });
     }
 
+    function backToSelection() {
+      document.getElementById('selectionSection').style.display = 'block';
+      document.getElementById('editorSection').style.display = 'none';
+    }
+
+    // --- PDF GENERATSIYA (TUZATILGAN) ---
     function generatePDF() {
-        const name = document.getElementById('inpName').value;
-        const course = document.getElementById('inpCourse').value;
-        
-        if(!name || !course) {
-            alert("Iltimos, Ism va Kursingizni kiriting!");
-            return;
-        }
+      // 1. Ma'lumotlarni saqlash
+      selected.forEach(id => {
+        const el = document.getElementById(`edit-${id}`);
+        if(el) edits[id] = el.innerHTML;
+      });
+      const conclusion = document.getElementById('finalConclusion').innerHTML;
+      const name = document.getElementById('studentName').value;
 
-        const cards = document.querySelectorAll('.info-card');
-        if(cards.length === 0) {
-            alert("Hech qanday mavzu tanlanmagan!");
-            return;
-        }
+      // 2. PDF shablonini to'ldirish
+      const output = document.getElementById('pdfOutput');
+      output.innerHTML = `
+        <div class="pdf-header">
+          <h1>MUSTAQIL ISH</h1>
+          <h3>Mavzu: Hadis ilmi (Mustalahul hadis)</h3>
+          <p style="margin-top:15px"><strong>Bajardi:</strong> ${name}</p>
+          <p><strong>Sana:</strong> ${new Date().toLocaleDateString()}</p>
+        </div>
+      `;
 
-        document.getElementById('pdf-name').innerText = name;
-        document.getElementById('pdf-course').innerText = course;
-        
-        const pdfBody = document.getElementById('pdf-body');
-        pdfBody.innerHTML = "";
+      selected.forEach(id => {
+        const t = topics.find(x => x.id === id);
+        output.innerHTML += `
+          <div class="pdf-topic">
+            <div class="pdf-title">${t.id}. ${t.title}</div>
+            <div class="pdf-text">${edits[id] || t.content}</div>
+          </div>
+        `;
+      });
 
-        cards.forEach(card => {
-            const title = card.querySelector('.card-title').innerText;
-            const content = card.querySelector('textarea').value;
-            
-            const sectionDiv = document.createElement('div');
-            sectionDiv.className = 'pdf-section';
-            sectionDiv.innerHTML = `
-                <h3>${title}</h3>
-                <div class="pdf-content">${content}</div>
-                <hr style="margin-top:10px; border:0; border-top:1px dashed #ccc;">
-            `;
-            pdfBody.appendChild(sectionDiv);
+      output.innerHTML += `
+        <div style="margin-top:40px; border-top:2px solid #000; padding-top:20px;">
+          <h3>XULOSA</h3>
+          <div class="pdf-text">${conclusion}</div>
+        </div>
+      `;
+
+      // 3. GENERATSIYA JARAYONI
+      const loader = document.getElementById('loader');
+      loader.classList.add('active');
+
+      // SIR SHU YERDA: Elementni ko'rinadigan qilamiz, lekin ustidan loader yopib turadi
+      output.style.display = 'block';
+      
+      const opt = {
+        margin:       15,
+        filename:     `${name.replace(/\s/g, '_')}_Mustaqil_Ish.pdf`,
+        image:        { type: 'jpeg', quality: 0.98 },
+        html2canvas:  { scale: 2, useCORS: true },
+        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+      };
+
+      // Brauzer render qilishi uchun ozgina vaqt beramiz
+      setTimeout(() => {
+        html2pdf().set(opt).from(output).save().then(() => {
+          loader.classList.remove('active');
+          output.style.display = 'none'; // Qaytarib yashiramiz
+          alert("PDF Muvaffaqiyatli yuklandi!");
+        }).catch(err => {
+          loader.classList.remove('active');
+          output.style.display = 'none';
+          alert("Xatolik: " + err.message);
         });
-
-        const element = document.getElementById('pdf-template');
-        element.style.display = 'block';
-
-        var opt = {
-            margin:       15,
-            filename:     `Mustaqil_Ish_${name}.pdf`,
-            image:        { type: 'jpeg', quality: 0.98 },
-            html2canvas:  { scale: 2 },
-            jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
-        };
-
-        html2pdf().set(opt).from(element).save().then(() => {
-            element.style.display = 'none';
-        });
+      }, 500);
     }
-
-    window.onload = renderMenu;
-
-const fullData = [
-{chapter:"1-BOB: Xabarlarning bo'linishi", topics:[
-{id:"1.1",title:"Hanafiylar taqsimoti",text:`Hanafiy imomlarimiz Rasululloh ﷺ ga bog'lanish jihatidan xabarlarni uch qismga bo'lishgan:
-
-1. MUTAVOTIR: Surat va ma'no jihatidan shubhasiz, to'liq bog'lanishga ega xabar.
-2. MASHHUR: Sahobalar davrida ahod, keyin tobi'in va tabe't-tobi'in davrida mutavotir bo'lgan.
-3. AHOD: Har ikki jihatdan shubhali, mutavotir bo'lmagan xabar.`},
-{id:"1.2",title:"Muhaddislar taqsimoti",text:`Muhaddislar xabarlarni ikki qismga bo'lishgan: Mutavotir va Ahod.
-Ahod esa uch turga: Mashhur, Aziz, G'arib.
-
-Hanafiylarning 'Mashhur'i alohida qism, muhaddislarda esa ahod turi.`},
-{id:"1.3",title:"Istilohlarni solishtirish",text:`Muhaddislar isnodga, faqihlar matnga e'tibor bergan.
-
-Agar 3+ sahoba rivoyat qilib, keyin mutavotir bo'lsa - ikkalada ham 'Mashhur'.
-Agar 1 sahoba rivoyat qilib, keyin mutavotir bo'lsa - hanafiylarda 'Mashhur', muhaddislarda yo'q.`}
-]},
-{chapter:"2-BOB: Mutavotir", topics:[
-{id:"2.1",title:"Ta'rif va shartlar",text:`TA'RIFI: O'z-o'zidan ilm hosil qiladigan jamoa xabari.
-
-SHARTLARI:
-1. Ko'plik - yolg'on ustida kelishish imkonsiz
-2. Barcha tabaqalarda ko'plik (3 asr: sahoba, tobi'in, tabe't-tobi'in)
-3. Hissiyotga asoslanish (aqliy emas)`},
-{id:"2.2",title:"Hukmi",text:`Mutavotir ZARURIY ILM beradi. Inkor qilgan kofir bo'ladi.
-
-Aniq son shart emas, mezon - ilm hosil bo'lishi.`},
-{id:"2.3",title:"Turlari",text:`1. Isnod mutavotiri
-2. Tabaqa mutavotiri
-3. Amal va meros mutavotiri
-4. Umumiy qadr mutavotiri`}
-]},
-{chapter:"3-BOB: Mashhur", topics:[
-{id:"3.1",title:"Ta'rif",text:`Birinchi asrda ahod, ikkinchi va uchinchi asrlarda mutavotir bo'lgan xabar.
-
-Uch asrdan keyin mashhurlik e'tiborga olinmaydi.`},
-{id:"3.2",title:"Uch asr chegarasi",text:`1. Sahobalar (110 h.y.gacha)
-2. Tobi'inlar (180 h.y.gacha)
-3. Tabe't-tobi'in (220 h.y.gacha)`},
-{id:"3.3",title:"Hukmi",text:`Mutavotir va ahod o'rtasida. 'Tuma'nina' (xotirjamlik) hosil qiladi.
-
-Inkor qilgan kofir emas, balki adashgan (zall).`}
-]},
-{chapter:"4-BOB: Ahod", topics:[
-{id:"4.1",title:"Ta'rif va hukmi",text:`Mashhur va mutavotirga yetmagan xabar.
-
-Qat'iy ilm bermaydi, lekin amal qilishni vojib qiladi (fiqhda hujjat).`},
-{id:"4.2",title:"Hudud masalasi",text:`Ahod bilan hudud sobit bo'ladimi?
-
-1-qarash (rojih): Sobit bo'ladi (Abu Yusuf, ko'pchilik)
-2-qarash: Sobit bo'lmaydi (Karkhiy)
-
-'Hududni shubha bilan daf eting' - voqeadagi shubha, dalildagi emas.`}
-]},
-{chapter:"Roviy shartlari: AQL", topics:[
-{id:"5.1",title:"Aql va balog'at",text:`To'liq aql - balog'at bilan hosil bo'ladi.
-
-Balog'at - ADO ETISH sharti, TAHAMMUL sharti emas.
-Bola eshitib, katta bo'lgandan keyin aytsa - qabul qilinadi (Ibn Abbos misoli).
-
-Tahammul uchun 'tamyiz' (5-7 yosh) yetarli.`}
-]},
-{chapter:"Roviy shartlari: ISLOM", topics:[
-{id:"6.1",title:"Islom sharti",text:`Roviy musulmon bo'lishi shart.
-
-Kofirning rivoyati qabul qilinmaydi (dushmanlik gumoni).
-
-Bu ham ADO ETISH sharti. Kofir eshitib, keyin musulmon bo'lsa - qabul qilinadi.`}
-]},
-{chapter:"Roviy shartlari: ZABT", topics:[
-{id:"7.1",title:"Zabt turlari",text:`ZABT - hadisni to'g'ri saqlash.
-
-Turlari:
-1. Zohiriy: Lafz va lug'aviy ma'no
-2. Botiniy: Fiqhiy ma'no (faqih bo'lish)
-
-Saqlash:
-1. Sadr zabti (xotira)
-2. Kitob zabti (yozuv)
-
-G'aflat ko'p bo'lsa - rad etiladi.`}
-]},
-{chapter:"Roviy shartlari: ADOLAT", topics:[
-{id:"8.1",title:"Ta'rif",text:`Adolat - taqvo va muruwwatni saqlashga undaydigan malaka.
-
-Hadis bobida adolatli:
-1. Katta gunohlardan tiyilgan
-2. Kichik gunohlarda davomli emas
-3. Muruwwatni buzmagan`},
-{id:"8.2",title:"Nabiyga yolg'on gapirgan",text:`Nabiy ﷺ ga yolg'on to'qigan, keyin tavba qilgan:
-
-1-qarash: Rivoyati abadiy qabul qilinmaydi (jazo)
-2-qarash (Navaviy): Tavba qilsa qabul qilinadi`},
-{id:"8.3",title:"Ta'dil va mubham roviy",text:`Adolatli roviyning boshqadan rivoyat qilishi ta'dilmi?
-
-Hanafiylarda: 3 asr ichida - ha, keyin - yo'q.
-
-Mubham ta'dil ('Ishonchli kishi aytdi'): Hanafiylarda qabul qilinadi (3 asr ichida).`}
-]},
-{chapter:"BID'ATCHI va MAJHUL", topics:[
-{id:"9.1",title:"Bid'atchi roviy",text:`Bid'at: Kufrga eltuvchi va Fisqqa eltuvchi.
-
-1-mazhab (Saraxsiy): Qabul qilinmaydi
-2-mazhab (Ibn Humom): Yolg'onni halol sanamasa - qabul qilinadi
-3-mazhab (Ibn Hajar): Da'vat qilmasa - qabul qilinadi
-
-Imom Buxoriy xorijiylardan hadis olgan (Imron ibn Hattol).`},
-{id:"9.2",title:"Majhul va mastur",text:`HANAFIY ISTILOHIDA:
-Majhul - 3 asr ichida kam rivoyat qilgan
-Mastur - 3 asrdan keyingi kam rivoyat qilgan (aslida bir xil)
-
-Majhulning 5 turi:
-1. Salaf qabul qilgan - OLINADI
-2. Salaf sukut qilgan - OLINADI
-3. Ixtilof qilingan - Qiyosga mos kelsa OLINADI
-4. Salaf rad etgan - OLINMAYDI
-5. Noma'lum - Vojib emas, qiyosga mos kelsa joiz
-
-3 asrdan keyingi mastur - qabul qilinmaydi.`}
-]}
-];
-</script>
-
+  </script>
 </body>
 </html>
