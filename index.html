@@ -3,900 +3,601 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Hadis Mavzulari - To'liq Vazifa Tizimi</title>
+  <title>Hadis Mavzulari - Mukammal Tizim</title>
 
-  <!-- jsPDF (PDF yuklab olish uchun) -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
   <style>
+    :root {
+      --primary: #4e54c8;
+      --secondary: #8f94fb;
+      --accent: #ff9f43;
+      --text: #2c3e50;
+      --bg: #f4f6f9;
+      --white: #ffffff;
+    }
+
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
-    body{
+    body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      background: linear-gradient(135deg, var(--bg) 0%, #e1eec3 100%);
       min-height: 100vh;
+      color: var(--text);
       padding: 20px;
     }
 
-    .container{ max-width: 1400px; margin: 0 auto; }
+    .container { max-width: 1000px; margin: 0 auto; }
 
-    .header{
-      background: white;
-      padding: 50px;
-      border-radius: 25px;
+    /* HEADER */
+    .main-header {
+      background: var(--white);
+      padding: 40px;
+      border-radius: 20px;
       text-align: center;
-      box-shadow: 0 15px 50px rgba(0,0,0,0.3);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
       margin-bottom: 30px;
       position: relative;
       overflow: hidden;
     }
 
-    .header::before{
-      content:'☪';
-      position:absolute;
-      font-size:200px;
-      opacity:0.05;
-      top:-30px;
-      right:-30px;
+    .main-header::before {
+      content: '\f6ad'; /* Quran icon */
+      font-family: "Font Awesome 6 Free";
+      font-weight: 900;
+      position: absolute;
+      top: -20px; right: -20px;
+      font-size: 150px;
+      color: var(--primary);
+      opacity: 0.05;
     }
 
-    .header h1{ color:#667eea; font-size: 3em; margin-bottom: 15px; position: relative; }
-    .header p{ color:#666; font-size: 1.2em; position: relative; }
+    .main-header h1 { color: var(--primary); margin-bottom: 10px; font-size: 2.2rem; }
+    .main-header p { color: #666; font-size: 1.1rem; }
 
-    .topics-container{
-      background:white;
-      padding: 50px;
-      border-radius: 25px;
-      box-shadow: 0 15px 50px rgba(0,0,0,0.3);
+    /* STEPS INDICATOR */
+    .steps {
+      display: flex;
+      justify-content: center;
       margin-bottom: 30px;
-    }
-
-    .topics-header{
-      display:flex;
-      justify-content: space-between;
-      align-items:center;
-      margin-bottom: 40px;
-      padding-bottom: 25px;
-      border-bottom: 4px solid #667eea;
       gap: 20px;
     }
-
-    .topics-header h2{ color:#667eea; font-size: 2.5em; }
-
-    .select-all-btn{
-      padding: 15px 40px;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color:white;
-      border:none;
-      border-radius: 12px;
-      font-size: 18px;
-      font-weight: 700;
-      cursor:pointer;
-      transition: all .3s ease;
-      white-space: nowrap;
+    .step {
+      background: rgba(255,255,255,0.6);
+      padding: 10px 20px;
+      border-radius: 50px;
+      font-weight: 600;
+      color: #999;
+      transition: 0.3s;
+    }
+    .step.active {
+      background: var(--primary);
+      color: var(--white);
+      box-shadow: 0 5px 15px rgba(78, 84, 200, 0.3);
     }
 
-    .select-all-btn:hover{
-      transform: translateY(-3px);
-      box-shadow: 0 8px 25px rgba(102,126,234,0.5);
-    }
-
-    .info-box{
-      background: linear-gradient(135deg, #d1ecf1 0%, #bee5eb 100%);
-      padding: 25px;
-      border-radius: 20px;
-      margin-bottom: 30px;
-      border-left: 6px solid #17a2b8;
-      box-shadow: 0 5px 20px rgba(23,162,184,0.2);
-    }
-
-    .info-box h4{ color:#0c5460; margin-bottom: 15px; font-size: 1.3em; }
-    .info-box p{ color:#0c5460; line-height: 1.8; font-size: 1.05em; }
-
-    .selected-count{
-      background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
-      padding: 25px;
-      border-radius: 20px;
-      text-align: center;
-      margin-bottom: 30px;
-      border-left: 6px solid #ffc107;
-      box-shadow: 0 5px 20px rgba(255,193,7,0.3);
-    }
-
-    .selected-count h3{ color:#856404; font-size: 1.5em; }
-
-    .topic-card{
-      background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-      padding: 0;
+    /* CARD STYLES */
+    .card {
+      background: var(--white);
+      border-radius: 15px;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.05);
       margin-bottom: 20px;
-      border-radius: 20px;
-      border: 4px solid transparent;
-      transition: all .4s ease;
       overflow: hidden;
-      box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+      transition: transform 0.3s ease;
+      border: 2px solid transparent;
     }
 
-    .topic-card:hover{
-      border-color: #667eea;
-      transform: translateY(-5px);
-      box-shadow: 0 10px 30px rgba(102,126,234,0.3);
+    .card.selected {
+      border-color: var(--primary);
+      background: #f8f9ff;
     }
 
-    .topic-card.selected{
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
-      border-color: #764ba2;
-    }
-
-    .topic-header{
-      padding: 25px;
+    .card-header {
+      padding: 20px;
+      display: flex;
+      align-items: center;
       cursor: pointer;
-      display:flex;
-      align-items:center;
-      gap: 20px;
+      gap: 15px;
     }
 
-    .checkbox{
-      width: 35px;
-      height: 35px;
-      border: 3px solid #667eea;
-      border-radius: 10px;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      font-size: 22px;
-      transition: all .3s ease;
+    .checkbox-custom {
+      width: 28px;
+      height: 28px;
+      border: 2px solid #ddd;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: 0.3s;
       flex-shrink: 0;
     }
 
-    .topic-card.selected .checkbox{
-      background:white;
-      color:#667eea;
-      border-color: white;
-    }
-
-    .topic-title-section{ flex: 1; }
-    .topic-number{ font-size: .9em; font-weight: 600; opacity:.7; margin-bottom: 5px; }
-    .topic-title{ font-size: 1.4em; font-weight: 700; margin-bottom: 8px; }
-    .topic-desc{ font-size: 1em; opacity:.85; line-height: 1.5; }
-
-    .expand-btn{
-      padding: 8px 20px;
-      background: rgba(102,126,234,0.1);
-      border: 2px solid #667eea;
-      color:#667eea;
-      border-radius: 8px;
-      font-size: 14px;
-      font-weight: 600;
-      cursor:pointer;
-      transition: all .3s ease;
-    }
-
-    .topic-card.selected .expand-btn{
-      background: rgba(255,255,255,0.2);
-      border-color: white;
+    .card.selected .checkbox-custom {
+      background: var(--primary);
+      border-color: var(--primary);
       color: white;
     }
 
-    .expand-btn:hover{ background:#667eea; color:white; }
-    .topic-card.selected .expand-btn:hover{ background:white; color:#667eea; }
+    .card-title { flex: 1; font-weight: 700; font-size: 1.1rem; }
+    .card-meta { font-size: 0.85rem; color: #777; margin-top: 5px; }
 
-    .topic-content{ max-height: 0; overflow: hidden; transition: max-height .5s ease; }
-    .topic-content.expanded{ max-height: 5000px; }
+    .toggle-icon {
+      width: 30px; height: 30px;
+      background: #eee;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--primary);
+      transition: 0.3s;
+    }
+    
+    .card-content {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.4s ease-out;
+      background: #fff;
+      border-top: 1px solid #eee;
+    }
+    
+    .card-content.open { max-height: 2000px; }
+    
+    .content-padding { padding: 25px; line-height: 1.7; }
+    .content-padding h3 { color: var(--primary); margin: 15px 0 10px; font-size: 1.2rem; }
+    .highlight {
+      background: #eef2ff;
+      border-left: 4px solid var(--primary);
+      padding: 15px;
+      margin: 15px 0;
+      border-radius: 0 8px 8px 0;
+    }
 
-    .topic-details{
-      padding: 30px;
+    /* FLOATING ACTION BAR */
+    .action-bar {
+      position: sticky;
+      bottom: 20px;
       background: rgba(255,255,255,0.95);
-      color: #333;
-      line-height: 2;
-      border-top: 2px solid rgba(102,126,234,0.2);
+      backdrop-filter: blur(10px);
+      padding: 15px 30px;
+      border-radius: 50px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 20px;
+      z-index: 100;
+      border: 1px solid rgba(0,0,0,0.1);
     }
 
-    .topic-card.selected .topic-details{
-      background: rgba(255,255,255,0.15);
+    .btn {
+      padding: 12px 30px;
+      border: none;
+      border-radius: 30px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.3s;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .btn-primary {
+      background: linear-gradient(45deg, var(--primary), var(--secondary));
       color: white;
+      box-shadow: 0 4px 15px rgba(78, 84, 200, 0.4);
     }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(78, 84, 200, 0.5); }
+    .btn-primary:disabled { background: #ccc; cursor: not-allowed; transform: none; box-shadow: none; }
 
-    .topic-details h3{
-      color:#667eea;
-      margin: 25px 0 15px 0;
-      font-size: 1.3em;
-      padding-left: 15px;
-      border-left: 5px solid #667eea;
-    }
+    .btn-secondary { background: #eee; color: #333; }
+    .btn-secondary:hover { background: #e0e0e0; }
 
-    .topic-card.selected .topic-details h3{
-      color:white;
-      border-left-color: white;
-    }
-
-    .topic-details p{ margin-bottom: 15px; text-align: justify; }
-    .topic-details ul{ margin-left: 30px; margin-bottom: 15px; }
-    .topic-details li{ margin-bottom: 10px; }
-
-    .highlight-box{
-      background: rgba(102,126,234,0.1);
+    /* EDITOR SECTION */
+    #editorSection { display: none; }
+    
+    .editable-box {
+      border: 2px dashed #ccc;
       padding: 20px;
       border-radius: 12px;
-      margin: 20px 0;
-      border-left: 5px solid #667eea;
+      background: #fff;
+      margin-bottom: 25px;
+      transition: 0.3s;
+      outline: none;
+    }
+    .editable-box:focus { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(78,84,200,0.1); }
+    
+    .editor-label {
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #888;
+      margin-bottom: 10px;
+      display: flex;
+      justify-content: space-between;
+    }
+    
+    .edit-hint { color: var(--accent); font-size: 0.8rem; display: flex; align-items: center; gap: 5px; }
+
+    /* PDF PREVIEW STYLES (Specific for PDF generation) */
+    .pdf-container {
+      background: white;
+      padding: 40px;
+      display: none; /* Faqat PDF uchun generatsiya qilinadi */
     }
 
-    .topic-card.selected .highlight-box{
-      background: rgba(255,255,255,0.2);
-      border-left-color: white;
-    }
-
-    .conclusion-section{
-      display:none;
-      background:white;
-      padding: 50px;
-      border-radius: 25px;
-      box-shadow: 0 15px 50px rgba(0,0,0,0.3);
-      margin-bottom: 30px;
-    }
-
-    .conclusion-section.active{
-      display:block;
-      animation: fadeIn .6s ease;
-    }
-
-    @keyframes fadeIn{
-      from{ opacity:0; transform: translateY(30px); }
-      to{ opacity:1; transform: translateY(0); }
-    }
-
-    .conclusion-section h2{
-      color:#667eea;
-      margin-bottom: 30px;
-      font-size: 2.5em;
-      border-bottom: 3px solid #667eea;
-      padding-bottom: 15px;
-    }
-
-    .selected-topics-list{
-      background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-      padding: 30px;
-      border-radius: 15px;
-      margin-bottom: 30px;
-      box-shadow: 0 5px 20px rgba(0,0,0,0.1);
-    }
-
-    .selected-topics-list h3{
-      color:#495057;
-      margin-bottom: 20px;
-      font-size: 1.5em;
-    }
-
-    .selected-topics-list ul{ list-style:none; padding:0; }
-    .selected-topics-list li{
-      padding: 15px 20px;
-      background:white;
-      margin-bottom: 12px;
-      border-radius: 12px;
-      border-left: 5px solid #667eea;
-      font-size: 1.1em;
-      box-shadow: 0 3px 10px rgba(0,0,0,0.08);
-    }
-
-    .conclusion-textarea{
-      width:100%;
-      min-height: 400px;
-      padding: 25px;
-      border: 3px solid #e9ecef;
-      border-radius: 20px;
-      font-size: 17px;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      resize: vertical;
-      transition: all .3s ease;
-      line-height: 1.8;
-    }
-
-    .conclusion-textarea:focus{
-      outline:none;
-      border-color: #667eea;
-      box-shadow: 0 0 0 5px rgba(102,126,234,0.15);
-    }
-
-    .action-buttons{
-      display:flex;
-      gap: 20px;
-      margin-top: 30px;
-      flex-wrap: wrap;
-    }
-
-    .btn{
-      padding: 18px 50px;
-      border:none;
-      border-radius: 15px;
-      font-size: 18px;
-      font-weight: 700;
-      cursor:pointer;
-      transition: all .3s ease;
-      display:flex;
-      align-items:center;
-      gap: 12px;
-      box-shadow: 0 5px 20px rgba(0,0,0,0.2);
-    }
-
-    .btn-primary{
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color:white;
-      flex: 1;
-    }
-
-    .btn-primary:hover{
-      transform: translateY(-3px);
-      box-shadow: 0 8px 30px rgba(102,126,234,0.5);
-    }
-
-    .btn-secondary{
-      background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
-      color:white;
-      flex: 1;
-    }
-
-    .btn-secondary:hover{
-      transform: translateY(-3px);
-      box-shadow: 0 8px 30px rgba(56,239,125,0.5);
-    }
-
-    .btn:disabled{ opacity:.5; cursor:not-allowed; transform:none !important; }
-
-    .loading-overlay{
-      display:none;
-      position: fixed;
-      top:0; left:0;
-      width:100%; height:100%;
-      background: rgba(0,0,0,0.8);
+    /* Loading */
+    .loader {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(255,255,255,0.9);
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
       z-index: 9999;
-      align-items:center;
-      justify-content:center;
+      opacity: 0; pointer-events: none; transition: 0.3s;
     }
-
-    .loading-overlay.active{ display:flex; }
-
-    .loading-content{
-      background:white;
-      padding: 50px;
-      border-radius: 25px;
-      text-align:center;
-      box-shadow: 0 15px 50px rgba(0,0,0,0.5);
-      max-width: 520px;
-      width: calc(100% - 40px);
+    .loader.active { opacity: 1; pointer-events: all; }
+    .spinner {
+      width: 50px; height: 50px;
+      border: 5px solid #eee; border-top-color: var(--primary);
+      border-radius: 50%; animation: spin 1s linear infinite;
     }
+    @keyframes spin { 100% { transform: rotate(360deg); } }
 
-    .spinner{
-      width: 60px;
-      height: 60px;
-      border: 6px solid #f3f3f3;
-      border-top: 6px solid #667eea;
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
-      margin: 0 auto 25px;
-    }
-
-    @keyframes spin{
-      0%{ transform: rotate(0deg); }
-      100%{ transform: rotate(360deg); }
-    }
-
-    .loading-content h3{ color:#667eea; font-size: 1.5em; }
-    .loading-content p{ margin-top: 10px; color:#666; }
-
-    @media (max-width: 768px){
-      .header h1{ font-size: 2em; }
-      .topics-header{ flex-direction: column; align-items: flex-start; }
-      .action-buttons{ flex-direction: column; }
-      .btn{ width: 100%; justify-content: center; }
-      .topic-header{ flex-direction: column; align-items: flex-start; }
-      .expand-btn{ align-self: flex-start; }
+    @media (max-width: 768px) {
+      .action-bar { flex-direction: column; gap: 15px; border-radius: 20px; }
+      .btn { width: 100%; justify-content: center; }
+      .steps { font-size: 0.8rem; }
     }
   </style>
 </head>
-
 <body>
+
+  <div class="loader" id="loader">
+    <div class="spinner"></div>
+    <h3 style="margin-top:20px; color:var(--primary)">PDF Tayyorlanmoqda...</h3>
+  </div>
+
   <div class="container">
-    <div class="header">
-      <h1>📚 Hadis Mavzulari - To'liq Vazifa Tizimi</h1>
-      <p>To'liq ma'lumotlar bilan o'zingizga tegishli mavzularni tanlang va xulosa yozing</p>
+    <div class="main-header">
+      <h1>Hadis Vazifa Tizimi</h1>
+      <p>Mavzularni tanlang, tahrirlang va xulosa yozib PDF yuklab oling</p>
     </div>
 
-    <div class="topics-container" id="topicsContainer">
-      <div class="topics-header">
-        <h2>Mavzular ro'yxati</h2>
-        <button class="select-all-btn" onclick="toggleSelectAll()">
-          <span id="selectAllText">✓ Hammasini tanlash</span>
+    <div class="steps">
+      <div class="step active" id="step1">1. Mavzularni Tanlash</div>
+      <div class="step" id="step2">2. Tahrirlash va Xulosa</div>
+    </div>
+
+    <div id="selectionSection">
+      <div style="display:flex; justify-content:space-between; margin-bottom:20px; align-items:center;">
+        <h3>Mavzular ro'yxati (<span id="countDisplay">0</span>)</h3>
+        <button class="btn btn-secondary" onclick="toggleSelectAll()" style="padding: 8px 20px; font-size:0.9rem;">
+          <i class="fa-solid fa-check-double"></i> Hammasini tanlash
         </button>
       </div>
 
-      <div class="info-box">
-        <h4>📝 Yo'riqnoma:</h4>
-        <p>
-          1. Har bir mavzuni ochib to'liq ma'lumotlarni o'qing<br>
-          2. O'zingizga tegishli mavzularni belgilang (checkbox bosish)<br>
-          3. "Xulosa yozish" tugmasini bosing<br>
-          4. Har bir mavzu bo'yicha o'z xulosangizni yozing<br>
-          5. PDF formatda yuklab oling
-        </p>
-      </div>
+      <div id="topicsContainer">
+        </div>
 
-      <div class="selected-count">
-        <h3>Tanlangan mavzular: <span id="selectedCount">0</span> / <span id="totalCount">10</span></h3>
-      </div>
-
-      <div id="topicsList"></div>
-
-      <div class="action-buttons">
-        <button class="btn btn-primary" onclick="showConclusionSection()" id="conclusionBtn" disabled>
-          ✍️ Xulosa yozish
+      <div class="action-bar">
+        <span>Tanlangan: <strong id="selectedCount">0</strong> ta mavzu</span>
+        <button class="btn btn-primary" id="nextBtn" onclick="goToEditor()" disabled>
+          Davom etish <i class="fa-solid fa-arrow-right"></i>
         </button>
       </div>
     </div>
 
-    <div class="conclusion-section" id="conclusionSection">
-      <h2>📝 Xulosa yozish</h2>
-
-      <div class="selected-topics-list">
-        <h3>Tanlangan mavzular:</h3>
-        <ul id="selectedTopicsList"></ul>
-      </div>
-
-      <div class="info-box">
-        <h4>💡 Xulosa yozish bo'yicha maslahat:</h4>
-        <p>
-          • Har bir mavzu bo'yicha o'z fikr-mulohazalaringizni yozing<br>
-          • Xulosangiz qisqacha, aniq va tushunarli bo'lishi kerak<br>
-          • O'qigan ma'lumotlaringizdan qanday saboq olgansiz?<br>
-          • Bu bilimlarni amalda qanday qo'llash mumkin?
+    <div id="editorSection">
+      <div class="info-box" style="background:#e3f2fd; padding:20px; border-radius:10px; margin-bottom:30px; border-left:5px solid #2196f3;">
+        <h4 style="color:#0d47a1; margin-bottom:10px;"><i class="fa-solid fa-pen-to-square"></i> Tahrirlash rejimi</h4>
+        <p style="color:#1565c0; font-size:0.95rem;">
+          Quyida tanlangan mavzular matni keltirilgan. Siz bu matnlarni bemalol o'zgartirishingiz, qisqartirishingiz yoki keraksiz joylarini o'chirib tashlashingiz mumkin.
         </p>
       </div>
 
-      <textarea
-        class="conclusion-textarea"
-        id="conclusionText"
-        placeholder="Bu yerga o'z xulosangizni yozing...
+      <div id="editorContainer"></div>
 
-Masalan:
+      <div class="editable-box" style="border-color: var(--accent); background: #fff8e1;">
+        <div class="editor-label">
+          <span><i class="fa-solid fa-pencil"></i> UMUMIY XULOSA</span>
+          <span class="edit-hint">O'z fikringizni yozing</span>
+        </div>
+        <div id="finalConclusion" contenteditable="true" style="min-height: 150px; outline:none;">
+          <b>XULOSA:</b><br><br>
+          Ushbu mavzularni o'rganish davomida men shuni tushundimki... (fikringizni shu yerga yozing)
+        </div>
+      </div>
 
-MUTAVOTIR XABAR BO'YICHA XULOSA:
-Men bu mavzuni o'rganish orqali mutavotir xabarning ahamiyati va shartlarini chuqur tushunib yetdim...
-
-MASHHUR XABAR BO'YICHA XULOSA:
-Mashhur xabarning hanafiy va muhaddislar istilohidagi farqini o'rganish orqali..."
-      ></textarea>
-
-      <div class="action-buttons">
-        <button class="btn btn-secondary" onclick="downloadPDF()">
-          📥 PDF yuklab olish
+      <div class="action-bar">
+        <button class="btn btn-secondary" onclick="backToSelection()">
+          <i class="fa-solid fa-arrow-left"></i> Ortga qaytish
         </button>
-        <button class="btn btn-primary" onclick="backToTopics()">
-          🔙 Mavzularga qaytish
+        <button class="btn btn-primary" onclick="generatePDF()">
+          <i class="fa-solid fa-file-pdf"></i> PDF Yuklash
         </button>
       </div>
     </div>
   </div>
 
-  <div class="loading-overlay" id="loadingOverlay">
-    <div class="loading-content">
-      <div class="spinner"></div>
-      <h3>PDF tayyorlanmoqda...</h3>
-      <p>Iltimos, kuting...</p>
+  <div id="pdfOutput" style="display: none;">
+    <div style="padding: 40px; font-family: 'Times New Roman', serif; color: #000;">
+      <h1 style="text-align: center; color: #4e54c8; border-bottom: 2px solid #4e54c8; padding-bottom: 15px; margin-bottom: 30px;">
+        Hadis Ilmi: Mustaqil Ish
+      </h1>
+      <div id="pdfContentBody"></div>
     </div>
   </div>
 
   <script>
+    // MA'LUMOTLAR BAZASI [Source: 82-118]
     const topicsData = [
       {
         id: 1,
         title: "Xabarlarning mutavotir, mashhur va ahodga bo'linishi",
-        desc: "Hanafiylar va muhaddislarning taqsimoti, istilohlar farqi",
+        desc: "Hanafiylar va muhaddislarning taqsimoti",
         content: `
           <h3>1 — Hanafiylarning taqsimoti</h3>
           <p>Bizning hanafiy imomlarimiz Rasululloh ﷺ ga bog'lanish (ittisol) jihatidan xabarlarni <strong>uch qismga</strong> bo'lishgan:</p>
-
-          <div class="highlight-box">
-            <strong>BIRINCHISI: MUTAVOTIR</strong><br>
-            Surat va ma'no jihatidan mutlaqo shubhasiz, to'liq bog'lanishga ega bo'lgan xabar. Undagi bog'lanish to'liq bo'lib, unda hech qanday shubha yo'q.
-          </div>
-
-          <div class="highlight-box">
-            <strong>IKKINCHISI: MASHHUR</strong><br>
-            Surat jihatidan shubha bor (sahobalar davrida ahod bo'lgan), ammo ma'no jihatidan shubha yo'q (ikkinchi va uchinchi asrlarda mutavotir bo'lib, ummat tomonidan qabul qilingan).
-          </div>
-
-          <div class="highlight-box">
-            <strong>UCHINCHISI: XABARUL-VOHID</strong><br>
-            Surat va ma'no jihatidan shubha bor — birinchi asrda ahod bo'lgan va mutavotir bo'lmagan.
-          </div>
-
+          <div class="highlight"><strong>1. MUTAVOTIR:</strong> Surat va ma'no jihatidan mutlaqo shubhasiz.</div>
+          <div class="highlight"><strong>2. MASHHUR:</strong> Surat jihatidan shubha bor, ammo ma'no jihatidan shubha yo'q (uchinchi asrda mashhur bo'lgan).</div>
+          <div class="highlight"><strong>3. XABARUL-VOHID:</strong> Surat va ma'no jihatidan shubha bor.</div>
           <h3>2 — Muhaddislarning taqsimoti</h3>
-          <p>Muhaddislarning aksariyatiga ko'ra xabarlar <strong>ikki qismga</strong> bo'linadi: Mutavotir xabar va Xabarul-vohid. So'ng xabarul-vohid o'z navbatida uch qismga bo'linadi: mashhur, aziz, g'arib.</p>
-
-          <h3>3 — Ikki istilohni solishtirish</h3>
-          <p>Muhaddislarning maqsadi — isnod, shuning uchun ular roviylar soniga qarab bo'lishgan. Faqihlarning maqsadi esa — matn va unga amal qilish, shuning uchun ular o'z mavzulariga foydali bo'lgan jihatdan bo'lishgan.</p>
-        `
+          <p>Muhaddislarning aksariyatiga ko'ra xabarlar <strong>ikki qismga</strong> bo'linadi: Mutavotir va Xabarul-vohid (Mashhur, Aziz, G'arib).</p>`
       },
       {
         id: 2,
         title: "Mutavotir xabar",
-        desc: "Ta'rifi, shartlari, hukmi, aniq son masalasi va turlari",
+        desc: "Ta'rifi, shartlari va hukmi",
         content: `
           <h3>1 — Ta'rifi</h3>
-          <div class="highlight-box">
-            <strong>LUG'ATDA:</strong> "Tavotur" — narsalarning ketma-ket kelishi bo'lib, ularning orasida bo'shliqlar va vaqt oralig'i bo'lishidir.<br><br>
-            <strong>ISTILOHDA:</strong> "O'z-o'zidan ilmni hosil qiladigan jamoa xabari" (Imom Ibn as-Sa'atiy)
-          </div>
-
-          <h3>2 — Mutavotir xabarning shartlari (3 ta)</h3>
-          <p><strong>1-SHART:</strong> Xabar beruvchilarning soni shunchalik ko'p bo'lishi kerakki, odatda aql ularning ataylab yolg'on ustida kelishib olishlarini imkonsiz deb bilsin.</p>
-          <p><strong>2-SHART:</strong> Bu ko'plik isnodning barcha tabaqalarida mavjud bo'lishi kerak. Hanafiylar nazarida mutavotirlik uch asr — sahobalar, tobe'inlar va tobe'ut-tobe'inlar bilan bog'liq.</p>
-          <p><strong>3-SHART:</strong> Xabar his-tuyg'uga (sezgiga) asoslangan bo'lishi kerak, aqlga emas. Aqliy masalalarda mutavotir bo'lmaydi.</p>
-
-          <h3>3 — Hukmi</h3>
-          <div class="highlight-box">
-            <strong>MUHIM:</strong> Ko'pchilik ulamolar orasida mutavotir xabar <strong>zaruriy ilm beradi</strong>. Uni inkor qilgan kishi <strong>kofir bo'ladi</strong>.
-          </div>
-
-          <h3>4 — Mutavotirda aniq son shartmi?</h3>
-          <p>Hanafiylar nazarida mutavotir uchun aniq son shart emas. Balki mezon — ilm va ishonch hosil bo'lishi. Qachon ilm hosil bo'lsa, o'sha xabar mutavotir hisoblanadi.</p>
-
-          <h3>5 — Mutavotirning turlari (4 ta)</h3>
+          <p><strong>Istilohda:</strong> "O'z-o'zidan ilmni hosil qiladigan jamoa xabari".</p>
+          <h3>2 — Shartlari</h3>
           <ul>
-            <li><strong>Isnod mutavotiri</strong> — Masalan: "Kim menga atab yolg'on to'qisa, jahannamdan o'z o'rnini tayyorlasin"</li>
-            <li><strong>Tabaqa mutavotiri</strong> — Masalan: Qur'oni Karimning tavoturi</li>
-            <li><strong>Amal va meros mutavotiri</strong> — Masalan: Besh vaqt namoz, Ramazon ro'zasi</li>
-            <li><strong>Umumiy qadr mutavotiri</strong> — Masalan: Mo'jizaning tavoturi</li>
+            <li>Xabar beruvchilarning soni ko'p bo'lishi (yolg'onga kelishish imkonsiz bo'lishi).</li>
+            <li>Bu ko'plik isnodning barcha tabaqalarida mavjud bo'lishi.</li>
+            <li>Xabar hissiyotga asoslangan bo'lishi kerak.</li>
           </ul>
-        `
+          <h3>3 — Hukmi</h3>
+          <p>Mutavotir xabar <strong>zaruriy ilm beradi</strong>. Uni inkor qilgan kishi kofir bo'ladi.</p>`
       },
       {
         id: 3,
         title: "Mashhur xabar",
-        desc: "Ta'rifi, uch asr mezoni, hukmi va istilohdagi farqlar",
+        desc: "Uch asr mezoni va hukmi",
         content: `
           <h3>1 — Ta'rifi</h3>
-          <div class="highlight-box">
-            <strong>ISTILOHDA:</strong> Mashhur xabar — bu birinchi asrda ahod bo'lgan, so'ngra ikkinchi va uchinchi asrlarda — ya'ni tobe'inlar va tobe'ut-tobe'inlar davrida mutavotir bo'lgan xabardir.
-          </div>
-
-          <p><strong>MUHIM SHART:</strong> Hanafiylar bir ovozdan shuni aytishganki: uch asrdan keyin yuzaga kelgan mashhurlik yoki mutavotirlik e'tiborga olinmaydi!</p>
-
-          <h3>2 — Uch asrni belgilash</h3>
-          <ul>
-            <li><strong>Birinchi asr:</strong> Sahobalar tabaqasi — 110-hijriy yilgacha</li>
-            <li><strong>Ikkinchi asr:</strong> Tobe'inlar tabaqasi — 180-hijriy yilgacha</li>
-            <li><strong>Uchinchi asr:</strong> Tobe'ut-tobe'inlar tabaqasi — 220-hijriy yilgacha</li>
-          </ul>
-
-          <h3>3 — Hukmi</h3>
-          <div class="highlight-box">
-            <strong>HANAFIYLAR NAZARIDA:</strong><br>
-            • Mashhur xabar mutavotir ham emas, mutavotir hukmida ham emas<br>
-            • U mutavotir bilan ahod o'rtasidagi darajadir<br>
-            • U yaqin ehtimolli gumonni beradi — "xotirjamlik (ṭuma'nina)"<br>
-            • Mashhur xabarni inkor qilgan kishi kofir emas, balki <strong>adashgan (zoll)</strong> hisoblanadi
-          </div>
-
-          <h3>4 — Muhaddislar istilohida</h3>
-          <p>Muhaddislar nazarida: mashhur xabar — bu ikki kishidan ortiq yo'l bilan rivoyat qilingan, ammo mutavotir darajasiga yetmagan xabardir.</p>
-        `
+          <p>Birinchi asrda ahod bo'lib, keyin (Tobe'in va Tobe'ut-tobe'in davrida) mutavotir darajasiga yetgan xabar.</p>
+          <h3>2 — Hukmi (Hanafiylar nazdida)</h3>
+          <p>Mashhur xabar <strong>xotirjamlik (tuma'nina)</strong> ilmini beradi. Uni inkor qilgan kishi kofir emas, balki adashgan (zoll) hisoblanadi.</p>`
       },
       {
         id: 4,
         title: "Ahod (Xabarul-vohid) xabarlar",
-        desc: "Ta'rifi, hukmi, hudud masalasida qo'llanilishi va Imom Abu Hanifaning fikri",
+        desc: "Ta'rifi va amal qilish hukmi",
         content: `
           <h3>1 — Ta'rifi</h3>
-          <div class="highlight-box">
-            <strong>ISTILOHDA:</strong> Xabarul-vohid — mashhurlik va mutavotir darajasiga yetmagan har qanday xabardir. Uni bitta, ikki yoki uch va undan ko'p kishi rivoyat qilgan bo'lsa ham, agar mashhur yoki mutavotir darajasiga yetmagan bo'lsa, u istilohda xabarul-vohid hisoblanadi.
-          </div>
-
+          <p>Mashhurlik va mutavotir darajasiga yetmagan har qanday xabar.</p>
           <h3>2 — Hukmi</h3>
-          <p><strong>Hanafiylar ittifoqi:</strong> Xabarul-vohid ilm bermaydi, ammo amal qilishni vojib qiladigan kuchli gumonni beradi.</p>
-          <p>Imom Saraxsiy: "Bizning mazhabimizda xabarul-vohid amalni vojib qiladi, lekin qat'iy ilmni vojib qilmaydi."</p>
-
-          <h3>3 — Hudud (jazolar) masalasida xabarul-vohid</h3>
-          <div class="highlight-box">
-            <strong>BIRINCHI QARASH (Imom Abu Yusuf, Jassos, Ibn Humom):</strong><br>
-            Hudud jazolari xabarul-vohid bilan isbotlanadi. Chunki hudud — amaliy shariat hukmi.
-          </div>
-
-          <div class="highlight-box">
-            <strong>IKKINCHI QARASH (Imom al-Karxiy, Bazdaviy):</strong><br>
-            Hudud jazolari xabarul-vohid bilan isbotlanmaydi. Chunki xabarul-vohidda xato va gumon ehtimoli mavjud.
-          </div>
-
-          <h3>4 — Imom Abu Hanifaning fikri</h3>
-          <p>Imom Abu Hanifadan bu masalada aniq matn rivoyat qilinmagan. Keyingi ulamolar ixtilof qilganlar. Rohij fikr — birinchi qarash.</p>
-        `
+          <p>Xabarul-vohid qat'iy ilm bermaydi, ammo <strong>amal qilishni vojib qiladigan</strong> g'olib gumonni beradi.</p>`
       },
       {
         id: 5,
         title: "Aql",
-        desc: "Ta'rifi, roviyda shart qilingan aql, balog'at va tahammul masalasi",
+        desc: "Roviyda shart qilingan aql va balog'at",
         content: `
-          <h3>1 — Ta'rifi</h3>
-          <p>Lug'atda: “Aql” — to'sish, man qilishdir. Aql shunday atalgan, chunki u egasini noloyiqliklardan to'sadi.</p>
-          <p>Istilohda: Aql — bu nafsdagi quvvat bo'lib, u orqali inson ilm va idroklarni qabul qilishga tayyor bo'ladi.</p>
-
-          <h3>2 — Roviyda shart qilingan aql</h3>
-          <p>Hadis rivoyati bobida talab qilinadigan aql — to'liq aqldir. To'liq aql esa balog'at bilan hosil bo'ladi.</p>
-
-          <h3>3 — Balog'at — rivoyatni ado etish sharti</h3>
-          <p>Balog'at — hadisni ado etish (yetkazish) shartidir, tahammul (eshitib olish) sharti emas.</p>
-
-          <h3>4 — Tahammul ma'lum yosh bilan cheklanadimi?</h3>
-          <p>Jumhur ulamolar nazarida tahammul ma'lum yosh bilan belgilanmaydi. Mezon — tushunish va farqlash qobiliyatidir.</p>
-        `
+          <p><strong>Aql:</strong> Nafsdagi quvvat bo'lib, ilm va idroklarni qabul qilishga tayyorlaydi.</p>
+          <p>Rivoyatni ado etishda <strong>to'liq aql (balog'at)</strong> shart qilinadi. Tahammul (eshitish) vaqtida esa tushunish qobiliyati (tamiyz) yetarlidir.</p>`
       },
       {
         id: 6,
         title: "Islom",
-        desc: "Islom shart qilinishining sababi va rivoyatni ado etish vaqtida shart qilinishi",
+        desc: "Musulmonlik sharti",
         content: `
-          <h3>1 — Islom shart qilinishining sababi</h3>
-          <p>Hadis rivoyatini qabul qilishda ikkinchi shart — roviy musulmon bo'lishidir. Shuning uchun kofirning rivoyati hadis bobida qabul qilinmaydi.</p>
-
-          <h3>2 — Islom rivoyatni ado etish vaqtida shart qilinadi</h3>
-          <p>Roviyning musulmon bo'lishi xabarni ado etish (rivoyat qilish) vaqtida shart qilinadi, tahammul (eshitib olish) vaqtida shart qilinmaydi.</p>
-        `
+          <p>Roviyning musulmon bo'lishi xabarni <strong>ado etish (rivoyat qilish) vaqtida</strong> shart qilinadi. Kofir paytida eshitib, musulmon bo'lgach rivoyat qilsa qabul qilinadi.</p>`
       },
       {
         id: 7,
         title: "Zabt",
-        desc: "Ta'rifi, bo'linishi, g'ofil roviy rivoyati va zabtli roviyni tanish",
+        desc: "Eslab qolish qobiliyati",
         content: `
-          <h3>1 — Ta'rifi</h3>
-          <p>Istilohda: Zabt — hadisni to'g'ri tarzda eshitish, so'ng uning ma'nosini tushunish, keyin uni yodda saqlash va ado etish paytigacha shu holatda barqaror tutishdir.</p>
-
-          <h3>2 — Bo'linishi</h3>
-          <p>Hanafiy mashoyixlari zabtni ikki turga bo'lishgan: Zohiriy zabt va Botiniy zabt.</p>
-
-          <h3>3 — G'ofil roviy rivoyatining hukmi</h3>
-          <p>Agar roviyda hushyorlik ustun bo'lsa, g'aflat kam bo'lsa — u g'aflatsiz roviy hukmidadir.</p>
-
-          <h3>4 — Zabtli roviy qanday taniladi</h3>
-          <p>Roviyning zabtli ekanligi ikki narsa bilan aniqlanadi: Shuhrat va Zabtli roviylarga muvofiqligi.</p>
-        `
+          <p><strong>Zabt:</strong> Hadisni to'g'ri eshitish, tushunish, yodlash va o'zgartirmasdan yetkazishdir.</p>
+          <p>Agar roviyda g'aflat ko'p bo'lsa, uning rivoyati rad etiladi.</p>`
       },
       {
         id: 8,
         title: "Adolat",
-        desc: "Ta'rifi, hadis rivoyati bobida adolat, bo'linishi va boshqalar",
+        desc: "Taqvo va muruwwat",
         content: `
-          <h3>1 — Ta'rifi</h3>
-          <p>Istilohda: Adolat — bu insonni taqvo va muruwwatga doimiy rioya qilishga undaydigan mustahkam sifatdir.</p>
-
-          <h3>2 — Hadis rivoyati bobida adolatning ma'nosi</h3>
-          <p>Adolatdan maqsad — katta gunohlarni tark etish, kichik gunohda turib olmaslik va muruwwatni buzadigan ishlardan saqlanishdir.</p>
-
-          <h3>3 — Adolatning bo'linishi</h3>
-          <p>Adolatni ikki turga bo'lishgan: Zohiriy adolat va Botiniy adolat.</p>
-
-          <h3>4 — Nabi ﷺ ga yolg'on gapirgan kishining rivoyati</h3>
-          <p>Agar tavbasi shartlari bilan sobit bo'lsa, tavbadan keyingi rivoyatlari qabul qilinadi (ikkinchi qarash).</p>
-
-          <h3>5 — Adolatli roviydan rivoyat qilish — uni ta'dil qiladimi?</h3>
-          <p>Adolatli roviydan rivoyat qilish ta'dil hisoblanadi, ammo faqat uch asrda.</p>
-
-          <h3>6 — Mubham holdagi ta'dil</h3>
-          <p>Bu ta'dil yetarli (hanafiylar ko'pchiligi).</p>
-        `
+          <p><strong>Adolat:</strong> Katta gunohlardan saqlanish, kichik gunohda bardavom bo'lmaslik va insoniylikni (muruwwat) saqlashdir.</p>`
       },
       {
         id: 9,
         title: "Bid'atchining rivoyati",
-        desc: "Bid'at ta'rifi va bid'atchining rivoyati hukmi",
+        desc: "Qabul qilinishi yoki rad etilishi",
         content: `
-          <h3>1 — Bid'atning ta'rifi</h3>
-          <p>Istilohda: Bid'at — sahobalar va tobe'inlar yo'lida bo'lmagan, shariat dalili talab qilmagan yangilikdir.</p>
-
-          <h3>2 — Bid'atchining rivoyati hukmi</h3>
-          <p>Birinchisi mazhab: Bid'atchining rivoyati mutlaqo qabul qilinmaydi.</p>
-        `
+          <p>Bid'atchi agar o'z bid'atiga da'vat qiluvchi bo'lsa yoki yolg'onni halol sanasa, uning rivoyati qabul qilinmaydi.</p>`
       },
       {
         id: 10,
-        title: "Mastur va majhul roviy rivoyati",
-        desc: "Ta'rifi, istilohdagi farq va hukmi",
+        title: "Mastur va Majhul",
+        desc: "Noma'lum roviylar",
         content: `
-          <h3>1 — Hanafiylar nazarida “majhul”ning ta'rifi</h3>
-          <p>Majhul — hadis rivoyati bilan mashhur bo'lmagan, odamlar undan ilm olib yurgani bilan tanilmagan roviydir.</p>
-
-          <h3>2 — Muhaddislar istilohi</h3>
-          <p>Muhaddislar nazarida majhul al-'ayn va majhul al-hol (mastur) farqlanadi.</p>
-
-          <h3>3 — Uch asr roviylaridan bo'lgan mastur roviy rivoyatining hukmi</h3>
-          <p>Hanafiylar majhul roviyni besh qismga bo'lishgan, va ularning hukmi tafsilot bilan bayon qilingan.</p>
-        `
+          <p><strong>Majhul:</strong> Shaxsi yoki holati noma'lum roviy.</p>
+          <p>Hanafiylar ilk uch asrdagi "Mastur" (holati yopiq) roviylarning rivoyatini ma'lum shartlar bilan qabul qilishgan.</p>`
       }
     ];
 
-    let selectedTopics = [];
+    let selectedIds = [];
 
-    function renderTopics(){
-      const topicsList = document.getElementById('topicsList');
-      const totalCount = document.getElementById('totalCount');
-      totalCount.textContent = topicsData.length;
-
-      topicsList.innerHTML = '';
-
-      topicsData.forEach(topic => {
-        const card = document.createElement('div');
-        card.className = 'topic-card' + (selectedTopics.includes(topic.id) ? ' selected' : '');
-
-        card.innerHTML = `
-          <div class="topic-header" onclick="toggleSelect(${topic.id})">
-            <div class="checkbox">${selectedTopics.includes(topic.id) ? '✓' : ''}</div>
-            <div class="topic-title-section">
-              <div class="topic-number">Mavzu ${topic.id}</div>
-              <div class="topic-title">${topic.title}</div>
-              <div class="topic-desc">${topic.desc}</div>
+    // 1. DASTLABKI YUKLASH
+    function init() {
+      const container = document.getElementById('topicsContainer');
+      container.innerHTML = topicsData.map(topic => `
+        <div class="card" id="card-${topic.id}">
+          <div class="card-header" onclick="toggleSelection(${topic.id})">
+            <div class="checkbox-custom" id="check-${topic.id}">
+              <i class="fa-solid fa-check" style="opacity:0"></i>
             </div>
-            <button class="expand-btn" onclick="toggleExpand(event, ${topic.id})">+</button>
+            <div class="card-title">
+              <div>${topic.id}. ${topic.title}</div>
+              <div class="card-meta">${topic.desc}</div>
+            </div>
+            <div class="toggle-icon" onclick="toggleContent(event, ${topic.id})">
+              <i class="fa-solid fa-chevron-down"></i>
+            </div>
           </div>
+          <div class="card-content" id="content-${topic.id}">
+            <div class="content-padding">
+              ${topic.content}
+            </div>
+          </div>
+        </div>
+      `).join('');
+      updateUI();
+    }
 
-          <div class="topic-content" id="content-${topic.id}">
-            <div class="topic-details">${topic.content}</div>
+    // 2. TANLASH LOGIKASI
+    function toggleSelection(id) {
+      const index = selectedIds.indexOf(id);
+      if (index > -1) {
+        selectedIds.splice(index, 1);
+        document.getElementById(`card-${id}`).classList.remove('selected');
+        document.querySelector(`#check-${id} i`).style.opacity = '0';
+      } else {
+        selectedIds.push(id);
+        selectedIds.sort((a,b) => a - b);
+        document.getElementById(`card-${id}`).classList.add('selected');
+        document.querySelector(`#check-${id} i`).style.opacity = '1';
+      }
+      updateUI();
+    }
+
+    function toggleContent(e, id) {
+      e.stopPropagation();
+      const content = document.getElementById(`content-${id}`);
+      const icon = e.currentTarget.querySelector('i');
+      content.classList.toggle('open');
+      icon.classList.toggle('fa-chevron-up');
+      icon.classList.toggle('fa-chevron-down');
+    }
+
+    function toggleSelectAll() {
+      if (selectedIds.length === topicsData.length) {
+        selectedIds = [];
+        document.querySelectorAll('.card').forEach(c => c.classList.remove('selected'));
+        document.querySelectorAll('.checkbox-custom i').forEach(i => i.style.opacity = '0');
+      } else {
+        selectedIds = topicsData.map(t => t.id);
+        document.querySelectorAll('.card').forEach(c => c.classList.add('selected'));
+        document.querySelectorAll('.checkbox-custom i').forEach(i => i.style.opacity = '1');
+      }
+      updateUI();
+    }
+
+    function updateUI() {
+      document.getElementById('countDisplay').innerText = topicsData.length;
+      document.getElementById('selectedCount').innerText = selectedIds.length;
+      document.getElementById('nextBtn').disabled = selectedIds.length === 0;
+    }
+
+    // 3. TAHRIRLASH BOSQICHIGA O'TISH
+    function goToEditor() {
+      // Interfeysni o'zgartirish
+      document.getElementById('selectionSection').style.display = 'none';
+      document.getElementById('editorSection').style.display = 'block';
+      document.getElementById('step1').classList.remove('active');
+      document.getElementById('step2').classList.add('active');
+      window.scrollTo(0, 0);
+
+      // Tanlangan mavzularni tahrirlash maydoniga joylash
+      const container = document.getElementById('editorContainer');
+      container.innerHTML = '';
+
+      selectedIds.forEach(id => {
+        const topic = topicsData.find(t => t.id === id);
+        // HTML yaratish: Sarlavha (o'zgarmas) + Kontent (ContentEditable)
+        const wrapper = document.createElement('div');
+        wrapper.className = 'editable-box';
+        wrapper.innerHTML = `
+          <div class="editor-label">
+            <span>${topic.id}-Mavzu: ${topic.title}</span>
+            <span class="edit-hint"><i class="fa-solid fa-eraser"></i> Tahrirlash mumkin</span>
+          </div>
+          <div class="topic-editable-content" id="edit-content-${id}" contenteditable="true" style="outline:none;">
+            ${topic.content}
           </div>
         `;
-
-        topicsList.appendChild(card);
+        container.appendChild(wrapper);
       });
-
-      updateSelectedCount();
-      updateConclusionButton();
-      updateSelectAllText();
-      renderSelectedList();
     }
 
-    function toggleSelect(id){
-      const index = selectedTopics.indexOf(id);
-      if(index > -1) selectedTopics.splice(index, 1);
-      else selectedTopics.push(id);
-
-      renderTopics();
+    function backToSelection() {
+      document.getElementById('selectionSection').style.display = 'block';
+      document.getElementById('editorSection').style.display = 'none';
+      document.getElementById('step1').classList.add('active');
+      document.getElementById('step2').classList.remove('active');
     }
 
-    function toggleSelectAll(){
-      if(selectedTopics.length === topicsData.length){
-        selectedTopics = [];
-      } else {
-        selectedTopics = topicsData.map(t => t.id);
-      }
-      renderTopics();
-    }
+    // 4. PDF YARATISH VA YUKLASH (HTML2PDF)
+    function generatePDF() {
+      const loader = document.getElementById('loader');
+      loader.classList.add('active');
 
-    function updateSelectAllText(){
-      const el = document.getElementById('selectAllText');
-      el.textContent = (selectedTopics.length === topicsData.length)
-        ? '✗ Hammasini bekor qilish'
-        : '✓ Hammasini tanlash';
-    }
+      // 1. PDF uchun maxsus HTML strukturani yig'amiz
+      const pdfBody = document.getElementById('pdfContentBody');
+      pdfBody.innerHTML = ''; // Tozalash
 
-    function toggleExpand(event, id){
-      event.stopPropagation();
-
-      const content = document.getElementById(`content-${id}`);
-      content.classList.toggle('expanded');
-
-      const btn = event.target;
-      btn.textContent = content.classList.contains('expanded') ? '-' : '+';
-    }
-
-    function updateSelectedCount(){
-      document.getElementById('selectedCount').textContent = selectedTopics.length;
-    }
-
-    function updateConclusionButton(){
-      document.getElementById('conclusionBtn').disabled = selectedTopics.length === 0;
-    }
-
-    function showConclusionSection(){
-      document.getElementById('topicsContainer').style.display = 'none';
-      document.getElementById('conclusionSection').classList.add('active');
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-
-    function backToTopics(){
-      document.getElementById('topicsContainer').style.display = 'block';
-      document.getElementById('conclusionSection').classList.remove('active');
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-
-    function renderSelectedList(){
-      const list = document.getElementById('selectedTopicsList');
-      if(!list) return;
-
-      list.innerHTML = '';
-      selectedTopics.forEach(id => {
+      // a) Tahrirlangan mavzularni olish
+      selectedIds.forEach(id => {
         const topic = topicsData.find(t => t.id === id);
-        const li = document.createElement('li');
-        li.textContent = topic ? topic.title : `Mavzu ${id}`;
-        list.appendChild(li);
+        const editedContent = document.getElementById(`edit-content-${id}`).innerHTML; // Foydalanuvchi o'zgartirgan matn
+        
+        const section = document.createElement('div');
+        section.style.marginBottom = '25px';
+        section.innerHTML = `
+          <h3 style="color:#4e54c8; border-bottom:1px solid #ddd; padding-bottom:5px; margin-bottom:10px;">
+            ${topic.id}. ${topic.title}
+          </h3>
+          <div style="font-size:14px; line-height:1.6; text-align:justify;">
+            ${editedContent}
+          </div>
+        `;
+        pdfBody.appendChild(section);
+      });
+
+      // b) Yakuniy xulosani olish
+      const conclusionText = document.getElementById('finalConclusion').innerHTML;
+      const conclusionSection = document.createElement('div');
+      conclusionSection.style.marginTop = '40px';
+      conclusionSection.style.padding = '20px';
+      conclusionSection.style.border = '2px solid #4e54c8';
+      conclusionSection.style.borderRadius = '10px';
+      conclusionSection.style.backgroundColor = '#f8f9ff';
+      conclusionSection.innerHTML = conclusionText;
+      pdfBody.appendChild(conclusionSection);
+
+      // 2. HTML2PDF sozlamalari
+      const element = document.getElementById('pdfOutput'); // Biz yig'gan yashirin div
+      element.style.display = 'block'; // PDF generatsiya vaqti ko'rinishi kerak (vizual rendering uchun)
+
+      const opt = {
+        margin:       10, // mm
+        filename:     'Hadis_Mustaqil_Ish.pdf',
+        image:        { type: 'jpeg', quality: 0.98 },
+        html2canvas:  { scale: 2, useCORS: true }, // Yuqori sifat
+        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+      };
+
+      // 3. Generatsiya
+      html2pdf().set(opt).from(element).save().then(() => {
+        element.style.display = 'none'; // Qayta yashirish
+        loader.classList.remove('active');
       });
     }
 
-    function safeText(str){
-      return (str || '').replace(/\s+/g, ' ').trim();
-    }
-
-    async function downloadPDF(){
-      const overlay = document.getElementById('loadingOverlay');
-      overlay.classList.add('active');
-
-      try{
-        const { jsPDF } = window.jspdf;
-        const doc = new jsPDF({ unit: 'mm', format: 'a4' });
-
-        const pageWidth = doc.internal.pageSize.getWidth();
-        const marginX = 12;
-        const marginTop = 14;
-        const maxWidth = pageWidth - marginX * 2;
-
-        let y = marginTop;
-
-        // Title
-        doc.setFontSize(16);
-        doc.text(safeText(document.querySelector('.header h1')?.textContent), marginX, y);
-        y += 8;
-
-        doc.setFontSize(11);
-        doc.text(safeText(document.querySelector('.header p')?.textContent), marginX, y);
-        y += 10;
-
-        // Selected topics
-        doc.setFontSize(13);
-        doc.text("Tanlangan mavzular:", marginX, y);
-        y += 7;
-
-        doc.setFontSize(11);
-        selectedTopics.forEach((id, idx) => {
-          const topic = topicsData.find(t => t.id === id);
-          const line = `${idx + 1}. ${topic ? topic.title : `Mavzu ${id}`}`;
-          const wrapped = doc.splitTextToSize(line, maxWidth);
-
-          wrapped.forEach(wLine => {
-            if(y > 285){ doc.addPage(); y = marginTop; }
-            doc.text(wLine, marginX, y);
-            y += 6;
-          });
-        });
-
-        y += 6;
-        if(y > 285){ doc.addPage(); y = marginTop; }
-
-        // Conclusion
-        doc.setFontSize(13);
-        doc.text("Xulosa:", marginX, y);
-        y += 7;
-
-        doc.setFontSize(11);
-        const conclusion = document.getElementById('conclusionText').value || '';
-        const paragraphs = conclusion.split('\n');
-
-        paragraphs.forEach(p => {
-          const text = p.trim() === '' ? ' ' : p;
-          const lines = doc.splitTextToSize(text, maxWidth);
-
-          lines.forEach(line => {
-            if(y > 285){ doc.addPage(); y = marginTop; }
-            doc.text(line, marginX, y);
-            y += 6;
-          });
-        });
-
-        doc.save("Hadis_xulosa.pdf");
-      } catch (e){
-        alert("PDF yaratishda xatolik: " + (e?.message || e));
-      } finally {
-        overlay.classList.remove('active');
-      }
-    }
-
-    // init
-    renderTopics();
+    // Ishga tushirish
+    init();
   </script>
 </body>
 </html>
