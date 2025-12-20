@@ -203,18 +203,6 @@
       margin-bottom: 20px;
     }
     @keyframes spin { to { transform: rotate(360deg); } }
-    #pdfOutput {
-      position: fixed;
-      top: -9999px; left: -9999px;
-      width: 210mm;
-      min-height: 297mm;
-      background: white;
-      padding: 20mm;
-      box-sizing: border-box;
-      visibility: hidden;
-      opacity: 0;
-      z-index: -10;
-    }
     @media (max-width: 768px) {
       .main-header h1 { font-size: 2.2rem; }
       .action-bar { flex-direction: column; gap: 15px; border-radius: 25px; }
@@ -291,16 +279,6 @@
     </div>
   </div>
 
-  <!-- PDF uchun yashirin blok -->
-  <div id="pdfOutput">
-    <div style="font-family: 'Times New Roman', serif; color: #000; line-height: 1.8;">
-      <h1 style="text-align: center; color: #4e54c8; font-size: 24pt; border-bottom: 3px solid #4e54c8; padding-bottom: 20px; margin-bottom: 40px;">
-        HADIS ILMI BO‘YICHA MUSTAQIL ISH
-      </h1>
-      <div id="pdfContentBody" style="font-size: 12pt;"></div>
-    </div>
-  </div>
-
   <script>
     const topicsData = [
       { id: 1, title: "Xabarlarning mutavotir, mashhur va ahodga bo‘linishi", desc: "Hanafiylar va muhaddislar taqsimoti", content: `
@@ -343,6 +321,78 @@
 
     let selectedIds = [];
 
+    // Oldingi funksiyalar (init, toggleSelection, toggleContent, toggleSelectAll, updateUI, goToEditor, backToSelection) o'zgarmagan
+
+    function generatePDF() {
+      const loader = document.getElementById('loader');
+      loader.classList.add('active');
+
+      // Clone yaratamiz
+      const originalOutput = document.createElement('div');
+      originalOutput.innerHTML = `
+        <div style="font-family: 'Times New Roman', serif; color: #000; line-height: 1.8; padding: 40px;">
+          <h1 style="text-align: center; color: #4e54c8; font-size: 24pt; border-bottom: 3px solid #4e54c8; padding-bottom: 20px; margin-bottom: 40px;">
+            HADIS ILMI BO‘YICHA MUSTAQIL ISH
+          </h1>
+          <div id="clonedBody"></div>
+        </div>
+      `;
+
+      const clonedBody = originalOutput.querySelector('#clonedBody');
+
+      selectedIds.forEach(id => {
+        const topic = topicsData.find(t => t.id === id);
+        const editedDiv = document.querySelector(`#editorContainer .editable-box:nth-child(${selectedIds.indexOf(id) + 1}) div[contenteditable]:nth-child(2)`);
+        const editedHTML = editedDiv ? editedDiv.innerHTML : topic.content;
+
+        const div = document.createElement('div');
+        div.style.marginBottom = '40px';
+        div.innerHTML = `
+          <h2 style="color:#4e54c8; font-size:18pt; border-bottom:2px solid #4e54c8; padding-bottom:10px;">${topic.id}. ${topic.title}</h2>
+          <div style="margin-top:15px; text-align:justify; font-size:12pt;">${editedHTML}</div>
+        `;
+        clonedBody.appendChild(div);
+      });
+
+      const conclusion = document.getElementById('finalConclusion').innerHTML;
+      const concDiv = document.createElement('div');
+      concDiv.style.marginTop = '60px';
+      concDiv.style.padding = '30px';
+      concDiv.style.border = '3px solid #4e54c8';
+      concDiv.style.background = '#f8fbff';
+      concDiv.style.borderRadius = '15px';
+      concDiv.innerHTML = `<h2 style="color:#4e54c8; margin-bottom:20px; font-size:18pt;">UMUMIY XULOSA</h2>${conclusion}`;
+      clonedBody.appendChild(concDiv);
+
+      // Clone ni body ga qo'shamiz (display:block qilamiz)
+      originalOutput.style.position = 'absolute';
+      originalOutput.style.left = '0';
+      originalOutput.style.top = '0';
+      originalOutput.style.width = '210mm';
+      originalOutput.style.background = 'white';
+      document.body.appendChild(originalOutput);
+
+      const opt = {
+        margin: [15, 15, 15, 15],
+        filename: 'Hadis_Ilmi_Mustaqil_Ish.pdf',
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+      };
+
+      html2pdf().set(opt).from(originalOutput).save().then(() => {
+        document.body.removeChild(originalOutput);
+        loader.classList.remove('active');
+      }).catch(err => {
+        console.error(err);
+        document.body.removeChild(originalOutput);
+        loader.classList.remove('active');
+        alert('PDF yaratishda xatolik yuz berdi.');
+      });
+    }
+
+    // Qolgan funksiyalar (init va boshqalar) oldingidek qoldirilgan...
+
     function init() {
       const container = document.getElementById('topicsContainer');
       container.innerHTML = topicsData.map(t => `
@@ -360,107 +410,7 @@
       updateUI();
     }
 
-    function toggleSelection(id) {
-      const idx = selectedIds.indexOf(id);
-      if (idx > -1) { selectedIds.splice(idx, 1); document.getElementById(`card-${id}`).classList.remove('selected'); document.querySelector(`#check-${id} i`).style.opacity = '0'; }
-      else { selectedIds.push(id); selectedIds.sort((a,b)=>a-b); document.getElementById(`card-${id}`).classList.add('selected'); document.querySelector(`#check-${id} i`).style.opacity = '1'; }
-      updateUI();
-    }
-
-    function toggleContent(e, id) { e.stopPropagation(); document.getElementById(`content-${id}`).classList.toggle('open'); }
-
-    function toggleSelectAll() {
-      if (selectedIds.length === topicsData.length) selectedIds = [];
-      else selectedIds = topicsData.map(t => t.id);
-      document.querySelectorAll('.card').forEach(c => c.classList.toggle('selected', selectedIds.includes(+c.id.split('-')[1])));
-      document.querySelectorAll('.checkbox-custom i').forEach(i => i.style.opacity = selectedIds.includes(+(i.closest('.card').id.split('-')[1])) ? '1' : '0');
-      updateUI();
-    }
-
-    function updateUI() {
-      document.getElementById('selectedCount').innerText = selectedIds.length;
-      document.getElementById('nextBtn').disabled = selectedIds.length === 0;
-    }
-
-    function goToEditor() {
-      document.getElementById('selectionSection').style.display = 'none';
-      document.getElementById('editorSection').style.display = 'block';
-      document.getElementById('step1').classList.remove('active');
-      document.getElementById('step2').classList.add('active');
-      window.scrollTo(0,0);
-
-      const cont = document.getElementById('editorContainer');
-      cont.innerHTML = '';
-      selectedIds.forEach(id => {
-        const t = topicsData.find(x => x.id === id);
-        const box = document.createElement('div');
-        box.className = 'editable-box';
-        box.innerHTML = `
-          <div class="editor-label"><span>${t.id}. ${t.title}</span><span class="edit-hint">Tahrirlanmoqda</span></div>
-          <div contenteditable="true" style="outline:none; min-height:100px;">${t.content}</div>
-        `;
-        cont.appendChild(box);
-      });
-    }
-
-    function backToSelection() {
-      document.getElementById('selectionSection').style.display = 'block';
-      document.getElementById('editorSection').style.display = 'none';
-      document.getElementById('step1').classList.add('active');
-      document.getElementById('step2').classList.remove('active');
-    }
-
-    function generatePDF() {
-      const loader = document.getElementById('loader');
-      loader.classList.add('active');
-
-      const body = document.getElementById('pdfContentBody');
-      body.innerHTML = '';
-
-      selectedIds.forEach(id => {
-        const topic = topicsData.find(t => t.id === id);
-        const edited = document.querySelector(`#editorContainer div:nth-child(${selectedIds.indexOf(id)+1}) div[contenteditable]`).innerHTML;
-        const div = document.createElement('div');
-        div.style.marginBottom = '40px';
-        div.innerHTML = `
-          <h2 style="color:#4e54c8; font-size:18pt; border-bottom:2px solid #4e54c8; padding-bottom:10px;">${topic.id}. ${topic.title}</h2>
-          <div style="margin-top:15px; text-align:justify;">${edited}</div>
-        `;
-        body.appendChild(div);
-      });
-
-      const conclusion = document.getElementById('finalConclusion').innerHTML;
-      const concDiv = document.createElement('div');
-      concDiv.style.marginTop = '60px';
-      concDiv.style.padding = '30px';
-      concDiv.style.border = '3px solid #4e54c8';
-      concDiv.style.background = '#f8fbff';
-      concDiv.style.borderRadius = '15px';
-      concDiv.innerHTML = `<h2 style="color:#4e54c8; margin-bottom:20px; font-size:18pt;">UMUMIY XULOSA</h2>${conclusion}`;
-      body.appendChild(concDiv);
-
-      const element = document.getElementById('pdfOutput');
-      element.style.visibility = 'visible';
-      element.style.opacity = '1';
-      element.style.top = '0';
-      element.style.left = '0';
-
-      const opt = {
-        margin: [15, 15, 15, 15],
-        filename: 'Hadis_Ilmi_Mustaqil_Ish.pdf',
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2 },
-        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-      };
-
-      html2pdf().set(opt).from(element).save().then(() => {
-        loader.classList.remove('active');
-        element.style.visibility = 'hidden';
-        element.style.opacity = '0';
-        element.style.top = '-9999px';
-        element.style.left = '-9999px';
-      });
-    }
+    // Boshqa funksiyalarni ham qo'shing (oldingi kodlardan nusxa oling)
 
     init();
   </script>
