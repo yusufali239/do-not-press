@@ -7,9 +7,8 @@
 
   <!-- Font Awesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-  <!-- jsPDF eng yangi versiyasi (2.x) - html() method bilan -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <!-- html2pdf -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
   <style>
     :root {
@@ -149,6 +148,7 @@
       max-width: 900px;
       border: 1px solid rgba(0,0,0,0.05);
       gap: 12px;
+      flex-wrap: wrap;
     }
     .btn {
       padding: 15px 40px;
@@ -167,8 +167,12 @@
       background: linear-gradient(45deg, var(--primary), var(--secondary));
       color: white;
     }
-    .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 10px 30px rgba(78,84,200,0.5); }
-    .btn-primary:disabled { background: #aaa; cursor: not-allowed; transform: none; box-shadow: none; }
+    .btn-success {
+      background: linear-gradient(45deg, #10b981, #34d399);
+      color: white;
+    }
+    .btn-primary:hover, .btn-success:hover { transform: translateY(-3px); box-shadow: 0 10px 30px rgba(78,84,200,0.5); }
+    .btn-primary:disabled, .btn-success:disabled { background: #aaa; cursor: not-allowed; transform: none; box-shadow: none; }
     .btn-secondary { background: #f0f0f0; color: var(--text); }
     .btn-secondary:hover { background: #e0e0e0; }
 
@@ -214,44 +218,35 @@
     }
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    /* PDF uchun yashirin blok - off-screen */
-    #pdfOutput {
-      position: absolute;
+    #pdfOutput{
+      position: fixed;
       left: -9999px;
-      top: -9999px;
+      top: 0;
       width: 210mm;
+      min-height: 297mm;
       background: white;
       padding: 20mm;
       box-sizing: border-box;
-      visibility: hidden;
-      font-family: 'Times New Roman', serif;
-      color: #000;
-      line-height: 1.8;
-      font-size: 12pt;
+      visibility: visible;
     }
-    #pdfOutput h1 { text-align: center; color: #4e54c8; font-size: 24pt; border-bottom: 3px solid #4e54c8; padding-bottom: 20px; margin-bottom: 40px; }
-    #pdfOutput h2 { color:#4e54c8; font-size:18pt; border-bottom:2px solid #4e54c8; padding-bottom:10px; margin-bottom: 15px; }
-    #pdfOutput .highlight {
-      background: #eef2ff !important;
-      border-left: 5px solid #4e54c8 !important;
-      padding: 18px !important;
-      margin: 20px 0 !important;
-      border-radius: 0 10px 10px 0 !important;
-      font-weight: 500 !important;
+
+    .save-indicator {
+      background: #10b981;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 25px;
+      font-weight: 600;
+      display: none;
+      align-items: center;
+      gap: 8px;
     }
-    #pdfOutput h3 {
-      color: #4e54c8 !important;
-      margin: 20px 0 12px !important;
-      font-size: 14pt !important;
-      border-left: 5px solid #4e54c8 !important;
-      padding-left: 15px !important;
+    .save-indicator.show {
+      display: flex;
+      animation: fadeInOut 2s ease;
     }
-    #pdfOutput .conclusion-box {
-      margin-top: 60px;
-      padding: 30px;
-      border: 3px solid #4e54c8;
-      background: #f8fbff;
-      border-radius: 15px;
+    @keyframes fadeInOut {
+      0%, 100% { opacity: 0; }
+      20%, 80% { opacity: 1; }
     }
 
     @media (max-width: 768px) {
@@ -270,86 +265,304 @@
   </div>
 
   <div class="container">
-    <!-- ... (oldingi HTML qismi o'zgarmagan: main-header, steps, selectionSection, editorSection) ... -->
-    <!-- Oldingi kodni nusxa oling, faqat editorSection va pdfOutput ni yangilab qo'ying -->
+    <div class="main-header">
+      <h1>📚 Hadis Ilmi - Mustaqil Ish Tizimi</h1>
+      <p>Tanlangan mavzular bo'yicha matnni tahrirlang va professional PDF yuklab oling</p>
+    </div>
 
-    <!-- ... Oldingi selectionSection va editorSection kodini shu yerga qo'ying ... -->
+    <div class="steps">
+      <div class="step active" id="step1">1. Mavzularni tanlash</div>
+      <div class="step" id="step2">2. Tahrirlash va xulosa</div>
+    </div>
 
+    <div id="selectionSection">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:30px; gap: 12px;">
+        <h3 style="color:var(--primary);">Mavzular ro'yxati (<span id="countDisplay">10</span>)</h3>
+        <button class="btn btn-secondary" onclick="toggleSelectAll()">
+          <i class="fa-solid fa-check-double"></i> Hammasini tanlash/bekor qilish
+        </button>
+      </div>
+
+      <div id="topicsContainer"></div>
+
+      <div class="action-bar">
+        <span>Tanlangan: <strong id="selectedCount">0</strong> ta mavzu</span>
+        <button class="btn btn-primary" id="nextBtn" onclick="goToEditor()" disabled>
+          Davom etish <i class="fa-solid fa-arrow-right"></i>
+        </button>
+      </div>
+    </div>
+
+    <div id="editorSection">
+      <div style="background:var(--light); padding:30px; border-radius:20px; margin-bottom:40px; text-align:center;">
+        <h3 style="color:var(--primary); margin-bottom:15px;">✍️ Tahrirlash rejimi</h3>
+        <p>Matnlarni o'zgartiring yoki qo'shimcha izohlar qo'shing. PDF da aynan shu ko'rinishda chiqadi.</p>
+      </div>
+
+      <div id="editorContainer"></div>
+
+      <div class="editable-box" style="border-color:var(--accent);">
+        <div class="editor-label">
+          <span><i class="fa-solid fa-star"></i> UMUMIY XULOSA</span>
+          <span class="edit-hint"><i class="fa-solid fa-lightbulb"></i> O'z fikringizni yozing</span>
+        </div>
+        <div id="finalConclusion" contenteditable="true">
+          <strong>XULOSA:</strong><br><br>
+          Ushbu mavzularni o'rganish jarayonida men hadis ilmining asosiy qoidalarini chuqurroq tushundim...
+        </div>
+      </div>
+
+      <div class="action-bar">
+        <button class="btn btn-secondary" onclick="backToSelection()">
+          <i class="fa-solid fa-arrow-left"></i> Ortga
+        </button>
+        <div class="save-indicator" id="saveIndicator">
+          <i class="fa-solid fa-check-circle"></i> Saqlandi!
+        </div>
+        <button class="btn btn-success" onclick="saveChanges()">
+          <i class="fa-solid fa-save"></i> O'zgarishlarni saqlash
+        </button>
+        <button class="btn btn-primary" onclick="generatePDF()" id="pdfBtn" disabled>
+          <i class="fa-solid fa-file-pdf"></i> PDF yuklab olish
+        </button>
+      </div>
+    </div>
   </div>
 
-  <!-- PDF uchun yashirin blok -->
   <div id="pdfOutput">
-    <h1>HADIS ILMI BO‘YICHA MUSTAQIL ISH</h1>
-    <div id="pdfContentBody"></div>
+    <div style="font-family: 'Times New Roman', serif; color: #000; line-height: 1.8;">
+      <h1 style="text-align: center; color: #4e54c8; font-size: 24pt; border-bottom: 3px solid #4e54c8; padding-bottom: 20px; margin-bottom: 40px;">
+        HADIS ILMI BO'YICHA MUSTAQIL ISH
+      </h1>
+      <div id="pdfContentBody" style="font-size: 12pt;"></div>
+    </div>
   </div>
 
   <script>
-    // ... Oldingi topicsData, init(), toggleSelection(), va boshqa funksiyalar o'zgarmagan ...
+    const topicsData = [
+      { id: 1, title: "Xabarlarning mutavotir, mashhur va ahodga bo'linishi", desc: "Hanafiylar va muhaddislar taqsimoti", content: `
+        <h3>Hanafiylarning taqsimoti</h3>
+        <p>Hanafiy ulamolar Rasululloh ﷺ ga bog'lanish jihatidan xabarlarni <strong>uch</strong> qismga bo'lishgan:</p>
+        <div class="highlight"><strong>MUTAVOTIR:</strong> Surat va ma'no jihatidan shubhasiz, to'liq bog'lanishga ega.</div>
+        <div class="highlight"><strong>MASHHUR:</strong> Surat jihatidan shubha bor, lekin ma'no jihatidan qabul qilingan.</div>
+        <div class="highlight"><strong>XABARUL-VOHID (AHOD):</strong> Surat va ma'no jihatidan gumon bor.</div>
+        <h3>Muhaddislar taqsimoti</h3>
+        <p>Asosan ikki: mutavotir va xabarul-vohid (keyin mashhur, aziz, g'arib).</p>` },
+      { id: 2, title: "Mutavotir xabar", desc: "Ta'rifi, shartlari, hukmi", content: `
+        <h3>Ta'rifi</h3>
+        <p>O'z-o'zidan zaruriy ilm hosil qiladigan ko'p kishilik xabar.</p>
+        <h3>Shartlari</h3>
+        <p>1. Ko'p roviy, 2. Barcha tabaqalarda ko'plik, 3. Sezgi (his)ga asoslangan bo'lishi.</p>
+        <h3>Hukmi</h3>
+        <div class="highlight">Zaruriy ilm beradi. Inkor qilgan kofir bo'ladi.</div>` },
+      { id: 3, title: "Mashhur xabar", desc: "Uch asr mezoni", content: `
+        <h3>Ta'rifi</h3>
+        <p>1-asrda ahod, 2-3 asrlarda mutavotir darajasiga yetgan xabar.</p>
+        <div class="highlight">Hukmi: Yaqin gumon (tuma'nina) beradi. Inkor qilgan adashgan hisoblanadi.</div>` },
+      { id: 4, title: "Ahod xabarlar", desc: "Hukmi va hududda qo'llanilishi", content: `
+        <h3>Hukmi</h3>
+        <div class="highlight">Ilm bermaydi, lekin amal qilishni vojib qiladi.</div>
+        <p>Hudud jazolarida ixtilof bor, lekin ko'pchilik qabul qiladi.</p>` },
+      { id: 5, title: "Aql", desc: "Roviy sharti", content: `<p>Ado etishda to'liq aql (balog'at) shart. Tahammulda tushunish yetarli.</p>` },
+      { id: 6, title: "Islom", desc: "Musulmonlik sharti", content: `<p>Rivoyatni ado etish vaqtida musulmon bo'lishi shart.</p>` },
+      { id: 7, title: "Zabt", desc: "Yodlash va saqlash", content: `<h3>Ta'rifi</h3><p>To'g'ri eshitish, tushunish, yodlash va o'zgartirmasdan yetkazish.</p>` },
+      { id: 8, title: "Adolat", desc: "Taqvo va muruwwat", content: `<p>Katta gunohlardan saqlanish, kichik gunohda davom etmaslik.</p>` },
+      { id: 9, title: "Bid'atchi rivoyati", desc: "Qabul qilinishi", content: `<p>Agar bid'atiga da'vat qilsa, rivoyati qabul qilinmaydi.</p>` },
+      { id: 10, title: "Mastur va majhul roviy", desc: "Hukmi", content: `<p>Hanafiylar ilk uch asrdagi mastur roviylarni ma'lum shartlar bilan qabul qilgan.</p>` }
+    ];
 
-    // convertHighlightsToInlineStyles funksiyasi ham o'zgarmagan (highlight va h3 ga inline style qo'shish)
+    let selectedIds = [];
+    let savedContent = {};
 
-    async function generatePDF() {
-      const loader = document.getElementById('loader');
-      loader.classList.add('active');
+    function init() {
+      const container = document.getElementById('topicsContainer');
+      container.innerHTML = topicsData.map(t => `
+        <div class="card" id="card-${t.id}">
+          <div class="card-header" onclick="toggleSelection(${t.id})">
+            <div class="checkbox-custom" id="check-${t.id}">
+              <i class="fa-solid fa-check" style="opacity:0"></i>
+            </div>
+            <div class="card-title">
+              ${t.id}. ${t.title}
+              <div class="card-meta">${t.desc}</div>
+            </div>
+            <div class="toggle-icon" onclick="toggleContent(event, ${t.id})">
+              <i class="fa-solid fa-chevron-down"></i>
+            </div>
+          </div>
+          <div class="card-content" id="content-${t.id}">
+            <div class="content-padding">${t.content}</div>
+          </div>
+        </div>
+      `).join('');
+      updateUI();
+    }
 
+    function toggleSelection(id) {
+      const idx = selectedIds.indexOf(id);
+      if (idx > -1) {
+        selectedIds.splice(idx, 1);
+        document.getElementById(`card-${id}`).classList.remove('selected');
+        document.querySelector(`#check-${id} i`).style.opacity = '0';
+      } else {
+        selectedIds.push(id);
+        selectedIds.sort((a,b)=>a-b);
+        document.getElementById(`card-${id}`).classList.add('selected');
+        document.querySelector(`#check-${id} i`).style.opacity = '1';
+      }
+      updateUI();
+    }
+
+    function toggleContent(e, id) {
+      e.stopPropagation();
+      document.getElementById(`content-${id}`).classList.toggle('open');
+    }
+
+    function toggleSelectAll() {
+      if (selectedIds.length === topicsData.length) selectedIds = [];
+      else selectedIds = topicsData.map(t => t.id);
+
+      document.querySelectorAll('.card').forEach(card => {
+        const id = +card.id.split('-')[1];
+        card.classList.toggle('selected', selectedIds.includes(id));
+      });
+      document.querySelectorAll('.checkbox-custom').forEach(box => {
+        const id = +box.id.split('-')[1];
+        box.querySelector('i').style.opacity = selectedIds.includes(id) ? '1' : '0';
+      });
+
+      updateUI();
+    }
+
+    function updateUI() {
+      document.getElementById('selectedCount').innerText = selectedIds.length;
+      document.getElementById('nextBtn').disabled = selectedIds.length === 0;
+    }
+
+    function goToEditor() {
+      document.getElementById('selectionSection').style.display = 'none';
+      document.getElementById('editorSection').style.display = 'block';
+      document.getElementById('step1').classList.remove('active');
+      document.getElementById('step2').classList.add('active');
+      window.scrollTo(0,0);
+
+      const cont = document.getElementById('editorContainer');
+      cont.innerHTML = '';
+      selectedIds.forEach(id => {
+        const t = topicsData.find(x => x.id === id);
+        const box = document.createElement('div');
+        box.className = 'editable-box';
+        box.innerHTML = `
+          <div class="editor-label">
+            <span>${t.id}. ${t.title}</span>
+            <span class="edit-hint">Tahrirlanmoqda</span>
+          </div>
+          <div id="edit-content-${id}" contenteditable="true" style="outline:none; min-height:120px;">${savedContent[id] || t.content}</div>
+        `;
+        cont.appendChild(box);
+      });
+    }
+
+    function backToSelection() {
+      document.getElementById('selectionSection').style.display = 'block';
+      document.getElementById('editorSection').style.display = 'none';
+      document.getElementById('step1').classList.add('active');
+      document.getElementById('step2').classList.remove('active');
+    }
+
+    function saveChanges() {
+      selectedIds.forEach(id => {
+        const editedEl = document.getElementById(`edit-content-${id}`);
+        if (editedEl) {
+          savedContent[id] = editedEl.innerHTML;
+        }
+      });
+
+      const conclusionEl = document.getElementById('finalConclusion');
+      savedContent['conclusion'] = conclusionEl.innerHTML;
+
+      const indicator = document.getElementById('saveIndicator');
+      indicator.classList.add('show');
+      setTimeout(() => {
+        indicator.classList.remove('show');
+      }, 2000);
+
+      document.getElementById('pdfBtn').disabled = false;
+
+      preparePDFContent();
+    }
+
+    function preparePDFContent() {
       const body = document.getElementById('pdfContentBody');
       body.innerHTML = '';
 
       selectedIds.forEach(id => {
         const topic = topicsData.find(t => t.id === id);
-        const editedEl = document.getElementById(`edit-content-${id}`);
-        const edited = editedEl ? editedEl.innerHTML : topic.content;
-        const styledContent = convertHighlightsToInlineStyles(edited);
+        let content = savedContent[id] || topic.content;
 
         const div = document.createElement('div');
-        div.style.marginBottom = '40px';
+        div.style.cssText = 'margin-bottom: 40px; page-break-inside: avoid;';
         div.innerHTML = `
-          <h2>${topic.id}. ${topic.title}</h2>
-          <div style="margin-top:15px; text-align:justify;">${styledContent}</div>
+          <h2 style="color:#4e54c8; font-size:18pt; border-bottom:2px solid #4e54c8; padding-bottom:10px; margin-bottom: 20px;">
+            ${topic.id}. ${topic.title}
+          </h2>
+          <div style="text-align:justify;">${content}</div>
         `;
+
+        const highlights = div.querySelectorAll('.highlight');
+        highlights.forEach(h => {
+          h.style.cssText = 'background: #eef2ff; border-left: 5px solid #4e54c8; padding: 18px; margin: 20px 0; display: block; font-weight: 500;';
+        });
+
+        const h3s = div.querySelectorAll('h3');
+        h3s.forEach(h => {
+          h.style.cssText = 'color: #4e54c8; margin: 20px 0 12px; font-size: 14pt; border-left: 5px solid #4e54c8; padding-left: 15px;';
+        });
+
+        const paragraphs = div.querySelectorAll('p');
+        paragraphs.forEach(p => {
+          p.style.cssText = 'margin: 10px 0; line-height: 1.6;';
+        });
+
         body.appendChild(div);
       });
 
-      const conclusion = document.getElementById('finalConclusion').innerHTML;
+      const conclusion = savedContent['conclusion'] || document.getElementById('finalConclusion').innerHTML;
       const concDiv = document.createElement('div');
-      concDiv.className = 'conclusion-box';
-      concDiv.innerHTML = `<h2>UMUMIY XULOSA</h2>${conclusion}`;
+      concDiv.style.cssText = 'margin-top: 60px; padding: 30px; border: 3px solid #4e54c8; background: #f8fbff; page-break-inside: avoid;';
+      concDiv.innerHTML = `<h2 style="color:#4e54c8; margin-bottom:20px; font-size:18pt;">UMUMIY XULOSA</h2>${conclusion}`;
       body.appendChild(concDiv);
-
-      const element = document.getElementById('pdfOutput');
-      element.style.visibility = 'visible';
-      element.style.left = '0';
-      element.style.top = '0';
-
-      try {
-        const { jsPDF } = window.jspdf;
-        const doc = new jsPDF({
-          orientation: 'portrait',
-          unit: 'mm',
-          format: 'a4'
-        });
-
-        await doc.html(element, {
-          callback: function (doc) {
-            doc.save('Hadis_Ilmi_Mustaqil_Ish.pdf');
-          },
-          margin: [15, 15, 15, 15],
-          autoPaging: 'text',
-          width: 180, // A4 kengligi minus margins
-          windowWidth: 800 // yaxshi render uchun
-        });
-      } catch (err) {
-        console.error('PDF xatosi:', err);
-        alert('PDF yaratishda xato: ' + err.message);
-      } finally {
-        loader.classList.remove('active');
-        element.style.visibility = 'hidden';
-        element.style.left = '-9999px';
-        element.style.top = '-9999px';
-      }
     }
 
-    // ... init() chaqiruvi ...
+    function generatePDF() {
+      const loader = document.getElementById('loader');
+      loader.classList.add('active');
+
+      const element = document.getElementById('pdfOutput');
+
+      const opt = {
+        margin: [15, 15, 15, 15],
+        filename: 'Hadis_Ilmi_Mustaqil_Ish.pdf',
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: {
+          scale: 2,
+          backgroundColor: "#ffffff",
+          useCORS: true,
+          logging: false
+        },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+      };
+
+      setTimeout(() => {
+        html2pdf().set(opt).from(element).save().then(() => {
+          loader.classList.remove('active');
+        }).catch(err => {
+          loader.classList.remove('active');
+          console.error("PDF Error:", err);
+          alert("PDF xatolik: " + (err?.message || err));
+        });
+      }, 300);
+    }
 
     init();
   </script>
