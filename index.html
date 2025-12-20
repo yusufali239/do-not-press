@@ -43,7 +43,7 @@
     }
 
     .main-header::before {
-      content: '\f6ad'; /* Quran icon */
+      content: '\f6ad';
       font-family: "Font Awesome 6 Free";
       font-weight: 900;
       position: absolute;
@@ -56,198 +56,68 @@
     .main-header h1 { color: var(--primary); margin-bottom: 10px; font-size: 2.2rem; }
     .main-header p { color: #666; font-size: 1.1rem; }
 
-    /* STEPS INDICATOR */
-    .steps {
-      display: flex;
-      justify-content: center;
-      margin-bottom: 30px;
-      gap: 20px;
-    }
-    .step {
-      background: rgba(255,255,255,0.6);
-      padding: 10px 20px;
-      border-radius: 50px;
-      font-weight: 600;
-      color: #999;
-      transition: 0.3s;
-    }
-    .step.active {
-      background: var(--primary);
-      color: var(--white);
-      box-shadow: 0 5px 15px rgba(78, 84, 200, 0.3);
-    }
+    /* STEPS */
+    .steps { display: flex; justify-content: center; margin-bottom: 30px; gap: 20px; }
+    .step { background: rgba(255,255,255,0.6); padding: 10px 20px; border-radius: 50px; font-weight: 600; color: #999; transition: 0.3s; }
+    .step.active { background: var(--primary); color: var(--white); box-shadow: 0 5px 15px rgba(78, 84, 200, 0.3); }
 
-    /* CARD STYLES */
-    .card {
-      background: var(--white);
-      border-radius: 15px;
-      box-shadow: 0 5px 20px rgba(0,0,0,0.05);
-      margin-bottom: 20px;
-      overflow: hidden;
-      transition: transform 0.3s ease;
-      border: 2px solid transparent;
-    }
-
-    .card.selected {
-      border-color: var(--primary);
-      background: #f8f9ff;
-    }
-
-    .card-header {
-      padding: 20px;
-      display: flex;
-      align-items: center;
-      cursor: pointer;
-      gap: 15px;
-    }
-
-    .checkbox-custom {
-      width: 28px;
-      height: 28px;
-      border: 2px solid #ddd;
-      border-radius: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: 0.3s;
-      flex-shrink: 0;
-    }
-
-    .card.selected .checkbox-custom {
-      background: var(--primary);
-      border-color: var(--primary);
-      color: white;
-    }
-
+    /* CARDS */
+    .card { background: var(--white); border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.05); margin-bottom: 20px; overflow: hidden; transition: transform 0.3s ease; border: 2px solid transparent; }
+    .card.selected { border-color: var(--primary); background: #f8f9ff; }
+    .card-header { padding: 20px; display: flex; align-items: center; cursor: pointer; gap: 15px; }
+    
+    .checkbox-custom { width: 28px; height: 28px; border: 2px solid #ddd; border-radius: 8px; display: flex; align-items: center; justify-content: center; transition: 0.3s; flex-shrink: 0; }
+    .card.selected .checkbox-custom { background: var(--primary); border-color: var(--primary); color: white; }
+    
     .card-title { flex: 1; font-weight: 700; font-size: 1.1rem; }
     .card-meta { font-size: 0.85rem; color: #777; margin-top: 5px; }
-
-    .toggle-icon {
-      width: 30px; height: 30px;
-      background: #eee;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: var(--primary);
-      transition: 0.3s;
-    }
     
-    .card-content {
-      max-height: 0;
-      overflow: hidden;
-      transition: max-height 0.4s ease-out;
-      background: #fff;
-      border-top: 1px solid #eee;
-    }
+    .toggle-icon { width: 30px; height: 30px; background: #eee; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--primary); transition: 0.3s; }
     
+    .card-content { max-height: 0; overflow: hidden; transition: max-height 0.4s ease-out; background: #fff; border-top: 1px solid #eee; }
     .card-content.open { max-height: 2000px; }
-    
     .content-padding { padding: 25px; line-height: 1.7; }
     .content-padding h3 { color: var(--primary); margin: 15px 0 10px; font-size: 1.2rem; }
-    .highlight {
-      background: #eef2ff;
-      border-left: 4px solid var(--primary);
-      padding: 15px;
-      margin: 15px 0;
-      border-radius: 0 8px 8px 0;
-    }
+    
+    .highlight { background: #eef2ff; border-left: 4px solid var(--primary); padding: 15px; margin: 15px 0; border-radius: 0 8px 8px 0; }
 
-    /* FLOATING ACTION BAR */
-    .action-bar {
-      position: sticky;
-      bottom: 20px;
-      background: rgba(255,255,255,0.95);
-      backdrop-filter: blur(10px);
-      padding: 15px 30px;
-      border-radius: 50px;
-      box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-top: 20px;
-      z-index: 100;
-      border: 1px solid rgba(0,0,0,0.1);
-    }
+    /* ACTION BAR */
+    .action-bar { position: sticky; bottom: 20px; background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); padding: 15px 30px; border-radius: 50px; box-shadow: 0 10px 40px rgba(0,0,0,0.2); display: flex; justify-content: space-between; align-items: center; margin-top: 20px; z-index: 100; border: 1px solid rgba(0,0,0,0.1); }
 
-    .btn {
-      padding: 12px 30px;
-      border: none;
-      border-radius: 30px;
-      font-size: 1rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: 0.3s;
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .btn-primary {
-      background: linear-gradient(45deg, var(--primary), var(--secondary));
-      color: white;
-      box-shadow: 0 4px 15px rgba(78, 84, 200, 0.4);
-    }
+    .btn { padding: 12px 30px; border: none; border-radius: 30px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: 0.3s; display: inline-flex; align-items: center; gap: 10px; }
+    .btn-primary { background: linear-gradient(45deg, var(--primary), var(--secondary)); color: white; box-shadow: 0 4px 15px rgba(78, 84, 200, 0.4); }
     .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(78, 84, 200, 0.5); }
     .btn-primary:disabled { background: #ccc; cursor: not-allowed; transform: none; box-shadow: none; }
-
     .btn-secondary { background: #eee; color: #333; }
     .btn-secondary:hover { background: #e0e0e0; }
 
-    /* EDITOR SECTION */
+    /* EDITOR */
     #editorSection { display: none; }
-    
-    .editable-box {
-      border: 2px dashed #ccc;
-      padding: 20px;
-      border-radius: 12px;
-      background: #fff;
-      margin-bottom: 25px;
-      transition: 0.3s;
-      outline: none;
-    }
-    .editable-box:focus { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(78,84,200,0.1); }
-    
-    .editor-label {
-      font-size: 0.9rem;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      color: #888;
-      margin-bottom: 10px;
-      display: flex;
-      justify-content: space-between;
-    }
-    
+    .editable-box { border: 2px dashed #ccc; padding: 20px; border-radius: 12px; background: #fff; margin-bottom: 25px; transition: 0.3s; outline: none; }
+    .editable-box:focus-within { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(78,84,200,0.1); }
+    .editor-label { font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; color: #888; margin-bottom: 10px; display: flex; justify-content: space-between; }
     .edit-hint { color: var(--accent); font-size: 0.8rem; display: flex; align-items: center; gap: 5px; }
 
-    /* PDF PREVIEW STYLES (Specific for PDF generation) */
-    .pdf-container {
+    /* PDF PREVIEW STYLES (MUHIM TUZATISH) */
+    /* Biz display: none ishlatmaymiz, o'rniga ekrandan tashqariga chiqaramiz */
+    #pdfOutput {
+      position: absolute;
+      left: -10000px; /* Ekranning chap tomonida ko'rinmas joyda turadi */
+      top: 0;
+      width: 800px; /* A4 formatga yaqin o'lcham */
       background: white;
-      padding: 40px;
-      display: none; /* Faqat PDF uchun generatsiya qilinadi */
+      z-index: -1;
     }
 
-    /* Loading */
-    .loader {
-      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(255,255,255,0.9);
-      display: flex; flex-direction: column;
-      align-items: center; justify-content: center;
-      z-index: 9999;
-      opacity: 0; pointer-events: none; transition: 0.3s;
-    }
+    /* Loader */
+    .loader { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.9); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 9999; opacity: 0; pointer-events: none; transition: 0.3s; }
     .loader.active { opacity: 1; pointer-events: all; }
-    .spinner {
-      width: 50px; height: 50px;
-      border: 5px solid #eee; border-top-color: var(--primary);
-      border-radius: 50%; animation: spin 1s linear infinite;
-    }
+    .spinner { width: 50px; height: 50px; border: 5px solid #eee; border-top-color: var(--primary); border-radius: 50%; animation: spin 1s linear infinite; }
     @keyframes spin { 100% { transform: rotate(360deg); } }
 
     @media (max-width: 768px) {
       .action-bar { flex-direction: column; gap: 15px; border-radius: 20px; }
       .btn { width: 100%; justify-content: center; }
-      .steps { font-size: 0.8rem; }
     }
   </style>
 </head>
@@ -276,10 +146,7 @@
           <i class="fa-solid fa-check-double"></i> Hammasini tanlash
         </button>
       </div>
-
-      <div id="topicsContainer">
-        </div>
-
+      <div id="topicsContainer"></div>
       <div class="action-bar">
         <span>Tanlangan: <strong id="selectedCount">0</strong> ta mavzu</span>
         <button class="btn btn-primary" id="nextBtn" onclick="goToEditor()" disabled>
@@ -292,7 +159,7 @@
       <div class="info-box" style="background:#e3f2fd; padding:20px; border-radius:10px; margin-bottom:30px; border-left:5px solid #2196f3;">
         <h4 style="color:#0d47a1; margin-bottom:10px;"><i class="fa-solid fa-pen-to-square"></i> Tahrirlash rejimi</h4>
         <p style="color:#1565c0; font-size:0.95rem;">
-          Quyida tanlangan mavzular matni keltirilgan. Siz bu matnlarni bemalol o'zgartirishingiz, qisqartirishingiz yoki keraksiz joylarini o'chirib tashlashingiz mumkin.
+          Matnlarni o'zgartirishingiz mumkin. PDF xuddi shu ko'rinishda chiqadi.
         </p>
       </div>
 
@@ -305,7 +172,7 @@
         </div>
         <div id="finalConclusion" contenteditable="true" style="min-height: 150px; outline:none;">
           <b>XULOSA:</b><br><br>
-          Ushbu mavzularni o'rganish davomida men shuni tushundimki... (fikringizni shu yerga yozing)
+          Ushbu mavzularni o'rganish davomida men shuni tushundimki...
         </div>
       </div>
 
@@ -320,7 +187,7 @@
     </div>
   </div>
 
-  <div id="pdfOutput" style="display: none;">
+  <div id="pdfOutput">
     <div style="padding: 40px; font-family: 'Times New Roman', serif; color: #000;">
       <h1 style="text-align: center; color: #4e54c8; border-bottom: 2px solid #4e54c8; padding-bottom: 15px; margin-bottom: 30px;">
         Hadis Ilmi: Mustaqil Ish
@@ -330,20 +197,18 @@
   </div>
 
   <script>
-    // MA'LUMOTLAR BAZASI [Source: 82-118]
+    // MA'LUMOTLAR
     const topicsData = [
       {
         id: 1,
-        title: "Xabarlarning mutavotir, mashhur va ahodga bo'linishi",
-        desc: "Hanafiylar va muhaddislarning taqsimoti",
+        title: "Xabarlarning taqsimoti",
+        desc: "Mutavotir, mashhur va ahod",
         content: `
           <h3>1 — Hanafiylarning taqsimoti</h3>
-          <p>Bizning hanafiy imomlarimiz Rasululloh ﷺ ga bog'lanish (ittisol) jihatidan xabarlarni <strong>uch qismga</strong> bo'lishgan:</p>
+          <p>Bizning hanafiy imomlarimiz xabarlarni <strong>uch qismga</strong> bo'lishgan:</p>
           <div class="highlight"><strong>1. MUTAVOTIR:</strong> Surat va ma'no jihatidan mutlaqo shubhasiz.</div>
-          <div class="highlight"><strong>2. MASHHUR:</strong> Surat jihatidan shubha bor, ammo ma'no jihatidan shubha yo'q (uchinchi asrda mashhur bo'lgan).</div>
-          <div class="highlight"><strong>3. XABARUL-VOHID:</strong> Surat va ma'no jihatidan shubha bor.</div>
-          <h3>2 — Muhaddislarning taqsimoti</h3>
-          <p>Muhaddislarning aksariyatiga ko'ra xabarlar <strong>ikki qismga</strong> bo'linadi: Mutavotir va Xabarul-vohid (Mashhur, Aziz, G'arib).</p>`
+          <div class="highlight"><strong>2. MASHHUR:</strong> Surat jihatidan shubha bor, ammo ma'no jihatidan shubha yo'q.</div>
+          <div class="highlight"><strong>3. XABARUL-VOHID:</strong> Surat va ma'no jihatidan shubha bor.</div>`
       },
       {
         id: 2,
@@ -352,13 +217,7 @@
         content: `
           <h3>1 — Ta'rifi</h3>
           <p><strong>Istilohda:</strong> "O'z-o'zidan ilmni hosil qiladigan jamoa xabari".</p>
-          <h3>2 — Shartlari</h3>
-          <ul>
-            <li>Xabar beruvchilarning soni ko'p bo'lishi (yolg'onga kelishish imkonsiz bo'lishi).</li>
-            <li>Bu ko'plik isnodning barcha tabaqalarida mavjud bo'lishi.</li>
-            <li>Xabar hissiyotga asoslangan bo'lishi kerak.</li>
-          </ul>
-          <h3>3 — Hukmi</h3>
+          <h3>2 — Hukmi</h3>
           <p>Mutavotir xabar <strong>zaruriy ilm beradi</strong>. Uni inkor qilgan kishi kofir bo'ladi.</p>`
       },
       {
@@ -367,70 +226,66 @@
         desc: "Uch asr mezoni va hukmi",
         content: `
           <h3>1 — Ta'rifi</h3>
-          <p>Birinchi asrda ahod bo'lib, keyin (Tobe'in va Tobe'ut-tobe'in davrida) mutavotir darajasiga yetgan xabar.</p>
-          <h3>2 — Hukmi (Hanafiylar nazdida)</h3>
-          <p>Mashhur xabar <strong>xotirjamlik (tuma'nina)</strong> ilmini beradi. Uni inkor qilgan kishi kofir emas, balki adashgan (zoll) hisoblanadi.</p>`
+          <p>Birinchi asrda ahod bo'lib, keyin mutavotir darajasiga yetgan xabar.</p>
+          <h3>2 — Hukmi</h3>
+          <p>Mashhur xabar <strong>xotirjamlik (tuma'nina)</strong> ilmini beradi. Uni inkor qilgan adashgan sanaladi.</p>`
       },
       {
         id: 4,
-        title: "Ahod (Xabarul-vohid) xabarlar",
+        title: "Ahod (Xabarul-vohid)",
         desc: "Ta'rifi va amal qilish hukmi",
         content: `
           <h3>1 — Ta'rifi</h3>
           <p>Mashhurlik va mutavotir darajasiga yetmagan har qanday xabar.</p>
           <h3>2 — Hukmi</h3>
-          <p>Xabarul-vohid qat'iy ilm bermaydi, ammo <strong>amal qilishni vojib qiladigan</strong> g'olib gumonni beradi.</p>`
+          <p>Xabarul-vohid qat'iy ilm bermaydi, ammo <strong>amal qilishni vojib qiladi</strong>.</p>`
       },
       {
         id: 5,
         title: "Aql",
-        desc: "Roviyda shart qilingan aql va balog'at",
+        desc: "Roviyda shart qilingan aql",
         content: `
-          <p><strong>Aql:</strong> Nafsdagi quvvat bo'lib, ilm va idroklarni qabul qilishga tayyorlaydi.</p>
-          <p>Rivoyatni ado etishda <strong>to'liq aql (balog'at)</strong> shart qilinadi. Tahammul (eshitish) vaqtida esa tushunish qobiliyati (tamiyz) yetarlidir.</p>`
+          <p>Rivoyatni ado etishda <strong>to'liq aql (balog'at)</strong> shart qilinadi. Tahammul (eshitish) vaqtida tushunish yetarli.</p>`
       },
       {
         id: 6,
         title: "Islom",
         desc: "Musulmonlik sharti",
         content: `
-          <p>Roviyning musulmon bo'lishi xabarni <strong>ado etish (rivoyat qilish) vaqtida</strong> shart qilinadi. Kofir paytida eshitib, musulmon bo'lgach rivoyat qilsa qabul qilinadi.</p>`
+          <p>Roviyning musulmon bo'lishi xabarni <strong>ado etish (rivoyat qilish) vaqtida</strong> shart qilinadi.</p>`
       },
       {
         id: 7,
         title: "Zabt",
         desc: "Eslab qolish qobiliyati",
         content: `
-          <p><strong>Zabt:</strong> Hadisni to'g'ri eshitish, tushunish, yodlash va o'zgartirmasdan yetkazishdir.</p>
-          <p>Agar roviyda g'aflat ko'p bo'lsa, uning rivoyati rad etiladi.</p>`
+          <p><strong>Zabt:</strong> Hadisni to'g'ri eshitish, tushunish, yodlash va o'zgartirmasdan yetkazishdir.</p>`
       },
       {
         id: 8,
         title: "Adolat",
         desc: "Taqvo va muruwwat",
         content: `
-          <p><strong>Adolat:</strong> Katta gunohlardan saqlanish, kichik gunohda bardavom bo'lmaslik va insoniylikni (muruwwat) saqlashdir.</p>`
+          <p><strong>Adolat:</strong> Katta gunohlardan saqlanish, kichik gunohda bardavom bo'lmaslik.</p>`
       },
       {
         id: 9,
         title: "Bid'atchining rivoyati",
-        desc: "Qabul qilinishi yoki rad etilishi",
+        desc: "Qabul qilinish masalasi",
         content: `
-          <p>Bid'atchi agar o'z bid'atiga da'vat qiluvchi bo'lsa yoki yolg'onni halol sanasa, uning rivoyati qabul qilinmaydi.</p>`
+          <p>Bid'atchi agar o'z bid'atiga da'vat qiluvchi bo'lsa, rivoyati qabul qilinmaydi.</p>`
       },
       {
         id: 10,
         title: "Mastur va Majhul",
         desc: "Noma'lum roviylar",
         content: `
-          <p><strong>Majhul:</strong> Shaxsi yoki holati noma'lum roviy.</p>
-          <p>Hanafiylar ilk uch asrdagi "Mastur" (holati yopiq) roviylarning rivoyatini ma'lum shartlar bilan qabul qilishgan.</p>`
+          <p><strong>Majhul:</strong> Shaxsi yoki holati noma'lum roviy. Hanafiylar ilk uch asrdagi "Mastur" roviylarni ma'lum shart bilan qabul qilgan.</p>`
       }
     ];
 
     let selectedIds = [];
 
-    // 1. DASTLABKI YUKLASH
     function init() {
       const container = document.getElementById('topicsContainer');
       container.innerHTML = topicsData.map(topic => `
@@ -448,16 +303,13 @@
             </div>
           </div>
           <div class="card-content" id="content-${topic.id}">
-            <div class="content-padding">
-              ${topic.content}
-            </div>
+            <div class="content-padding">${topic.content}</div>
           </div>
         </div>
       `).join('');
       updateUI();
     }
 
-    // 2. TANLASH LOGIKASI
     function toggleSelection(id) {
       const index = selectedIds.indexOf(id);
       if (index > -1) {
@@ -475,11 +327,7 @@
 
     function toggleContent(e, id) {
       e.stopPropagation();
-      const content = document.getElementById(`content-${id}`);
-      const icon = e.currentTarget.querySelector('i');
-      content.classList.toggle('open');
-      icon.classList.toggle('fa-chevron-up');
-      icon.classList.toggle('fa-chevron-down');
+      document.getElementById(`content-${id}`).classList.toggle('open');
     }
 
     function toggleSelectAll() {
@@ -501,32 +349,22 @@
       document.getElementById('nextBtn').disabled = selectedIds.length === 0;
     }
 
-    // 3. TAHRIRLASH BOSQICHIGA O'TISH
     function goToEditor() {
-      // Interfeysni o'zgartirish
       document.getElementById('selectionSection').style.display = 'none';
       document.getElementById('editorSection').style.display = 'block';
       document.getElementById('step1').classList.remove('active');
       document.getElementById('step2').classList.add('active');
       window.scrollTo(0, 0);
 
-      // Tanlangan mavzularni tahrirlash maydoniga joylash
       const container = document.getElementById('editorContainer');
       container.innerHTML = '';
-
       selectedIds.forEach(id => {
         const topic = topicsData.find(t => t.id === id);
-        // HTML yaratish: Sarlavha (o'zgarmas) + Kontent (ContentEditable)
         const wrapper = document.createElement('div');
         wrapper.className = 'editable-box';
         wrapper.innerHTML = `
-          <div class="editor-label">
-            <span>${topic.id}-Mavzu: ${topic.title}</span>
-            <span class="edit-hint"><i class="fa-solid fa-eraser"></i> Tahrirlash mumkin</span>
-          </div>
-          <div class="topic-editable-content" id="edit-content-${id}" contenteditable="true" style="outline:none;">
-            ${topic.content}
-          </div>
+          <div class="editor-label"><span>${topic.id}. ${topic.title}</span><span class="edit-hint"><i class="fa-solid fa-eraser"></i> Tahrirlash</span></div>
+          <div id="edit-content-${id}" contenteditable="true" style="outline:none;">${topic.content}</div>
         `;
         container.appendChild(wrapper);
       });
@@ -539,64 +377,57 @@
       document.getElementById('step2').classList.remove('active');
     }
 
-    // 4. PDF YARATISH VA YUKLASH (HTML2PDF)
+    // PDF YARATISH FUNKSIYASI (TUZATILDI)
     function generatePDF() {
       const loader = document.getElementById('loader');
       loader.classList.add('active');
 
-      // 1. PDF uchun maxsus HTML strukturani yig'amiz
+      // 1. PDF kontentni yangilash
       const pdfBody = document.getElementById('pdfContentBody');
-      pdfBody.innerHTML = ''; // Tozalash
+      pdfBody.innerHTML = '';
 
-      // a) Tahrirlangan mavzularni olish
       selectedIds.forEach(id => {
         const topic = topicsData.find(t => t.id === id);
-        const editedContent = document.getElementById(`edit-content-${id}`).innerHTML; // Foydalanuvchi o'zgartirgan matn
+        // Tahrirlangan matnni olamiz
+        const editedText = document.getElementById(`edit-content-${id}`).innerHTML;
         
-        const section = document.createElement('div');
-        section.style.marginBottom = '25px';
-        section.innerHTML = `
-          <h3 style="color:#4e54c8; border-bottom:1px solid #ddd; padding-bottom:5px; margin-bottom:10px;">
-            ${topic.id}. ${topic.title}
-          </h3>
-          <div style="font-size:14px; line-height:1.6; text-align:justify;">
-            ${editedContent}
-          </div>
+        const div = document.createElement('div');
+        div.style.marginBottom = '20px';
+        div.innerHTML = `
+          <h3 style="color:#4e54c8; border-bottom:1px solid #ddd; padding-bottom:5px; margin-bottom:10px;">${topic.id}. ${topic.title}</h3>
+          <div style="font-size:14px; line-height:1.6;">${editedText}</div>
         `;
-        pdfBody.appendChild(section);
+        pdfBody.appendChild(div);
       });
 
-      // b) Yakuniy xulosani olish
-      const conclusionText = document.getElementById('finalConclusion').innerHTML;
-      const conclusionSection = document.createElement('div');
-      conclusionSection.style.marginTop = '40px';
-      conclusionSection.style.padding = '20px';
-      conclusionSection.style.border = '2px solid #4e54c8';
-      conclusionSection.style.borderRadius = '10px';
-      conclusionSection.style.backgroundColor = '#f8f9ff';
-      conclusionSection.innerHTML = conclusionText;
-      pdfBody.appendChild(conclusionSection);
+      const conclusion = document.getElementById('finalConclusion').innerHTML;
+      const concDiv = document.createElement('div');
+      concDiv.style.marginTop = '40px';
+      concDiv.style.padding = '20px';
+      concDiv.style.border = '2px solid #4e54c8';
+      concDiv.style.background = '#f8f9ff';
+      concDiv.innerHTML = conclusion;
+      pdfBody.appendChild(concDiv);
 
-      // 2. HTML2PDF sozlamalari
-      const element = document.getElementById('pdfOutput'); // Biz yig'gan yashirin div
-      element.style.display = 'block'; // PDF generatsiya vaqti ko'rinishi kerak (vizual rendering uchun)
-
+      // 2. PDF generatsiya (Element ekranda mavjud bo'lishi kerak!)
+      const element = document.getElementById('pdfOutput');
+      
       const opt = {
-        margin:       10, // mm
+        margin:       10,
         filename:     'Hadis_Mustaqil_Ish.pdf',
         image:        { type: 'jpeg', quality: 0.98 },
-        html2canvas:  { scale: 2, useCORS: true }, // Yuqori sifat
+        html2canvas:  { scale: 2 },
         jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
       };
 
-      // 3. Generatsiya
-      html2pdf().set(opt).from(element).save().then(() => {
-        element.style.display = 'none'; // Qayta yashirish
-        loader.classList.remove('active');
-      });
+      // 1 soniya kutib keyin generatsiya qilamiz (Brauzer chizib olishi uchun)
+      setTimeout(() => {
+        html2pdf().set(opt).from(element).save().then(() => {
+          loader.classList.remove('active');
+        });
+      }, 500);
     }
 
-    // Ishga tushirish
     init();
   </script>
 </body>
