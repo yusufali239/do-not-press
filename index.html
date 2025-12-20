@@ -1,718 +1,590 @@
 <!DOCTYPE html>
 <html lang="uz">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hadis Mavzulari - Vazifa Tizimi</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Hadis Ilmi - Mustaqil Ish</title>
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 20px;
-        }
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
+  <style>
+    :root {
+      --primary: #4e54c8;
+      --secondary: #8f94fb;
+      --accent: #ff9f43;
+      --text: #2c3e50;
+      --bg: #f8fbff;
+      --white: #ffffff;
+      --light: #f0f4ff;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #e0e7ff 0%, #c3dafe 100%);
+      min-height: 100vh;
+      color: var(--text);
+      padding: 20px;
+      padding-bottom: 100px;
+    }
+    .container { max-width: 1100px; margin: 0 auto; }
+    
+    /* HEADER */
+    .main-header {
+      background: var(--white);
+      padding: 40px;
+      border-radius: 25px;
+      text-align: center;
+      box-shadow: 0 15px 40px rgba(0,0,0,0.1);
+      margin-bottom: 30px;
+      position: relative;
+      overflow: hidden;
+    }
+    .main-header h1 { color: var(--primary); font-size: 2.5rem; margin-bottom: 10px; }
+    .main-header p { color: #666; font-size: 1.1rem; }
 
-        .header {
-            background: white;
-            padding: 40px;
-            border-radius: 20px;
-            text-align: center;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-            margin-bottom: 30px;
-        }
+    /* INPUT FOR STUDENT INFO */
+    .student-info-box {
+      background: var(--white);
+      padding: 20px;
+      border-radius: 15px;
+      margin-bottom: 30px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .student-info-box label { font-weight: 600; color: var(--primary); }
+    .student-info-box input {
+      padding: 12px;
+      border: 2px solid #ddd;
+      border-radius: 10px;
+      font-size: 1rem;
+      transition: 0.3s;
+    }
+    .student-info-box input:focus { border-color: var(--primary); outline: none; }
 
-        .header h1 {
-            color: #667eea;
-            font-size: 2.5em;
-            margin-bottom: 10px;
-        }
+    /* STEPS */
+    .steps {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 30px;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+    .step {
+      background: var(--white);
+      padding: 10px 25px;
+      border-radius: 50px;
+      font-weight: 600;
+      color: #999;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+      transition: 0.3s;
+    }
+    .step.active {
+      background: var(--primary);
+      color: white;
+      box-shadow: 0 8px 25px rgba(78,84,200,0.4);
+    }
 
-        .header p {
-            color: #666;
-            font-size: 1.1em;
-        }
+    /* CARDS */
+    .card {
+      background: var(--white);
+      border-radius: 20px;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.07);
+      margin-bottom: 20px;
+      overflow: hidden;
+      transition: all 0.3s ease;
+      border: 3px solid transparent;
+    }
+    .card:hover { transform: translateY(-3px); }
+    .card.selected { border-color: var(--primary); background: var(--light); }
+    
+    .card-header {
+      padding: 20px;
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      gap: 15px;
+    }
+    .checkbox-custom {
+      width: 28px; height: 28px;
+      border: 2px solid #ddd;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: 0.3s;
+      flex-shrink: 0;
+      font-size: 16px;
+    }
+    .card.selected .checkbox-custom {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: white;
+    }
+    .card-title { flex: 1; font-weight: 700; font-size: 1.1rem; }
+    .card-meta { font-size: 0.9rem; color: #777; margin-top: 4px; }
+    .toggle-icon {
+      width: 35px; height: 35px;
+      background: #f0f0f0;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--primary);
+      transition: 0.3s;
+    }
+    .card-content { max-height: 0; overflow: hidden; transition: max-height 0.4s ease; background: #fafbff; }
+    .card-content.open { max-height: 1000px; } /* Increased height limit */
+    .content-padding { padding: 25px; line-height: 1.8; font-size: 1rem; }
+    .content-padding h3 { color: var(--primary); margin: 15px 0 10px; font-size: 1.2rem; }
+    
+    .highlight {
+      background: #eef2ff;
+      border-left: 4px solid var(--primary);
+      padding: 15px;
+      margin: 15px 0;
+      border-radius: 0 8px 8px 0;
+      font-weight: 500;
+    }
 
-        .topics-container {
-            background: white;
-            padding: 40px;
-            border-radius: 20px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-            margin-bottom: 30px;
-        }
+    /* ACTION BAR */
+    .action-bar {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(255,255,255,0.95);
+      backdrop-filter: blur(10px);
+      padding: 15px 30px;
+      border-radius: 50px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 90%;
+      max-width: 900px;
+      border: 1px solid rgba(0,0,0,0.05);
+      gap: 15px;
+      z-index: 100;
+    }
+    .btn {
+      padding: 12px 30px;
+      border: none;
+      border-radius: 50px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.3s;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    .btn-primary { background: linear-gradient(45deg, var(--primary), var(--secondary)); color: white; }
+    .btn-success { background: linear-gradient(45deg, #10b981, #34d399); color: white; }
+    .btn:hover { transform: translateY(-2px); }
+    .btn:disabled { background: #ccc; cursor: not-allowed; transform: none; box-shadow: none; }
+    .btn-secondary { background: #f0f0f0; color: var(--text); }
 
-        .topics-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 30px;
-            padding-bottom: 20px;
-            border-bottom: 3px solid #667eea;
-        }
+    /* EDITOR */
+    #editorSection { display: none; }
+    .editable-box {
+      background: var(--white);
+      border: 2px dashed #ccc;
+      border-radius: 15px;
+      padding: 20px;
+      margin-bottom: 25px;
+    }
+    .editable-box:focus-within { border-color: var(--primary); }
+    .editor-label {
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #888;
+      margin-bottom: 10px;
+      display: flex;
+      justify-content: space-between;
+    }
 
-        .topics-header h2 {
-            color: #667eea;
-            font-size: 2em;
-        }
+    /* LOADER */
+    .loader {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(255,255,255,0.95); 
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center; z-index: 9999;
+      opacity: 0; pointer-events: none; transition: 0.3s;
+    }
+    .loader.active { opacity: 1; pointer-events: all; }
+    .spinner {
+      width: 50px; height: 50px;
+      border: 5px solid #f0f0f0;
+      border-top: 5px solid var(--primary);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-bottom: 15px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
 
-        .select-all-btn {
-            padding: 12px 30px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
+    /* PDF OUTPUT CONTAINER (Hidden from user, seen by JS) */
+    #pdfOutput {
+      position: fixed;
+      left: -9999px;
+      top: 0;
+      width: 210mm;
+      min-height: 297mm;
+      background: white;
+      padding: 20mm;
+      color: #000;
+    }
+    
+    .save-indicator {
+        position: fixed;
+        top: 20px; right: 20px;
+        background: #10b981; color: white;
+        padding: 10px 20px; border-radius: 20px;
+        z-index: 200; opacity: 0; transition: 0.5s;
+        pointer-events: none;
+    }
+    .save-indicator.show { opacity: 1; top: 30px; }
 
-        .select-all-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
-        }
-
-        .topic-item {
-            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-            padding: 20px;
-            margin-bottom: 15px;
-            border-radius: 15px;
-            border: 3px solid transparent;
-            transition: all 0.3s ease;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .topic-item:hover {
-            border-color: #667eea;
-            transform: translateX(5px);
-            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.2);
-        }
-
-        .topic-item.selected {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border-color: #764ba2;
-        }
-
-        .checkbox {
-            width: 30px;
-            height: 30px;
-            border: 3px solid #667eea;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-            transition: all 0.3s ease;
-            flex-shrink: 0;
-        }
-
-        .topic-item.selected .checkbox {
-            background: white;
-            color: #667eea;
-            border-color: white;
-        }
-
-        .topic-content {
-            flex: 1;
-        }
-
-        .topic-title {
-            font-size: 1.2em;
-            font-weight: 700;
-            margin-bottom: 5px;
-        }
-
-        .topic-desc {
-            font-size: 0.95em;
-            opacity: 0.8;
-        }
-
-        .selected-count {
-            background: #fff3cd;
-            padding: 20px;
-            border-radius: 15px;
-            text-align: center;
-            margin-bottom: 30px;
-            border-left: 5px solid #ffc107;
-        }
-
-        .selected-count h3 {
-            color: #856404;
-            font-size: 1.3em;
-        }
-
-        .conclusion-section {
-            display: none;
-            background: white;
-            padding: 40px;
-            border-radius: 20px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-            margin-bottom: 30px;
-        }
-
-        .conclusion-section.active {
-            display: block;
-            animation: fadeIn 0.5s ease;
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .conclusion-section h2 {
-            color: #667eea;
-            margin-bottom: 20px;
-            font-size: 2em;
-        }
-
-        .selected-topics-list {
-            background: #f8f9fa;
-            padding: 20px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-        }
-
-        .selected-topics-list h3 {
-            color: #495057;
-            margin-bottom: 15px;
-        }
-
-        .selected-topics-list ul {
-            list-style: none;
-            padding: 0;
-        }
-
-        .selected-topics-list li {
-            padding: 10px;
-            background: white;
-            margin-bottom: 8px;
-            border-radius: 8px;
-            border-left: 4px solid #667eea;
-        }
-
-        .conclusion-textarea {
-            width: 100%;
-            min-height: 300px;
-            padding: 20px;
-            border: 2px solid #e9ecef;
-            border-radius: 15px;
-            font-size: 16px;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            resize: vertical;
-            transition: all 0.3s ease;
-        }
-
-        .conclusion-textarea:focus {
-            outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-        }
-
-        .action-buttons {
-            display: flex;
-            gap: 15px;
-            margin-top: 20px;
-            flex-wrap: wrap;
-        }
-
-        .btn {
-            padding: 15px 40px;
-            border: none;
-            border-radius: 12px;
-            font-size: 17px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            flex: 1;
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
-        }
-
-        .btn-secondary {
-            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
-            color: white;
-            flex: 1;
-        }
-
-        .btn-secondary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 20px rgba(56, 239, 125, 0.4);
-        }
-
-        .btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            transform: none !important;
-        }
-
-        .info-box {
-            background: linear-gradient(135deg, #d1ecf1 0%, #bee5eb 100%);
-            padding: 20px;
-            border-radius: 15px;
-            margin-bottom: 20px;
-            border-left: 5px solid #17a2b8;
-        }
-
-        .info-box h4 {
-            color: #0c5460;
-            margin-bottom: 10px;
-        }
-
-        .info-box p {
-            color: #0c5460;
-            line-height: 1.6;
-        }
-
-        @media (max-width: 768px) {
-            .header h1 {
-                font-size: 1.8em;
-            }
-
-            .topics-header {
-                flex-direction: column;
-                gap: 15px;
-            }
-
-            .action-buttons {
-                flex-direction: column;
-            }
-
-            .btn {
-                width: 100%;
-                justify-content: center;
-            }
-        }
-
-        .loading-overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.7);
-            z-index: 9999;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .loading-overlay.active {
-            display: flex;
-        }
-
-        .loading-content {
-            background: white;
-            padding: 40px;
-            border-radius: 20px;
-            text-align: center;
-        }
-
-        .spinner {
-            width: 50px;
-            height: 50px;
-            border: 5px solid #f3f3f3;
-            border-top: 5px solid #667eea;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 20px;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-    </style>
+    @media (max-width: 768px) {
+      .action-bar { flex-direction: column; border-radius: 20px; padding: 20px; }
+      .btn { width: 100%; justify-content: center; }
+    }
+  </style>
 </head>
+
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>📚 Hadis Mavzulari - Vazifa Tizimi</h1>
-            <p>O'zingizga tegishli mavzularni tanlang va xulosa yozing</p>
-        </div>
 
-        <div class="topics-container">
-            <div class="topics-header">
-                <h2>Mavzular ro'yxati</h2>
-                <button class="select-all-btn" onclick="toggleSelectAll()">
-                    <span id="selectAllText">Hammasini tanlash</span>
-                </button>
-            </div>
+  <div class="loader" id="loader">
+    <div class="spinner"></div>
+    <h3 style="color:var(--primary);">PDF tayyorlanmoqda...</h3>
+  </div>
 
-            <div class="info-box">
-                <h4>📝 Yo'riqnoma:</h4>
-                <p>1. O'zingizga tegishli mavzularni belgilang<br>
-                   2. "Xulosa yozish" tugmasini bosing<br>
-                   3. Har bir mavzu bo'yicha xulosangizni yozing<br>
-                   4. PDF formatda yuklab oling</p>
-            </div>
+  <div class="save-indicator" id="saveIndicator">
+    <i class="fa-solid fa-check"></i> Saqlandi!
+  </div>
 
-            <div class="selected-count">
-                <h3>Tanlangan mavzular: <span id="selectedCount">0</span></h3>
-            </div>
-
-            <div id="topicsList"></div>
-
-            <div class="action-buttons">
-                <button class="btn btn-primary" onclick="showConclusionSection()" id="conclusionBtn" disabled>
-                    ✍️ Xulosa yozish
-                </button>
-            </div>
-        </div>
-
-        <div class="conclusion-section" id="conclusionSection">
-            <h2>📝 Xulosa yozish</h2>
-
-            <div class="selected-topics-list">
-                <h3>Tanlangan mavzular:</h3>
-                <ul id="selectedTopicsList"></ul>
-            </div>
-
-            <div class="info-box">
-                <h4>💡 Maslahat:</h4>
-                <p>Har bir mavzu bo'yicha o'z fikr-mulohazalaringizni yozing. Xulosangiz qisqacha, aniq va tushunarli bo'lishi kerak.</p>
-            </div>
-
-            <textarea 
-                class="conclusion-textarea" 
-                id="conclusionText"
-                placeholder="Bu yerga o'z xulosangizni yozing...&#10;&#10;Masalan:&#10;&#10;1. Mutavotir xabar bo'yicha xulosa:&#10;Men bu mavzuni o'rganish orqali mutavotir xabarning ahamiyati va shartlarini chuqur tushunib yetdim...&#10;&#10;2. Mashhur xabar bo'yicha xulosa:&#10;Mashhur xabarning hanafiy va muhaddislar istilohidagi farqini aniq bilib oldim..."
-            ></textarea>
-
-            <div class="action-buttons">
-                <button class="btn btn-secondary" onclick="downloadPDF()">
-                    📥 PDF yuklab olish
-                </button>
-                <button class="btn btn-primary" onclick="backToTopics()">
-                    🔙 Mavzularga qaytish
-                </button>
-            </div>
-        </div>
+  <div class="container">
+    <div class="main-header">
+      <h1>📚 Hadis Ilmi - Mustaqil Ish</h1>
+      <p>Mavzularni tanlang, tahrirlang va PDF yuklab oling</p>
     </div>
 
-    <div class="loading-overlay" id="loadingOverlay">
-        <div class="loading-content">
-            <div class="spinner"></div>
-            <h3>PDF tayyorlanmoqda...</h3>
-        </div>
+    <div class="steps">
+      <div class="step active" id="step1">1. Tanlash</div>
+      <div class="step" id="step2">2. Tahrirlash va PDF</div>
     </div>
 
-    <script>
-        const topics = [
-            {
-                id: 1,
-                title: "Xabarlarning mutavotir, mashhur va ohodga bo'linishi",
-                desc: "Hanafiylar va muhaddislarning taqsimoti, farqlari"
-            },
-            {
-                id: 2,
-                title: "Mutavotir xabar",
-                desc: "Ta'rifi, shartlari, hukmi va turlari"
-            },
-            {
-                id: 3,
-                title: "Mashhur xabar",
-                desc: "Ta'rifi, uch asr, hukmi va istilohdagi farqlar"
-            },
-            {
-                id: 4,
-                title: "Ohod (Xabarul-vohid) xabarlar",
-                desc: "Ta'rifi, hukmi va hudud masalasida qo'llanilishi"
-            },
-            {
-                id: 5,
-                title: "Roviyning birinchi sharti - Aql",
-                desc: "Aqlning ta'rifi, balog'at va tahammul masalalari"
-            },
-            {
-                id: 6,
-                title: "Roviyning ikkinchi sharti - Islom",
-                desc: "Islom sharti va uning sababiyati"
-            },
-            {
-                id: 7,
-                title: "Roviyning uchinchi sharti - Zabt",
-                desc: "Zabtning ta'rifi, turlari va g'ofil roviy hukmi"
-            },
-            {
-                id: 8,
-                title: "Roviyning to'rtinchi sharti - Adolat",
-                desc: "Adolatning ta'rifi, turlari va Nabiyga yolg'on gapirgan kishi hukmi"
-            },
-            {
-                id: 9,
-                title: "Adolatli roviydan rivoyat qilish",
-                desc: "Ta'dil masalasi va uning hukmi"
-            },
-            {
-                id: 10,
-                title: "Bid'atchining rivoyati",
-                desc: "Bid'atning ta'rifi, turlari va har xil qarashlar"
-            },
-            {
-                id: 11,
-                title: "Mastur va majhul roviy",
-                desc: "Hanafiylar istilohida majhul, muhaddislar istilohi bilan farqi"
-            },
-            {
-                id: 12,
-                title: "Uch asr roviylarining rivoyati",
-                desc: "Besh qism va ularning hukmlari, misollar"
-            }
-        ];
+    <div id="selectionSection">
+      
+      <div class="student-info-box">
+        <label>Talaba ma'lumotlari:</label>
+        <input type="text" id="studentName" placeholder="F.I.O va Guruh (Masalan: Aliyev Vali, 204-guruh)">
+      </div>
 
-        let selectedTopics = new Set();
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+        <h3 style="color:var(--primary);">Mavzular (<span id="countDisplay">10</span>)</h3>
+        <button class="btn btn-secondary" onclick="toggleSelectAll()" style="font-size:0.9rem; padding: 8px 15px;">
+          <i class="fa-solid fa-check-double"></i> Hammasi
+        </button>
+      </div>
 
-        function initTopics() {
-            const topicsList = document.getElementById('topicsList');
-            topicsList.innerHTML = topics.map(topic => `
-                <div class="topic-item" onclick="toggleTopic(${topic.id})">
-                    <div class="checkbox" id="check-${topic.id}"></div>
-                    <div class="topic-content">
-                        <div class="topic-title">${topic.title}</div>
-                        <div class="topic-desc">${topic.desc}</div>
-                    </div>
-                </div>
-            `).join('');
-            updateCount();
+      <div id="topicsContainer"></div>
+
+      <div class="action-bar">
+        <span>Tanlangan: <strong id="selectedCount">0</strong></span>
+        <button class="btn btn-primary" id="nextBtn" onclick="goToEditor()" disabled>
+          Davom etish <i class="fa-solid fa-arrow-right"></i>
+        </button>
+      </div>
+    </div>
+
+    <div id="editorSection">
+      <div style="background:var(--light); padding:20px; border-radius:15px; margin-bottom:30px; text-align:center;">
+        <h3 style="color:var(--primary); margin-bottom:10px;">✍️ Tahrirlash rejimi</h3>
+        <p style="font-size:0.95rem">Matnlarni o'zgartiring. PDF da aynan shu ko'rinishda chiqadi.</p>
+      </div>
+
+      <div id="editorContainer"></div>
+
+      <div class="editable-box" style="border-color:var(--accent);">
+        <div class="editor-label">
+          <span><i class="fa-solid fa-star"></i> XULOSA</span>
+        </div>
+        <div id="finalConclusion" contenteditable="true" style="outline:none; min-height:100px;">
+          <strong>XULOSA:</strong><br><br>
+          Ushbu mavzularni o'rganish jarayonida men hadis ilmining asosiy qoidalarini va roviylarga qo'yiladigan talablarni chuqurroq tushundim.
+        </div>
+      </div>
+
+      <div class="action-bar">
+        <button class="btn btn-secondary" onclick="backToSelection()">
+          <i class="fa-solid fa-arrow-left"></i> Ortga
+        </button>
+        <button class="btn btn-success" onclick="saveChanges()">
+          <i class="fa-solid fa-save"></i> Saqlash
+        </button>
+        <button class="btn btn-primary" onclick="generatePDF()" id="pdfBtn">
+          <i class="fa-solid fa-file-pdf"></i> PDF yuklab olish
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div id="pdfOutput">
+    <div style="font-family: 'Times New Roman', serif; color: #000; line-height: 1.6;">
+      <div style="text-align: center; border-bottom: 3px solid #4e54c8; padding-bottom: 15px; margin-bottom: 30px;">
+        <h1 style="color: #4e54c8; font-size: 22pt; margin: 0;">HADIS ILMI BO'YICHA MUSTAQIL ISH</h1>
+        <p style="margin-top: 10px; font-size: 14pt;" id="pdfStudentInfo"></p>
+        <p style="font-size: 10pt; color: #555;">Sanasi: <span id="pdfDate"></span></p>
+      </div>
+      
+      <div id="pdfContentBody" style="font-size: 12pt;"></div>
+    </div>
+  </div>
+
+  <script>
+    // MA'LUMOTLAR BAZASI
+    const topicsData = [
+      { id: 1, title: "Xabarlarning bo'linishi", desc: "Mutavotir, mashhur va ahod", content: `
+        <h3>Hanafiylarning taqsimoti</h3>
+        <p>Hanafiy ulamolar Rasululloh ﷺ ga bog'lanish jihatidan xabarlarni <strong>uch</strong> qismga bo'lishgan:</p>
+        <div class="highlight"><strong>MUTAVOTIR:</strong> Surat va ma'no jihatidan shubhasiz.</div>
+        <div class="highlight"><strong>MASHHUR:</strong> Surat jihatidan shubha bor, lekin ma'no jihatidan qabul qilingan.</div>
+        <div class="highlight"><strong>AHOD:</strong> Surat va ma'no jihatidan gumon bor.</div>` },
+      { id: 2, title: "Mutavotir xabar", desc: "Ta'rifi, shartlari", content: `
+        <h3>Ta'rifi</h3>
+        <p>O'z-o'zidan zaruriy ilm hosil qiladigan ko'p kishilik xabar.</p>
+        <h3>Hukmi</h3>
+        <div class="highlight">Zaruriy ilm beradi. Inkor qilgan kofir bo'ladi.</div>` },
+      { id: 3, title: "Mashhur xabar", desc: "Uch asr mezoni", content: `
+        <h3>Ta'rifi</h3>
+        <p>1-asrda ahod, 2-3 asrlarda mutavotir darajasiga yetgan xabar.</p>
+        <div class="highlight">Hukmi: Yaqin gumon (tuma'nina) beradi.</div>` },
+      { id: 4, title: "Ahod xabarlar", desc: "Hukmi", content: `
+        <h3>Hukmi</h3>
+        <div class="highlight">Ilm bermaydi, lekin amal qilishni vojib qiladi.</div>` },
+      { id: 5, title: "Aql", desc: "Roviy sharti", content: `<p>Ado etishda to'liq aql (balog'at) shart.</p>` },
+      { id: 6, title: "Islom", desc: "Musulmonlik sharti", content: `<p>Rivoyatni ado etish vaqtida musulmon bo'lishi shart.</p>` },
+      { id: 7, title: "Zabt", desc: "Yodlash", content: `<p>To'g'ri eshitish, tushunish, yodlash va o'zgartirmasdan yetkazish.</p>` },
+      { id: 8, title: "Adolat", desc: "Taqvo va muruvvat", content: `<p>Katta gunohlardan saqlanish, kichik gunohda davom etmaslik va muruvvatni saqlash.</p>` },
+      { id: 9, title: "Bid'atchi rivoyati", desc: "Qabul qilinishi", content: `<p>Agar bid'atiga da'vat qilsa, rivoyati qabul qilinmaydi.</p>` },
+      { id: 10, title: "Mastur va majhul", desc: "Hukmi", content: `<p>Hanafiylar ilk uch asrdagi mastur roviylarni ma'lum shartlar bilan qabul qilgan.</p>` }
+    ];
+
+    let selectedIds = [];
+    let savedContent = {};
+
+    // --- INITIALIZATION ---
+    function init() {
+      const container = document.getElementById('topicsContainer');
+      
+      // Agar container topilmasa, to'xtaymiz (xatolikni oldini olish)
+      if(!container) return;
+
+      container.innerHTML = topicsData.map(t => `
+        <div class="card" id="card-${t.id}">
+          <div class="card-header" onclick="toggleSelection(${t.id})">
+            <div class="checkbox-custom" id="check-${t.id}">
+              <i class="fa-solid fa-check" style="opacity:0"></i>
+            </div>
+            <div class="card-title">
+              ${t.id}. ${t.title}
+              <div class="card-meta">${t.desc}</div>
+            </div>
+            <div class="toggle-icon" onclick="toggleContent(event, ${t.id})">
+              <i class="fa-solid fa-chevron-down"></i>
+            </div>
+          </div>
+          <div class="card-content" id="content-${t.id}">
+            <div class="content-padding">${t.content}</div>
+          </div>
+        </div>
+      `).join('');
+      updateUI();
+    }
+
+    // --- UI LOGIC ---
+    function toggleSelection(id) {
+      const idx = selectedIds.indexOf(id);
+      if (idx > -1) {
+        selectedIds.splice(idx, 1);
+        document.getElementById(`card-${id}`).classList.remove('selected');
+        document.querySelector(`#check-${id} i`).style.opacity = '0';
+      } else {
+        selectedIds.push(id);
+        selectedIds.sort((a,b)=>a-b);
+        document.getElementById(`card-${id}`).classList.add('selected');
+        document.querySelector(`#check-${id} i`).style.opacity = '1';
+      }
+      updateUI();
+    }
+
+    function toggleContent(e, id) {
+      e.stopPropagation();
+      document.getElementById(`content-${id}`).classList.toggle('open');
+    }
+
+    function toggleSelectAll() {
+      // Logic fix: If something is unselected, select ALL. If ALL are selected, clear ALL.
+      const allSelected = selectedIds.length === topicsData.length;
+      
+      if (allSelected) {
+        selectedIds = [];
+      } else {
+        selectedIds = topicsData.map(t => t.id);
+      }
+
+      topicsData.forEach(t => {
+        const card = document.getElementById(`card-${t.id}`);
+        const check = document.querySelector(`#check-${t.id} i`);
+        if (selectedIds.includes(t.id)) {
+          card.classList.add('selected');
+          check.style.opacity = '1';
+        } else {
+          card.classList.remove('selected');
+          check.style.opacity = '0';
         }
+      });
+      updateUI();
+    }
 
-        function toggleTopic(id) {
-            const item = event.currentTarget;
-            const checkbox = document.getElementById(`check-${id}`);
-            
-            if (selectedTopics.has(id)) {
-                selectedTopics.delete(id);
-                item.classList.remove('selected');
-                checkbox.textContent = '';
-            } else {
-                selectedTopics.add(id);
-                item.classList.add('selected');
-                checkbox.textContent = '✓';
-            }
-            
-            updateCount();
-        }
+    function updateUI() {
+      document.getElementById('selectedCount').innerText = selectedIds.length;
+      document.getElementById('nextBtn').disabled = selectedIds.length === 0;
+    }
 
-        function toggleSelectAll() {
-            if (selectedTopics.size === topics.length) {
-                // Deselect all
-                selectedTopics.clear();
-                document.querySelectorAll('.topic-item').forEach(item => {
-                    item.classList.remove('selected');
-                });
-                document.querySelectorAll('.checkbox').forEach(cb => {
-                    cb.textContent = '';
-                });
-                document.getElementById('selectAllText').textContent = 'Hammasini tanlash';
-            } else {
-                // Select all
-                topics.forEach(topic => selectedTopics.add(topic.id));
-                document.querySelectorAll('.topic-item').forEach(item => {
-                    item.classList.add('selected');
-                });
-                document.querySelectorAll('.checkbox').forEach(cb => {
-                    cb.textContent = '✓';
-                });
-                document.getElementById('selectAllText').textContent = 'Tanlovni bekor qilish';
-            }
-            updateCount();
-        }
+    function goToEditor() {
+      // Validate Name
+      const name = document.getElementById('studentName').value;
+      if(name.trim() === "") {
+        alert("Iltimos, ism va familiyangizni kiriting!");
+        return;
+      }
 
-        function updateCount() {
-            const count = selectedTopics.size;
-            document.getElementById('selectedCount').textContent = count;
-            document.getElementById('conclusionBtn').disabled = count === 0;
-            
-            if (count === topics.length) {
-                document.getElementById('selectAllText').textContent = 'Tanlovni bekor qilish';
-            } else {
-                document.getElementById('selectAllText').textContent = 'Hammasini tanlash';
-            }
-        }
+      document.getElementById('selectionSection').style.display = 'none';
+      document.getElementById('editorSection').style.display = 'block';
+      document.getElementById('step1').classList.remove('active');
+      document.getElementById('step2').classList.add('active');
+      window.scrollTo(0,0);
 
-        function showConclusionSection() {
-            document.getElementById('conclusionSection').classList.add('active');
-            
-            const selectedTopicsList = document.getElementById('selectedTopicsList');
-            const selected = topics.filter(t => selectedTopics.has(t.id));
-            
-            selectedTopicsList.innerHTML = selected.map((topic, index) => `
-                <li><strong>${index + 1}.</strong> ${topic.title}</li>
-            `).join('');
-            
-            window.scrollTo({ top: document.getElementById('conclusionSection').offsetTop - 20, behavior: 'smooth' });
-        }
+      const cont = document.getElementById('editorContainer');
+      cont.innerHTML = '';
+      selectedIds.forEach(id => {
+        const t = topicsData.find(x => x.id === id);
+        const box = document.createElement('div');
+        box.className = 'editable-box';
+        box.innerHTML = `
+          <div class="editor-label">
+            <span>${t.id}. ${t.title}</span>
+            <span class="edit-hint">Tahrirlash</span>
+          </div>
+          <div id="edit-content-${id}" contenteditable="true" style="outline:none; min-height:80px;">${savedContent[id] || t.content}</div>
+        `;
+        cont.appendChild(box);
+      });
+    }
 
-        function backToTopics() {
-            document.getElementById('conclusionSection').classList.remove('active');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
+    function backToSelection() {
+      document.getElementById('selectionSection').style.display = 'block';
+      document.getElementById('editorSection').style.display = 'none';
+      document.getElementById('step1').classList.add('active');
+      document.getElementById('step2').classList.remove('active');
+    }
 
-        function downloadPDF() {
-            const conclusion = document.getElementById('conclusionText').value.trim();
-            
-            if (!conclusion) {
-                alert('Iltimos, avval xulosa yozing!');
-                return;
-            }
+    function saveChanges() {
+      selectedIds.forEach(id => {
+        const el = document.getElementById(`edit-content-${id}`);
+        if (el) savedContent[id] = el.innerHTML;
+      });
+      savedContent['conclusion'] = document.getElementById('finalConclusion').innerHTML;
+      
+      const ind = document.getElementById('saveIndicator');
+      ind.classList.add('show');
+      setTimeout(()=>ind.classList.remove('show'), 2000);
+    }
 
-            const overlay = document.getElementById('loadingOverlay');
-            overlay.classList.add('active');
+    // --- PDF GENERATION ---
+    function preparePDFContent() {
+      const body = document.getElementById('pdfContentBody');
+      body.innerHTML = '';
+      
+      // Update Header Info
+      const name = document.getElementById('studentName').value || "Talaba";
+      document.getElementById('pdfStudentInfo').innerText = "Bajardi: " + name;
+      const today = new Date();
+      document.getElementById('pdfDate').innerText = today.toLocaleDateString();
 
-            setTimeout(() => {
-                try {
-                    const selected = topics.filter(t => selectedTopics.has(t.id));
-                    
-                    // Create print window
-                    const printWindow = window.open('', '_blank');
-                    
-                    const content = `
-                        <!DOCTYPE html>
-                        <html>
-                        <head>
-                            <meta charset="UTF-8">
-                            <title>Hadis Mavzulari - Vazifa</title>
-                            <style>
-                                body {
-                                    font-family: Arial, sans-serif;
-                                    padding: 40px;
-                                    line-height: 1.8;
-                                }
-                                h1 {
-                                    color: #667eea;
-                                    text-align: center;
-                                    margin-bottom: 10px;
-                                }
-                                .subtitle {
-                                    text-align: center;
-                                    color: #666;
-                                    margin-bottom: 30px;
-                                }
-                                .section {
-                                    margin-bottom: 30px;
-                                    page-break-inside: avoid;
-                                }
-                                h2 {
-                                    color: #667eea;
-                                    border-bottom: 2px solid #667eea;
-                                    padding-bottom: 10px;
-                                    margin-bottom: 15px;
-                                }
-                                .topic-list {
-                                    background: #f8f9fa;
-                                    padding: 20px;
-                                    border-radius: 10px;
-                                    margin-bottom: 20px;
-                                }
-                                .topic-item {
-                                    padding: 10px;
-                                    background: white;
-                                    margin-bottom: 8px;
-                                    border-radius: 5px;
-                                    border-left: 4px solid #667eea;
-                                }
-                                .conclusion {
-                                    background: #f8f9fa;
-                                    padding: 20px;
-                                    border-radius: 10px;
-                                    white-space: pre-wrap;
-                                    line-height: 2;
-                                }
-                                .footer {
-                                    text-align: center;
-                                    margin-top: 50px;
-                                    padding-top: 20px;
-                                    border-top: 2px solid #ddd;
-                                    color: #666;
-                                }
-                                @media print {
-                                    body { padding: 20px; }
-                                    .section { page-break-inside: avoid; }
-                                }
-                            </style>
-                        </head>
-                        <body>
-                            <h1>📚 Hadis Mavzulari - Vazifa</h1>
-                            <p class="subtitle">Tanlangan mavzular va xulosa</p>
-                            
-                            <div class="section">
-                                <h2>Tanlangan Mavzular (${selected.length} ta)</h2>
-                                <div class="topic-list">
-                                    ${selected.map((topic, index) => `
-                                        <div class="topic-item">
-                                            <strong>${index + 1}.</strong> ${topic.title}
-                                            <div style="font-size: 0.9em; color: #666; margin-top: 5px;">${topic.desc}</div>
-                                        </div>
-                                    `).join('')}
-                                </div>
-                            </div>
-                            
-                            <div class="section">
-                                <h2>Xulosa</h2>
-                                <div class="conclusion">${conclusion}</div>
-                            </div>
-                            
-                            <div class="footer">
-                                <p>Sana: ${new Date().toLocaleDateString('uz-UZ')}</p>
-                                <p>© 2024 - Hadis Mavzulari Vazifa Tizimi</p>
-                            </div>
-                        </body>
-                        </html>
-                    `;
-                    
-                    printWindow.document.write(content);
-                    printWindow.document.close();
-                    
-                    setTimeout(() => {
-                        printWindow.print();
-                        overlay.classList.remove('active');
-                    }, 500);
-                    
-                } catch (error) {
-                    console.error('PDF yaratishda xatolik:', error);
-                    alert('PDF yaratishda xatolik yuz berdi. Iltimos, qayta urinib ko\'ring.');
-                    overlay.classList.remove('active');
-                }
-            }, 500);
-        }
+      selectedIds.forEach(id => {
+        const t = topicsData.find(x => x.id === id);
+        const content = savedContent[id] || t.content;
 
-        // Initialize on load
-        window.onload = () => {
-            initTopics();
-        };
-    </script>
+        const div = document.createElement('div');
+        // Prevent huge blocks from breaking awkwardly
+        div.style.cssText = 'margin-bottom: 30px; page-break-inside: auto;';
+        div.innerHTML = `
+          <h2 style="color:#4e54c8; font-size:16pt; border-bottom:1px solid #ddd; padding-bottom:5px; margin-bottom: 15px;">
+            ${t.id}. ${t.title}
+          </h2>
+          <div style="text-align:justify;">${content}</div>
+        `;
+
+        // Styling fix for PDF
+        const highlights = div.querySelectorAll('.highlight');
+        highlights.forEach(h => {
+          h.style.cssText = 'background:#eef2ff; border-left:4px solid #4e54c8; padding:10px; margin:10px 0; font-weight:500; font-size: 11pt;';
+        });
+
+        body.appendChild(div);
+      });
+
+      const conc = savedContent['conclusion'] || document.getElementById('finalConclusion').innerHTML;
+      const cDiv = document.createElement('div');
+      cDiv.style.cssText = 'margin-top:40px; border-top:2px solid #4e54c8; padding-top:20px; page-break-inside: avoid;';
+      cDiv.innerHTML = `<h3 style="color:#4e54c8;">UMUMIY XULOSA</h3>${conc}`;
+      body.appendChild(cDiv);
+    }
+
+    function generatePDF() {
+      saveChanges(); // Auto-save
+      preparePDFContent();
+
+      const loader = document.getElementById('loader');
+      loader.classList.add('active');
+      
+      const element = document.getElementById('pdfOutput');
+      
+      // Fix visual glitch: keep it fixed but visible to html2canvas
+      element.style.left = '0'; 
+      element.style.zIndex = '-1'; // Behind everything but visible
+
+      const opt = {
+        margin: [10, 15, 10, 15],
+        filename: 'Mustaqil_Ish.pdf',
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true, scrollY: 0 },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+      };
+
+      // Slight delay to ensure DOM render
+      setTimeout(() => {
+        html2pdf().set(opt).from(element).save().then(() => {
+          loader.classList.remove('active');
+          element.style.left = '-9999px';
+        }).catch(err => {
+          console.error(err);
+          loader.classList.remove('active');
+          alert("Xatolik: PDF yaratib bo'lmadi.");
+        });
+      }, 500);
+    }
+
+    // Start the app
+    window.onload = init; // Ensures DOM is ready before running init
+  </script>
 </body>
 </html>
