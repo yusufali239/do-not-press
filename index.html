@@ -546,3 +546,130 @@ Uch asr majhulining 5 turi va hukmi:
     ];
 
     // ======================================================
+    // DASTUR MANTIQI
+    // ======================================================
+
+    // 1. Menyuni yaratish
+    function initMenu() {
+        const menu = document.getElementById('topicsMenu');
+        
+        db.forEach(section => {
+            let html = `<div class="chapter-block">
+                <div class="chapter-title">${section.chapter}</div>`;
+            
+            section.topics.forEach(topic => {
+                html += `
+                    <div class="topic-item">
+                        <input type="checkbox" id="chk_${topic.id}" onchange="handleSelection('${topic.id}')">
+                        <label for="chk_${topic.id}">${topic.title}</label>
+                    </div>`;
+            });
+            html += `</div>`;
+            menu.innerHTML += html;
+        });
+
+        // Sana qo'yish
+        const date = new Date().toLocaleDateString('uz-UZ');
+        document.getElementById('pdf-date').innerText = date;
+    }
+
+    // 2. Tanlov o'zgarganda
+    function handleSelection(id) {
+        const checkbox = document.getElementById(`chk_${id}`);
+        const container = document.getElementById('cards-container');
+        
+        if (checkbox.checked) {
+            // Ma'lumotni topish
+            let data = null;
+            db.forEach(s => {
+                const found = s.topics.find(t => t.id === id);
+                if (found) data = found;
+            });
+
+            if (data) {
+                const card = document.createElement('div');
+                card.className = 'info-card';
+                card.id = `card_${id}`;
+                card.innerHTML = `
+                    <div class="card-header">
+                        <div class="card-title">${data.title}</div>
+                        <button class="btn-remove" onclick="removeTopic('${id}')">❌ O'chirish</button>
+                    </div>
+                    <textarea class="content-editor" id="txt_${id}">${data.text}</textarea>
+                `;
+                container.appendChild(card);
+                card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        } else {
+            removeTopic(id);
+        }
+    }
+
+    // 3. O'chirish funksiyasi
+    function removeTopic(id) {
+        const card = document.getElementById(`card_${id}`);
+        if(card) card.remove();
+        
+        const chk = document.getElementById(`chk_${id}`);
+        if(chk) chk.checked = false;
+    }
+
+    // 4. PDF Generatsiya
+    function generatePDF() {
+        const name = document.getElementById('inpName').value;
+        const course = document.getElementById('inpCourse').value;
+        const cards = document.querySelectorAll('.info-card');
+
+        if (!name || !course) {
+            alert("Iltimos, Ism va Kursingizni kiriting!");
+            return;
+        }
+        if (cards.length === 0) {
+            alert("Iltimos, kamida bitta mavzuni tanlang!");
+            return;
+        }
+
+        // Ma'lumotlarni PDF shabloniga joylash
+        document.getElementById('pdf-student-name').innerText = name;
+        document.getElementById('pdf-student-course').innerText = course;
+
+        const pdfBody = document.getElementById('pdf-body');
+        pdfBody.innerHTML = '';
+
+        cards.forEach(card => {
+            const title = card.querySelector('.card-title').innerText;
+            const content = card.querySelector('textarea').value;
+
+            const section = document.createElement('div');
+            section.className = 'pdf-section';
+            section.innerHTML = `
+                <h3>${title}</h3>
+                <div class="pdf-text">${content}</div>
+                <hr style="margin-top: 15px; border: 0; border-top: 1px dashed #ccc;">
+            `;
+            pdfBody.appendChild(section);
+        });
+
+        // PDF yaratish
+        const element = document.getElementById('pdf-template');
+        element.style.display = 'block';
+
+        const opt = {
+            margin: 15,
+            filename: `Mustaqil_Ish_${name.replace(/\s+/g, '_')}.pdf`,
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { scale: 2 },
+            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        };
+
+        html2pdf().set(opt).from(element).save().then(() => {
+            element.style.display = 'none';
+        });
+    }
+
+    // Ishga tushirish
+    initMenu();
+
+</script>
+</body>
+</html>
