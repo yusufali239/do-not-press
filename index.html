@@ -163,8 +163,15 @@
     </div>
   </div>
 
-<div id="pdfWrapper"
-     style="position: fixed; top: 0; left: -9999px; width: 210mm; z-index: 9998; opacity: 1; pointer-events:none;">
+<div id="pdfWrapper" style="
+  position: fixed;
+  top: 0;
+  left: -9999px;
+  width: 794px;   /* ширина A4 при 96dpi */
+  background: white;
+  opacity: 1;
+  pointer-events: none;
+">
   <div id="pdfOutput"></div>
 </div>
 
@@ -1570,7 +1577,7 @@
       document.getElementById('editorSection').style.display = 'none';
     }
 function generatePDF() {
-  // 1) Сохраняем правки
+  // 1) Сохраняем правки из редактора
   selected.forEach(id => {
     const el = document.getElementById(`edit-${id}`);
     if (el) edits[id] = el.innerHTML;
@@ -1582,11 +1589,11 @@ function generatePDF() {
   // 2) Собираем PDF DOM
   const output = document.getElementById('pdfOutput');
   output.innerHTML = `
-    <div class="pdf-header">
-      <h1>MUSTAQIL ISH</h1>
-      <h3>Mavzu: Hadis ilmi (Mustalahul hadis)</h3>
-      <p style="margin-top:15px"><strong>Bajardi:</strong> ${name}</p>
-      <p><strong>Sana:</strong> ${new Date().toLocaleDateString('uz-UZ')}</p>
+    <div class="pdf-header" style="text-align:center; margin-bottom:30px; border-bottom:2px solid #000; padding-bottom:20px;">
+      <h1 style="font-size:19pt; margin:0;">MUSTAQIL ISH</h1>
+      <h2 style="font-size:16pt; margin:15px 0;">Hadis ilmi (Mustalahul hadis)</h2>
+      <p style="font-size:13pt; margin:10px 0;"><strong>Bajardi:</strong> ${name}</p>
+      <p style="font-size:13pt;"><strong>Sana:</strong> ${new Date().toLocaleDateString('uz-UZ')}</p>
     </div>
   `;
 
@@ -1615,10 +1622,10 @@ function generatePDF() {
 
   loader.classList.add('active');
 
-  // показываем output
+  // показываем output (на всякий)
   output.style.display = 'block';
 
-  // двигаем wrapper в нормальную позицию (всё равно opacity/pointer-events не мешают)
+  // двигаем wrapper в нормальную позицию, чтобы html2canvas увидел весь контент
   wrapper.style.left = '0';
 
   const opt = {
@@ -1642,17 +1649,16 @@ function generatePDF() {
     html2pdf().set(opt).from(output).save()
       .then(() => {
         loader.classList.remove('active');
-        output.style.display = 'none';
         wrapper.style.left = '-9999px';
       })
       .catch(err => {
         console.error(err);
         loader.classList.remove('active');
-        output.style.display = 'none';
         wrapper.style.left = '-9999px';
         alert("Xatolik: " + err.message);
       });
   }, 800);
 }
+</script>
 </body>
 </html>
