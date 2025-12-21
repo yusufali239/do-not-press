@@ -26,6 +26,7 @@
     }
     .container { max-width: 900px; margin: 0 auto; padding-bottom: 100px; }
     
+    /* ASOSIY STYLES */
     .card {
       background: var(--white);
       border-radius: 15px;
@@ -48,6 +49,7 @@
     }
     .card.selected .check-icon { background: var(--primary); border-color: var(--primary); }
 
+    /* BUTTONS */
     .btn {
       padding: 12px 25px; border: none; border-radius: 50px;
       color: white; font-weight: bold; cursor: pointer;
@@ -55,6 +57,7 @@
     }
     .btn:disabled { background: #ccc; cursor: not-allowed; }
     
+    /* ACTION BAR */
     .action-bar {
       position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
       background: white; padding: 15px 30px; border-radius: 50px;
@@ -62,6 +65,7 @@
       display: flex; gap: 15px; z-index: 100;
     }
 
+    /* EDITOR & INPUTS */
     input[type="text"] {
       width: 100%; padding: 15px; margin-bottom: 20px;
       border: 1px solid #ddd; border-radius: 10px; font-size: 16px;
@@ -71,6 +75,7 @@
       border: 2px dashed #ccc;
     }
 
+    /* LOADER */
     .loader {
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
       background: rgba(255,255,255,0.98); 
@@ -85,15 +90,18 @@
     }
     @keyframes spin { 100% { transform: rotate(360deg); } }
 
+    /* --- PDF CONTAINER (MUHIM QISM) --- */
+    /* Bu qism oddiy holatda ko'rinmaydi */
     #pdfOutput {
       display: none; 
       background: white;
-      width: 750px;
+      width: 750px; /* A4 proporsiyasi uchun fix o'lcham */
       padding: 40px;
       color: black;
       font-family: 'Times New Roman', serif;
     }
     
+    /* PDF ichidagi stillar */
     .pdf-header { text-align: center; border-bottom: 2px solid #000; padding-bottom: 20px; margin-bottom: 30px; }
     .pdf-topic { margin-bottom: 30px; page-break-inside: auto; }
     .pdf-title { color: #000; font-size: 16pt; font-weight: bold; margin-bottom: 10px; }
@@ -152,55 +160,420 @@
   </div>
 
   <script>
+    // DATA
     const topics = [
-      { id: 1, title: "Hanafiylarning taqsimoti", content: `<p><b>Hanafiy imomlarimiz xabarlarni uch qismga bo'lishgan:</b></p><div class='pdf-highlight'><b>1. MUTAVOTIR:</b> Surat va ma'no jihatidan shubhasiz, to'liq bog'lanishga ega xabar.</div><div class='pdf-highlight'><b>2. MASHHUR:</b> Sahobalar davrida ahod, keyin tobi'inlar davrida mutavotir bo'lgan.</div><div class='pdf-highlight'><b>3. AHOD:</b> Har ikki jihatdan shubhali xabar.</div>` },
-      { id: 2, title: "Muhaddislarning taqsimoti", content: `<p><b>Muhaddislar ikki qismga:</b> Mutavotir va Xabarul-vohid.</p><p>Xabarul-vohid uch turga: mashhur, aziz, g'arib.</p><div class='pdf-highlight'>Ibn Hajar va Ibn Humom ikki istiloh farqiga e'tibor qaratgan.</div>` },
-      { id: 3, title: "Ikki istilohni solishtirish", content: `<p><b>Har bir guruh o'z faniga mos yo'l tanlagan:</b></p><div class='pdf-highlight'>MUHADDISLAR: Isnodga e'tibor, roviylar soniga qarab bo'lishgan.</div><div class='pdf-highlight'>FAQIHLAR: Matnga e'tibor, amal qilish jihatidan bo'lishgan.</div>` },
-      { id: 4, title: "Mutavotir ta'rifi", content: `<p><b>LUG'AVIY:</b> Ketma-ket kelish.</p><div class='pdf-highlight'><b>ISTILOHDA:</b> O'z-o'zidan ilm hosil qiladigan jamoa xabari (Imom Ibn as-Sa'atiy).</div><p>Hanafiy muhaqqiqlar (Abdulaziz al-Buxoriy, Ibn Humom) bu ta'rifni afzal ko'rgan.</p>` },
-      { id: 5, title: "Mutavotir shartlari", content: `<div class='pdf-highlight'><b>1-SHART:</b> Ko'plik - yolg'onda kelishish imkonsiz.</div><div class='pdf-highlight'><b>2-SHART:</b> Barcha tabaqalarda ko'plik (3 asr).</div><div class='pdf-highlight'><b>3-SHART:</b> Hissiyotga asoslanish (aqliy emas).</div>` },
-      { id: 6, title: "Mutavotir hukmi", content: `<div class='pdf-highlight'><b>ZARURIY ILM BERADI! Inkor qilgan KOFIR.</b></div><p><b>QozÄ± Iso:</b> "Kim rad etsa, Rasululloh ﷺ ni rad etgandek."</p><div class='pdf-highlight'>Aniq son shart emas, mezon - ilm hosil bo'lishi.</div>` },
-      { id: 7, title: "Mutavotir turlari", content: `<p><b>Imom Kashmiri to'rt qismga:</b></p><p>1. Isnod mutavotiri<br>2. Tabaqa mutavotiri<br>3. Amal va meros mutavotiri<br>4. Umumiy qadr mutavotiri</p>` },
-      { id: 8, title: "Mashhur ta'rifi", content: `<div class='pdf-highlight'><b>Birinchi asrda ahod, ikkinchi va uchinchi asrlarda mutavotir bo'lgan xabar.</b></div><p>Uch asrdan keyin mashhurlik e'tiborga olinmaydi!</p>` },
-      { id: 9, title: "Uch asr chegarasi", content: `<div class='pdf-highlight'><b>1-ASR:</b> Sahobalar (110 h.y.)</div><div class='pdf-highlight'><b>2-ASR:</b> Tobi'inlar (180 h.y.)</div><div class='pdf-highlight'><b>3-ASR:</b> Tabe't-tobi'in (220 h.y.)</div>` },
-      { id: 10, title: "Mashhur hukmi", content: `<div class='pdf-highlight'>Mutavotir va ahod o'rtasida. "Tuma'nina" (xotirjamlik) beradi.</div><p>Inkor qilgan KOFIR emas, ADASHGAN.</p>` },
-      { id: 11, title: "Ahod ta'rifi", content: `<div class='pdf-highlight'>Mashhur va mutavotirga yetmagan har qanday xabar.</div><p>Istilohdagi va lug'aviy ma'no har doim mos kelmaydi!</p>` },
-      { id: 12, title: "Ahod hukmi", content: `<div class='pdf-highlight'>ILM BERMAYDI, AMAL QILISHNI VOJIB qiladi.</div><p><b>Saraxsiy:</b> "Amalni vojib qiladi, ilmni emas."</p>` },
-      { id: 13, title: "Hudud masalasi", content: `<div class='pdf-highlight'><b>ROJIH:</b> Hudud ahod bilan isbotlanadi (Abu Yusuf, ko'pchilik).</div><p>"Hududni shubha bilan daf eting" - sababdagi shubha, dalildagi emas!</p>` },
-      { id: 14, title: "Aql sharti", content: `<div class='pdf-highlight'>To'liq aql - balog'at bilan hosil bo'ladi.</div><p>Bolaning rivoyati hujjat emas.</p>` },
-      { id: 15, title: "Balog'at - ado sharti", content: `<div class='pdf-highlight'>Balog'at ADO ETISH sharti, TAHAMMUL sharti emas!</div><p>Ibn Abbos 13, Ibn Zubayr 10, Nu'mon 8 yoshda eshitgan.</p>` },
-      { id: 16, title: "Tahammul yoshi", content: `<div class='pdf-highlight'>Yosh bilan belgilanmaydi. Mezon - tushunish!</div><p>5 yoshdan kichik tushunsa - sahih.</p>` },
-      { id: 17, title: "Islom sharti", content: `<div class='pdf-highlight'>Roviy musulmon bo'lishi shart. Kofirning rivoyati qabul qilinmaydi.</div><p>Sabab - dushmanlik gumoni.</p>` },
-      { id: 18, title: "Islom - ado vaqtida", content: `<div class='pdf-highlight'>Islom ADO ETISH vaqtida shart, TAHAMMUL vaqtida emas!</div><p>Kofir eshitib, keyin musulmon bo'lsa - qabul qilinadi.</p>` },
-      { id: 19, title: "Zabt ta'rifi", content: `<div class='pdf-highlight'>To'g'ri eshitish, tushunish, saqlash va barqaror tutish.</div><p>Zabt xatodan ustun bo'lishi kerak!</p>` },
-      { id: 20, title: "Zabt turlari", content: `<div class='pdf-highlight'><b>ZOHIRIY:</b> Lafz va lug'aviy ma'no (SHART).</div><div class='pdf-highlight'><b>BOTINIY:</b> Fiqhiy ma'no, faqih bo'lish (AFZALLIK).</div><p>Sadr zabti / Kitob zabti.</p>` },
-      { id: 21, title: "G'ofil roviy", content: `<p>Hushyorlik ustun bo'lsa - qabul qilinadi.</p><div class='pdf-highlight'>G'aflat ustun bo'lsa - qabul qilinmaydi!</div>` },
-      { id: 22, title: "Zabtli roviy tanish", content: `<div class='pdf-highlight'>1. Shuhrat<br>2. Zabtli roviylarga muvofiqligi</div>` },
-      { id: 23, title: "Adolat ta'rifi", content: `<div class='pdf-highlight'>Taqvo va muruwwatga undaydigan mustahkam sifat.</div><p>Hadisda: Katta gunohlarni tark etish yetarli.</p>` },
-      { id: 24, title: "Hadisda adolat", content: `<div class='pdf-highlight'>1. Katta gunohlarni tark<br>2. Kichik gunohlarda turib olmaslik<br>3. Muruwwatni buzmaslik</div>` },
-      { id: 25, title: "Adolat turlari", content: `<div class='pdf-highlight'><b>ZOHIRIY:</b> Islomning zohiri bilan.</div><div class='pdf-highlight'><b>BOTINIY:</b> Haqiqiy daraja (ikkisi ham shart!).</div>` },
-      { id: 26, title: "Nabiyga yolg'on", content: `<div class='pdf-highlight'>1-QARASH: Hech qachon qabul qilinmaydi (jazo).</div><p>2-QARASH: Tavba qilsa qabul qilinadi.</p>` },
-      { id: 27, title: "Adolatli roviydan rivoyat", content: `<div class='pdf-highlight'>HANAFIYLAR: Uch asrda ta'dil, keyin yo'q!</div>` },
-      { id: 28, title: "Mubham ta'dil", content: `<div class='pdf-highlight'>Hanafiylar: "Ishonchli kishi aytdi" - uch asrda qabul qilinadi!</div>` },
-      { id: 29, title: "Bid'at ta'rifi", content: `<div class='pdf-highlight'>Sahoba yo'lida bo'lmagan, shariat talab qilmagan yangilik.</div><p>Ikki turi: Kufrga va Fisqqa olib boruvchi.</p>` },
-      { id: 30, title: "Bid'atchi rivoyati", content: `<p><b>1-MAZHAB (Saraxsiy):</b> Mutlaqo qabul qilinmaydi.</p><p><b>2-MAZHAB (Ibn Humom):</b> Yolg'onni halol sanamaasa - qabul qilinadi.</p><p><b>3-MAZHAB (Ibn Hajar):</b> Da'vat qilmasa - qabul qilinadi.</p>` },
-      { id: 31, title: "Buxoriy va xorijiylar", content: `<div class='pdf-highlight'>Buxoriy xorijiylardan (Imron) hadis olgan - u hadisda ayblangan emas edi!</div>` },
-      { id: 32, title: "Majhul - kirish", content: `<p><b>Muhammad 'Avvoma:</b> "Hanafiylar 'majhul'ini bayon qilish zarur - odamlar aralashtirib yuborishgan!"</p><div class='pdf-highlight'>Birinchi gapirgan: QozÄ± Iso ibn Abon (221 h.y.) - Imom Muhammad shogirdi.</div>` },
-      { id: 33, title: "Roviylarning 3 toifasi", content: `<div class='pdf-highlight'><b>1-TOIFA:</b> Rivoyat va fiqh bilan tanilgan - qabul qilinadi.</div><div class='pdf-highlight'><b>2-TOIFA:</b> Faqat rivoyat bilan tanilgan - qabul qilinadi.</div><div class='pdf-highlight'><b>3-TOIFA:</b> MAJHUL - kam tanilgan (5 turga bo'linadi).</div>` },
-      { id: 34, title: "Hanafiylar nazarida majhul", content: `<div class='pdf-highlight'>Hadis rivoyati bilan mashhur emas, kam rivoyat qilgan roviy.</div><p>"Bir yoki ikki hadis" - kamlikni ifodalash!</p>` },
-      { id: 35, title: "Majhulga misollar", content: `<p>Vobisa: 8 hadis, 18 kishi<br>Ma'qil: 4 hadis, 9 kishi<br>Salama: 7 hadis, 5 kishi</p><div class='pdf-highlight'>Undan kimlar rivoyat qilgani ahamiyatsiz!</div>` },
-      { id: 36, title: "Mastur = Majhul", content: `<div class='pdf-highlight'>Abdulaziz al-Buxoriy: "Majhul va mastur - bitta!"</div><p>Faqat 3 asr "majhul", keyingisi "mastur".</p>` },
-      { id: 37, title: "Muhaddislar istilohi", content: `<p>Majhul al-'ayn: 1 kishi rivoyat qilgan.<br>Majhul al-hol (mastur): 2+ kishi, lekin ta'dil/jarh yo'q.</p><div class='pdf-highlight'>Hanafiylar: rivoyatlari kami muhim. Muhaddislar: kimlar rivoyat qilgani muhim.</div>` },
-      { id: 38, title: "Majhul 5 qismi - 1,2", content: `<div class='pdf-highlight'><b>1-QISM:</b> Salaf qabul qilgan - QABUL QILINADI!</div><div class='pdf-highlight'><b>2-QISM:</b> Salaf sukut qilgan - QABUL QILINADI!</div>` },
-      { id: 39, title: "Majhul 5 qismi - 3", content: `<div class='pdf-highlight'><b>3-QISM:</b> Ixtilof qilingan - QIYOSGA MOS KELSA QABUL QILINADI!</div><p><b>MISOL:</b> Ma'qil ibn Sinon - Ibn Mas'ud qabul, Ali rad etgan.</p>` },
-      { id: 40, title: "Majhul 5 qismi - 4,5", content: `<div class='pdf-highlight'><b>4-QISM:</b> Salaf rad etgan - RAD ETILADI!</div><div class='pdf-highlight'><b>5-QISM:</b> Salaf bilmagan - VOJIB EMAS, qiyosga mos kelsa JOIZ!</div>` },
-      { id: 41, title: "Saraxsiy bayoni", content: `<p>"5-qism bilan amal qilish vojib emas, qiyosga mos kelsa joiz. Chunki birinchi davrda adolat ustun. Lekin salaf bilmagani uchun xato ehtimoli bor."</p><div class='pdf-highlight'>Shariatda vojiblik bunday zaif yo'l bilan sobit bo'lmaydi!</div>` },
-      { id: 42, title: "Abu Hanifa va mastur", content: `<p>"Abu Hanifa mastur guvoh bilan hukm qilishni joiz ko'rgan, vojib qilmagan. U 3-asrda yashagan, o'sha davrda adolat ustun."</p><div class='pdf-highlight'>Bizning zamonimizda: qabul qilinmaydi, fisq ustun!</div>` },
-      { id: 43, title: "Xulosa - Majhul", content: `<div class='pdf-highlight'><b>1.</b> 3 asr "MAJHUL", keyin "MASTUR".</div><div class='pdf-highlight'><b>2.</b> Ikkalasi aslida BITTA.</div><div class='pdf-highlight'><b>3.</b> 3 asr majhuli tafsilot bilan qabul qilinadi (vojib emas, joiz).</div><div class='pdf-highlight'><b>4.</b> SHART: Qiyosga mos bo'lishi. 3 asrdan keyingi mastur - qabul qilinmaydi!</div>` }
-    ];
+  {
+    id: 1,
+    title: "Xabarlarning bo‘linishi (Hanafiylar va Muhaddislar)",
+    content: `
+      <h3>1-BOB: Xabarlarning mutavotir, mashhur va ahodga bo‘linishi</h3>
+
+      <h4>1) Hanafiylarning taqsimoti (ittisol — Rasululloh ﷺ ga bog‘lanish jihatidan)</h4>
+      <ul>
+        <li><b>Mutavotir</b> — <u>surat jihatidan ham, ma’no jihatidan ham</u> mutlaqo shubhasiz; bog‘lanish (ittisol) to‘liq.</li>
+        <li><b>Mashhur</b> — <u>surat jihatidan</u> shubha bor (1-asrda ahod bo‘lgan), lekin <u>ma’no jihatidan</u> shubha yo‘q (2–3-asrlarda mutavotir bo‘lib, ummat qabul qilgan).</li>
+        <li><b>Xabarul-vohid (Ahod)</b> — <u>surat jihatidan ham</u> shubha bor (1-asrda ahod), <u>ma’no jihatidan ham</u> shubha bor (mutavotir bo‘lmagan va 2–3-asrlarda ummat tomonidan qabul qilinmagan).</li>
+      </ul>
+
+      <div class="pdf-highlight">
+        Xulosa: hanafiylar nazarida xabarlar 3 qism: <b>mutavotir</b>, <b>mashhur</b>, <b>ahod</b>.
+      </div>
+
+      <h4>2) Muhaddislarning taqsimoti</h4>
+      <ul>
+        <li>Ko‘pchilik muhaddislarga ko‘ra xabarlar 2 qism: <b>Mutavotir</b> va <b>Xabarul-vohid</b>.</li>
+        <li>Keyin <b>xabarul-vohid</b> 3 qismga bo‘linadi: <b>mashhur</b>, <b>aziz</b>, <b>g‘arib</b>.</li>
+      </ul>
+
+      <p><b>Eslatma:</b> To‘liq bog‘lanishning yana bir turi bor — gapiruvchidan bevosita og‘zaki eshitish.
+      Bu mutavotirdan ham kuchliroq (eshitish + ko‘rish tushunishga yaqinroq).</p>
+    `
+  },
+
+  {
+    id: 2,
+    title: "Mutavotir xabar (ta’rif, shartlar, hukm, turlari)",
+    content: `
+      <h3>2-BOB: Mutavotir xabar</h3>
+
+      <h4>1) Mutavotir xabarning ta’rifi</h4>
+
+      <p><b>Lug‘atda:</b> “Tavotur” — narsalarning ketma-ket kelishi bo‘lib, ular orasida bo‘shliq va vaqt oralig‘i bo‘lishidir.
+      Agar uzluksiz (bo‘shliqsiz) bo‘lsa, bu “mutavotir” emas, oddiy ketma-ketlik bo‘ladi.</p>
+
+      <p><b>Istilohda (Ibn as-Sa’atiy):</b> <b>“O‘z-o‘zidan ilmni hosil qiladigan jamoa xabari.”</b></p>
+
+      <p><b>“Ilmni o‘z-o‘zidan”</b> deb cheklanishi sababi:
+      tashqi qo‘shimcha dalil bilan rostligi bilinadigan xabarlar bu ta’rifdan chiqadi (masalan, aql daliliga mos kelgan jamoa xabari).</p>
+
+      <h4>2) Mutavotir xabarning shartlari (Hanafiy muhaqqiqlar nazarida)</h4>
+      <ol>
+        <li>
+          <b>Ko‘plik sharti:</b> xabar beruvchilar shunchalik ko‘p bo‘lsinki,
+          odatda aql ularning ataylab yolg‘on ustida kelishib olishini yoki bilmasdan yolg‘onga mos tushib qolishini imkonsiz deb bilsin.
+        </li>
+        <li>
+          <b>Tabaqalarda davomiylik:</b> bu ko‘plik isnodning barcha tabaqalarida bo‘lishi kerak.
+          <br><i>Eslatma:</i> tabaqalar son jihatidan “bir xil” bo‘lishi shart emas — har tabaqa eshituvchiga ilm bersa yetadi.
+          <br><b>Muqim qoida:</b> hanafiylar nazarida mutavotirlik <b>uch asr</b> (sahoba, tobi‘in, tobi‘ut-tobi‘in) bilan bog‘liq;
+          undan keyingi davrlar mutavotirlikda e’tiborga olinmaydi.
+        </li>
+        <li>
+          <b>Sezgiga (his) asoslanish:</b> xabar mazmuni hissiy bo‘lishi kerak; aqliy masala bo‘lmasligi lozim.
+        </li>
+      </ol>
+
+      <h4>3) “Sezgiga asoslanish” degani nima?</h4>
+      <p>Mutavotir aqliy masalalarda bo‘lmaydi.
+      Masalan, “dunyo yaratilgandir” mazmuni aqliy — mazmun jihatidan mutavotir bo‘lmaydi.
+      Lekin “Bag‘dod ahli shuni aytdi” degan narsa — hissiy; bu jihatdan mutavotir bo‘lishi mumkin.</p>
+
+      <h4>Muhim savol</h4>
+      <p>Rasululloh ﷺ dan mutavotir bo‘lib kelgan “Kim ‘La ilaha illalloh’ desa jannatga kiradi” kabi hadislar zaruriy ilm beradimi?</p>
+      <p><b>Javob:</b> bu yerda 2 masala bor:
+      <br>— bu so‘zning Rasululloh ﷺ ga nisbat berilishi — hissiy (zaruriy ilm).
+      <br>— mazmuni (jannatga kirishi) — aqliy (istidloliy ilm).</p>
+
+      <h4>4) Mutavotir xabarning hukmi</h4>
+      <div class="pdf-highlight">
+        Ko‘pchilik ulamolar orasida ixtilof yo‘q: <b>mutavotir xabar zaruriy ilm beradi</b>.
+        <br>Uni inkor qilgan kishi <b>kofir</b> bo‘ladi.
+      </div>
+
+      <p>Qozı Iso ibn Aban: bu ilm majburiy-zaruriy; kim rad etsa Rasululloh ﷺ ni rad etgandek bo‘ladi — shuning uchun Islomdan chiqadi.</p>
+
+      <h4>5) Mutavotirda aniq son shartmi?</h4>
+      <p><b>Hanafiylar:</b> aniq son shart emas.
+      Mezon — <b>ilm va ishonch hosil bo‘lishi</b>. Qachon ilm hosil bo‘lsa, xabar mutavotir hisoblanadi.</p>
+
+      <h4>6) Mutavotirning turlari</h4>
+      <p>Muhaddislar: <b>lafziy</b> va <b>ma’naviy</b> deya bo‘lishgan.</p>
+      <p>Imom Kashmiri taqsimoti (kengroq):</p>
+      <ul>
+        <li><b>Isnod mutavotiri</b></li>
+        <li><b>Tabaqa mutavotiri</b></li>
+        <li><b>Amal va meros mutavotiri</b></li>
+        <li><b>Umumiy qadr mutavotiri</b></li>
+      </ul>
+    `
+  },
+
+  {
+    id: 3,
+    title: "Mashhur xabar (ta’rif, istiloh farqi, hukmi)",
+    content: `
+      <h3>3-BOB: Mashhur xabar</h3>
+
+      <h4>1) Mashhur xabarning ta’rifi</h4>
+      <p><b>Lug‘atda:</b> “Mashhur” — ravshan, ochiq-oydin, keng tarqalgan.</p>
+
+      <p><b>Hanafiy istilohida:</b>
+      Mashhur xabar — <b>1-asrda ahod</b> bo‘lgan, keyin <b>2–3-asrlarda</b> (tobi‘inlar va tobi‘ut-tobi‘inlar davrida)
+      <b>mutavotir</b> bo‘lib ketgan xabardir. Shundan keyin uni yolg‘on ustida kelishib olishlari tasavvur qilinmaydigan jamoa rivoyat qiladi.</p>
+
+      <div class="pdf-highlight">
+        Muhim shart: hanafiylar nazarida <b>uch asrdan keyin</b> yuzaga kelgan mashhurlik/mutavotirlik e’tiborga olinmaydi.
+      </div>
+
+      <h4>2) Muhaddislar istilohida “mashhur”</h4>
+      <p>Muhaddislar nazarida mashhur — <b>2 kishidan ortiq yo‘l</b> bilan rivoyat qilinadigan,
+      lekin <b>mutavotir darajasiga yetmagan</b> xabardir.</p>
+
+      <h4>3) Mashhur xabarning hukmi</h4>
+      <p>Hanafiylarning ko‘pchilik qarashi: mashhur xabar <b>yaqin ehtimolli gumon</b> beradi.
+      Hanafiylar buni <b>“ṭuma’nina (xotirjamlik)”</b> deb atashadi:
+      qalb asosan xotirjam bo‘ladi, faqat 1-asrda ahod bo‘lganini eslaganda ozgina ikkilanish qoladi.</p>
+
+      <p><b>Dalil:</b> 2–3-asrda mutavotir bo‘lsa ham, 1-asrda roviylar soni kam bo‘lgani sababli xato ehtimoli to‘liq yo‘qolmagan.</p>
+
+      <div class="pdf-highlight">
+        Shu sabab: ko‘pchilik hanafiylar nazarida mashhur xabarni inkor qilgan kishi <b>kofir emas</b>,
+        balki <b>adashgan (zall)</b> hisoblanadi.
+      </div>
+    `
+  },
+
+  {
+    id: 4,
+    title: "Ahod xabarlar (Xabarul-vohid) — ta’rif va hukm",
+    content: `
+      <h3>4-BOB: Ahod xabarlar (Xabarul-vohid)</h3>
+
+      <h4>1) Xabarul-vohidning ta’rifi</h4>
+
+      <p><b>Lug‘atda:</b> faqat bitta kishi rivoyat qilgan xabar.</p>
+
+      <p><b>Istilohda (Hanafiylar):</b> mashhurlik va mutavotir darajasiga yetmagan <b>har qanday xabar</b>.
+      Uni 1 kishi, 2–3 kishi yoki undan ko‘p kishi rivoyat qilsa ham — agar mashhur/mutavotir bo‘lmasa — istilohda baribir <b>xabarul-vohid</b> bo‘ladi.</p>
+
+      <p><b>Natija:</b> istilohdagi “vohid” doim lug‘aviy “vohid” bilan mos kelavermaydi:
+      2–3 kishining rivoyati lug‘atda “vohid” emas, lekin mashhur bo‘lmagani uchun istilohda “xabarul-vohid” sanaladi.</p>
+
+      <p><b>Muhaddislar istilohida:</b> mutavotir shartlari yo‘q xabar. Ular uni 3 qism deydi: mashhur, aziz, g‘arib.</p>
+
+      <h4>2) Xabarul-vohidning hukmi</h4>
+      <div class="pdf-highlight">
+        Hanafiylar ittifoqiga ko‘ra: xabarul-vohid (shartlari bo‘lsa) <b>ilm bermaydi</b>,
+        lekin <b>amal qilishni vojib qiladigan kuchli gumon</b> beradi.
+      </div>
+    `
+  },
+
+  // Qolganlari PART 2 da to‘liq qilib beriladi (Zabt, Adolat, Bid’atchi, Mastur/majhul va h.k.)
+  {
+  id: 5,
+  title: "Roviy shartlari: Aql",
+  content: `
+    <h3>5-BOB: Roviyda aql sharti</h3>
+
+    <h4>1) Aql shartining ma’nosi</h4>
+    <p>Roviy <b>aql egasi</b> bo‘lishi shart. Aql yo‘q bo‘lsa, xabarni tushunish, yodlash va yetkazish mumkin bo‘lmaydi.</p>
+
+    <h4>2) Aqlga zid holatlar</h4>
+    <ul>
+      <li><b>Majnun (aqli yo‘q)</b> — rivoyati mutlaqo qabul qilinmaydi.</li>
+      <li><b>Hushsiz / telbalik holati</b> — shu paytdagi rivoyati olinmaydi.</li>
+      <li><b>Bola</b> — balog‘atga yetmagan bo‘lsa, rivoyati qabul qilinmaydi.</li>
+    </ul>
+
+    <div class="pdf-highlight">
+      Xulosa: Aql — roviylikning asosiy poydevori. Aqlsiz roviy = ishonchsiz xabar.
+    </div>
+  `
+},
+
+{
+  id: 6,
+  title: "Roviy shartlari: Islom",
+  content: `
+    <h3>6-BOB: Roviyda Islom sharti</h3>
+
+    <h4>1) Islom shartining sababi</h4>
+    <p>Hadis — <b>shariat dalili</b>. Uni yetkazuvchi shariatni hurmat qiluvchi bo‘lishi kerak.</p>
+
+    <h4>2) Kofirning rivoyati</h4>
+    <ul>
+      <li><b>Kofir holida rivoyat qilsa</b> — qabul qilinmaydi.</li>
+      <li><b>Kofir bo‘lib eshitib, keyin musulmon bo‘lib rivoyat qilsa</b> — qabul qilinadi (ko‘pchilik ulamolar nazarida).</li>
+    </ul>
+
+    <p>Sababi: rivoyat paytida u Islomga sodiq bo‘lgan bo‘ladi.</p>
+
+    <div class="pdf-highlight">
+      Mezon — <b>rivoyat qilish vaqtidagi holat</b>, eshitish vaqtidagi emas.
+    </div>
+  `
+},
+
+{
+  id: 7,
+  title: "Zabt (yodlash va aniqlik)",
+  content: `
+    <h3>7-BOB: Zabt (Roviyning aniqligi)</h3>
+
+    <h4>1) Zabtning ta’rifi</h4>
+    <p><b>Zabt</b> — roviy eshitgan narsasini <b>aniq yodlab</b>, keyinchalik <b>o‘zgartirmasdan yetkazish qobiliyati</b>.</p>
+
+    <h4>2) Zabtning ikki turi</h4>
+    <ul>
+      <li>
+        <b>Zabt as-sadr</b> — yoddan mustahkam saqlash.
+        <br><i>(xotirasi kuchli roviy)</i>
+      </li>
+      <li>
+        <b>Zabt al-kitab</b> — yozma manbani buzmasdan saqlash.
+        <br><i>(kitobiga suyanadigan roviy)</i>
+      </li>
+    </ul>
+
+    <h4>3) Zabtning buzilishi nimada bilinadi?</h4>
+    <ul>
+      <li>Ko‘p xato qilish</li>
+      <li>Roviylarning ishonchli rivoyatlariga zid kelish</li>
+      <li>Bir hadisni turli joyda qarama-qarshi qilib aytish</li>
+    </ul>
+
+    <div class="pdf-highlight">
+      Zabt yo‘q bo‘lsa — roviy ishonchli emas, hatto taqvodor bo‘lsa ham.
+    </div>
+  `
+},
+
+{
+  id: 8,
+  title: "Adolat (axloqiy ishonchlilik)",
+  content: `
+    <h3>8-BOB: Adolat</h3>
+
+    <h4>1) Adolatning ta’rifi</h4>
+    <p><b>Adolat</b> — roviy <b>katta gunohlardan yiroq</b>, <b>kichik gunohlarda odatlanmagan</b>,
+    hamda <b>muruwwat</b> (insoniy sha’n) ni saqlagan bo‘lishidir.</p>
+
+    <h4>2) Adolatga zid holatlar</h4>
+    <ul>
+      <li>Katta gunoh qilish</li>
+      <li>Kichik gunohda doimiylik</li>
+      <li>Muruwwatni buzadigan ishlar (odamlar nazarida pastlik)</li>
+    </ul>
+
+    <h4>3) Muruwwat nima?</h4>
+    <p>Jamiyatda odob va sha’n hisoblangan narsalarni saqlash.
+    Masalan: ochiq-oydin past ishlar, behayo harakatlar — muruwwatga zid.</p>
+
+    <h4>4) Adolat va zabt farqi</h4>
+    <ul>
+      <li><b>Adolat</b> — axloqiy ishonchlilik</li>
+      <li><b>Zabt</b> — ilmiy aniqlik</li>
+    </ul>
+
+    <div class="pdf-highlight">
+      Roviy uchun <b>ikkalasi ham shart</b>: adolat bor, zabt yo‘q → rivoyat olinmaydi.
+    </div>
+  `
+},
+ {
+  id: 9,
+  title: "Bid’atchi roviyning rivoyati",
+  content: `
+    <h3>9-BOB: Bid’atchi roviyning rivoyati</h3>
+
+    <h4>1) Bid’at nima?</h4>
+    <p>Bid’at — Qur’on va sunnatda bo‘lmagan e’tiqod yoki amalni din nomidan kiritish.</p>
+
+    <h4>2) Bid’atchilar turlari</h4>
+    <ul>
+      <li><b>Kufrga olib boruvchi bid’at</b> — masalan, sahobalarni kofirga chiqarish.</li>
+      <li><b>Kufrga olib bormaydigan bid’at</b> — masalan, ba’zi aqidaviy xatolar.</li>
+    </ul>
+
+    <h4>3) Hanafiylar qarashi</h4>
+    <ul>
+      <li>Agar bid’ati <b>kufrga olib borsa</b> — rivoyati <b>mutlaqo qabul qilinmaydi</b>.</li>
+      <li>Agar bid’ati <b>kufrga olib bormasa</b>:
+        <ul>
+          <li>Yolg‘onchi bo‘lmasa</li>
+          <li>Bid’atini targ‘ib qilmasa</li>
+          <li>Rivoyati bid’atini kuchaytirmasa</li>
+        </ul>
+        → <b>rivoyati qabul qilinadi</b>.
+      </li>
+    </ul>
+
+    <h4>4) Muhaddislar qarashi</h4>
+    <p>Ko‘pchilik muhaddislar ham xuddi shu mezonlarga amal qiladi,
+    lekin ba’zilari bid’atchidan ehtiyot chorasi sifatida rivoyat olmaydi.</p>
+
+    <div class="pdf-highlight">
+      Mezon: yolg‘on + bid’atni yoyish xavfi bo‘lmasa — rivoyat olinishi mumkin.
+    </div>
+  `
+},
+
+{
+  id: 10,
+  title: "Mastur va Majhul roviylar",
+  content: `
+    <h3>10-BOB: Mastur va Majhul roviy</h3>
+
+    <h4>1) Majhul roviy</h4>
+    <p><b>Majhul</b> — roviy haqida yetarli ma’lumot yo‘q.</p>
+
+    <ul>
+      <li><b>Majhul al-‘ayn</b> — faqat bitta kishi rivoyat qilgan, boshqalar tanimaydi.</li>
+      <li><b>Majhul al-hal</b> — shaxsi ma’lum, lekin adolat/zabt noma’lum.</li>
+    </ul>
+
+    <h4>2) Mastur roviy</h4>
+    <p><b>Mastur</b> — tashqi ko‘rinishda solih, lekin ichki holati (adolat darajasi) tekshirilmagan.</p>
+
+    <h4>3) Hanafiylar qarashi</h4>
+    <ul>
+      <li>Mastur roviy — <b>qabul qilinadi</b>, agar ochiq fasodi bo‘lmasa.</li>
+      <li>Sababi: asl hol — musulmonda adolat bor deb hisoblanadi.</li>
+    </ul>
+
+    <h4>4) Muhaddislar qarashi</h4>
+    <ul>
+      <li>Majhul va mastur roviy — <b>zaif</b>.</li>
+      <li>Sababi: roviy tekshirilmaguncha ishonch hosil bo‘lmaydi.</li>
+    </ul>
+
+    <div class="pdf-highlight">
+      Bu yerda hanafiylar va muhaddislar yo‘li keskin farqlanadi.
+    </div>
+  `
+},
+
+{
+  id: 11,
+  title: "Hanafiylar va Muhaddislar o‘rtasidagi asosiy farqlar",
+  content: `
+    <h3>11-BOB: Asosiy metodologik farqlar</h3>
+
+    <table class="comparison-table">
+      <tr>
+        <th>Masala</th>
+        <th>Hanafiylar</th>
+        <th>Muhaddislar</th>
+      </tr>
+      <tr>
+        <td>Mashhur xabar</td>
+        <td>Ahod → keyin mutavotir</td>
+        <td>2+ yo‘l bilan kelgan xabar</td>
+      </tr>
+      <tr>
+        <td>Mastur roviy</td>
+        <td>Qabul qilinadi</td>
+        <td>Zaif</td>
+      </tr>
+      <tr>
+        <td>Xabarul-vohid</td>
+        <td>Ilm bermaydi, amal vojib</td>
+        <td>Sahih bo‘lsa amal qilinadi</td>
+      </tr>
+      <tr>
+        <td>Mutavotir mezoni</td>
+        <td>Ilm hosil bo‘lishi</td>
+        <td>Ko‘plik + shartlar</td>
+      </tr>
+    </table>
+  `
+},
+
+{
+  id: 12,
+  title: "Yakuniy xulosa va imtihon uchun qisqa algoritm",
+  content: `
+    <h3>12-BOB: Yakuniy xulosa</h3>
+
+    <h4>1) Hadisni baholash algoritmi</h4>
+    <ol>
+      <li>Xabar turi: mutavotir / mashhur / ahod</li>
+      <li>Roviyda aql va Islom bormi?</li>
+      <li>Adolat bormi?</li>
+      <li>Zabt bormi?</li>
+      <li>Bid’at yoki yolg‘on alomatlari yo‘qmi?</li>
+    </ol>
+
+    <h4>2) Qisqa eslab qolish formulasi</h4>
+    <div class="pdf-highlight">
+      Mutavotir → ilm + kufr hukmi<br>
+      Mashhur → tuma’nina + adashish<br>
+      Ahod → amal vojib, ilm yo‘q
+    </div>
+
+    <h4>3) Talaba uchun maslahat</h4>
+    <p>Hanafiy usulini tushunmasdan hadis ilmidagi ixtiloflarni tushunib bo‘lmaydi.
+    Bu farqlar “qarama-qarshilik” emas, balki <b>metod farqi</b>.</p>
+  `
+}
+
+];
 
     let selected = [];
     let edits = {};
 
+    // 1. DASTURNI YURGIZISH
     window.addEventListener('DOMContentLoaded', () => {
       const cont = document.getElementById('topicsContainer');
       cont.innerHTML = topics.map(t => `
@@ -213,10 +586,12 @@
       `).join('');
     });
 
+    // 2. LOGIKA
     function toggle(id) {
       if(selected.includes(id)) selected = selected.filter(x => x !== id);
       else selected.push(id);
       
+      // UI yangilash
       topics.forEach(t => {
          const el = document.getElementById(`card-${t.id}`);
          const ic = document.getElementById(`check-${t.id}`);
@@ -237,7 +612,9 @@
       if(selected.length === topics.length) selected = [];
       else selected = topics.map(t => t.id);
       
+      // UI Update (oddiyroq yo'l bilan)
       topics.forEach(t => {
+         // Force update visuals
          const el = document.getElementById(`card-${t.id}`);
          const ic = document.getElementById(`check-${t.id}`);
          if(selected.includes(t.id)) {
@@ -278,7 +655,9 @@
       document.getElementById('editorSection').style.display = 'none';
     }
 
+    // --- PDF GENERATSIYA (TUZATILGAN) ---
     function generatePDF() {
+      // 1. Ma'lumotlarni saqlash
       selected.forEach(id => {
         const el = document.getElementById(`edit-${id}`);
         if(el) edits[id] = el.innerHTML;
@@ -286,6 +665,7 @@
       const conclusion = document.getElementById('finalConclusion').innerHTML;
       const name = document.getElementById('studentName').value;
 
+      // 2. PDF shablonini to'ldirish
       const output = document.getElementById('pdfOutput');
       output.innerHTML = `
         <div class="pdf-header">
@@ -313,9 +693,11 @@
         </div>
       `;
 
+      // 3. GENERATSIYA JARAYONI
       const loader = document.getElementById('loader');
       loader.classList.add('active');
 
+      // SIR SHU YERDA: Elementni ko'rinadigan qilamiz, lekin ustidan loader yopib turadi
       output.style.display = 'block';
       
       const opt = {
@@ -326,10 +708,11 @@
         jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
       };
 
+      // Brauzer render qilishi uchun ozgina vaqt beramiz
       setTimeout(() => {
         html2pdf().set(opt).from(output).save().then(() => {
           loader.classList.remove('active');
-          output.style.display = 'none';
+          output.style.display = 'none'; // Qaytarib yashiramiz
           alert("PDF Muvaffaqiyatli yuklandi!");
         }).catch(err => {
           loader.classList.remove('active');
