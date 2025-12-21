@@ -93,13 +93,18 @@
     /* --- PDF CONTAINER (MUHIM QISM) --- */
     /* Bu qism oddiy holatda ko'rinmaydi */
     #pdfOutput {
-      display: none; 
-      background: white;
-      width: 750px; /* A4 proporsiyasi uchun fix o'lcham */
-      padding: 40px;
-      color: black;
-      font-family: 'Times New Roman', serif;
-    }
+  display: none;
+  background: white;
+  width: 210mm;           /* Точная ширина A4 */
+  min-height: 297mm;      /* Высота A4 */
+  padding: 20mm 15mm;     /* Отступы как в реферате */
+  margin: 0 auto;
+  box-sizing: border-box;
+  font-family: 'Times New Roman', serif;
+  font-size: 12pt;
+  line-height: 1.6;
+  color: black;
+}
     
     /* PDF ichidagi stillar */
     .pdf-header { text-align: center; border-bottom: 2px solid #000; padding-bottom: 20px; margin-bottom: 30px; }
@@ -1563,129 +1568,81 @@
       document.getElementById('selectionSection').style.display = 'block';
       document.getElementById('editorSection').style.display = 'none';
     }
-
-    // --- PDF GENERATSIYA (TUZATILGAN) ---
-    function generatePDF() {
-      // 1. Ma'lumotlarni saqlash
-      selected.forEach(id => {
-        const el = document.getElementById(`edit-${id}`);
-        if(el) edits[id] = el.innerHTML;
-      });
-      const conclusion = document.getElementById('finalConclusion').innerHTML;
-      const name = document.getElementById('studentName').value;
-
-      // 2. PDF shablonini to'ldirish
-      const output = document.getElementById('pdfOutput');
-      output.innerHTML = `
-        <div class="pdf-header">
-          <h1>MUSTAQIL ISH</h1>
-          <h3>Mavzu: Hadis ilmi (Mustalahul hadis)</h3>
-          <p style="margin-top:15px"><strong>Bajardi:</strong> ${name}</p>
-          <p><strong>Sana:</strong> ${new Date().toLocaleDateString()}</p>
-        </div>
-      `;
-
-      selected.forEach(id => {
-        const t = topics.find(x => x.id === id);
-        output.innerHTML += `
-          <div class="pdf-topic">
-            <div class="pdf-title">${t.id}. ${t.title}</div>
-            <div class="pdf-text">${edits[id] || t.content}</div>
-          </div>
-        `;
-      });
-
-      output.innerHTML += `
-        <div style="margin-top:40px; border-top:2px solid #000; padding-top:20px;">
-          <h3>XULOSA</h3>
-          <div class="pdf-text">${conclusion}</div>
-        </div>
-      `;
-
-      // 3. GENERATSIYA JARAYONI
-      const loader = document.getElementById('loader');
-      loader.classList.add('active');
-
-      // SIR SHU YERDA: Elementni ko'rinadigan qilamiz, lekin ustidan loader yopib turadi
-      
-      
-      const opt = {
-  margin: 15,
-  filename: `${name.replace(/\s/g, '_')}_Mustaqil_Ish.pdf`,
-  image: { type: 'jpeg', quality: 0.98 },
-  html2canvas: { scale: 2, useCORS: true, scrollY: 0 },
-  jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
-  pagebreak: { mode: ['css', 'legacy'] }
-};
-
-
-      // Brauzer render qilishi uchun ozgina vaqt beramiz
-      setTimeout(() => {
-        html2pdf().set(opt).from(output).save().then(() => {
-          loader.classList.remove('active');
-          output.style.display = 'none'; // Qaytarib yashiramiz
-          alert("PDF Muvaffaqiyatli yuklandi!");
-        }).catch(err => {
-          loader.classList.remove('active');
-          output.style.display = 'none';
-          alert("Xatolik: " + err.message);
-        });
-      }, 500);
-    }
-  </script> 
 function generatePDF() {
-  const loader = document.getElementById('loader');
-  loader.classList.add('active');
+  // Сохраняем все правки
+  selected.forEach(id => {
+    const el = document.getElementById(`edit-${id}`);
+    if (el) edits[id] = el.innerHTML;
+  });
 
-  const pdf = document.getElementById('pdfOutput');
-  pdf.innerHTML = '';
+  const conclusion = document.getElementById('finalConclusion').innerHTML;
+  const name = document.getElementById('studentName').value.trim() || "Talaba";
 
-  const name = document.getElementById('studentName').value;
-
-  // HEADER
-  pdf.innerHTML += `
-    <div class="pdf-header">
-      <h2>Hadis Ilmi – Mustaqil Ish</h2>
-      <p><b>Talaba:</b> ${name}</p>
+  const output = document.getElementById('pdfOutput');
+  output.innerHTML = `
+    <div class="pdf-header" style="text-align:center; margin-bottom:30px; border-bottom:2px solid #000; padding-bottom:20px;">
+      <h1 style="font-size:19pt; margin:0;">MUSTAQIL ISH</h1>
+      <h2 style="font-size:16pt; margin:15px 0;">Hadis ilmi (Mustalahul hadis)</h2>
+      <p style="font-size:13pt; margin:10px 0;"><strong>Bajardi:</strong> ${name}</p>
+      <p style="font-size:13pt;"><strong>Sana:</strong> ${new Date().toLocaleDateString('uz-UZ')}</p>
     </div>
   `;
 
-  // CONTENT
-  selected.sort((a,b)=>a-b).forEach(id => {
+  selected.sort((a,b) => a-b).forEach(id => {
     const t = topics.find(x => x.id === id);
-    const content = document.getElementById(\`edit-\${id}\`).innerHTML;
-
-    pdf.innerHTML += `
+    const content = edits[id] || t.content;
+    output.innerHTML += `
       <div class="pdf-topic">
-        <div class="pdf-title">${t.title}</div>
+        <div class="pdf-title">${t.id}. ${t.title}</div>
         <div class="pdf-text">${content}</div>
       </div>
     `;
   });
 
-  // CONCLUSION
-  pdf.innerHTML += `
-    <div class="pdf-topic">
-      <div class="pdf-title">Xulosa</div>
-      <div class="pdf-text">
-        ${document.getElementById('finalConclusion').innerHTML}
-      </div>
+  output.innerHTML += `
+    <div class="pdf-topic" style="margin-top:40px; border-top:2px solid #000; padding-top:20px;">
+      <div class="pdf-title">XULOSA</div>
+      <div class="pdf-text">${conclusion}</div>
     </div>
   `;
 
-  // EXPORT
-  html2pdf()
-    .set({
-      margin: 15,
-      filename: 'hadis-mustaqil-ish.pdf',
-      html2canvas: { scale: 2, scrollY: 0 },
-      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
-      pagebreak: { mode: ['css', 'legacy'] }
-    })
-    .from(pdf)
-    .save()
-    .then(() => loader.classList.remove('active'));
-}
+  // Показываем для рендера
+  output.style.display = 'block';
+  document.getElementById('loader').classList.add('active');
 
+  const opt = {
+    margin: [15, 15, 15, 15],
+    filename: `${name.replace(/\s+/g, '_')}_Hadis_Mustaqil_Ish.pdf`,
+    image: { type: 'jpeg', quality: 0.98 },
+    html2canvas: { 
+      scale: 2, 
+      useCORS: true, 
+      letterRendering: true,
+      scrollY: 0,
+      scrollX: 0,
+      windowWidth: 794  // A4 в пикселях при 96dpi
+    },
+    jsPDF: { 
+      unit: 'mm', 
+      format: 'a4', 
+      orientation: 'portrait' 
+    },
+    pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
+  };
+
+  setTimeout(() => {
+    html2pdf().set(opt).from(output).save().then(() => {
+      document.getElementById('loader').classList.remove('active');
+      output.style.display = 'none';
+      alert("PDF muvaffaqiyatli yaratildi va yuklandi!");
+    }).catch(err => {
+      console.error(err);
+      document.getElementById('loader').classList.remove('active');
+      output.style.display = 'none';
+      alert("Xatolik: " + err.message);
+    });
+  }, 1000); // 1 секунда — достаточно для полного рендера
+}
+   
 </body>
 </html>
